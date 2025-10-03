@@ -154,6 +154,7 @@
             background-color: var(--bg-primary);
             max-width: 100%;
             height: auto;
+            touch-action: none; /* Prevent scrolling on touch */
         }
         .game-info {
             display: flex;
@@ -162,6 +163,24 @@
             max-width: 800px;
             margin-bottom: 0.5rem;
             font-weight: bold;
+        }
+        .restart-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 0.5rem;
+            transition: background 0.2s;
+        }
+        .restart-btn:hover {
+            background: var(--accent-hover);
+        }
+        .restart-btn:disabled {
+            background: var(--text-secondary);
+            cursor: not-allowed;
         }
         .game-controls {
             text-align: center;
@@ -184,6 +203,9 @@
             }
             .contact-buttons {
                 justify-content: center; /* Ensures centering on mobile */
+            }
+            .game-controls p::before {
+                content: "Touch to move/shoot | ";
             }
         }
         /* Auto-detect system preference */
@@ -248,6 +270,7 @@
                         <span id="lives">Lives: 3</span>
                     </div>
                     <canvas id="gameCanvas" width="800" height="600"></canvas>
+                    <button class="restart-btn" id="restartBtn" onclick="restartGame()">Restart Game</button>
                     <div class="game-controls">
                         <p>← → to move | Space to shoot | Refresh to restart</p>
                     </div>
@@ -280,16 +303,18 @@
     </script>
 
     <script>
-        // Enhanced Space Invaders Game
+        // Enhanced Space Invaders Game with Mobile Support & Restart
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         const scoreElement = document.getElementById('score');
         const livesElement = document.getElementById('lives');
+        const restartBtn = document.getElementById('restartBtn');
 
         // Game variables
         let score = 0;
         let lives = 3;
         let gameRunning = true;
+        let lastShotTime = 0; // For shoot cooldown
 
         // Player
         const player = {
@@ -317,42 +342,80 @@
         const enemyPadding = 10;
         let enemyDirection = 1;
         let enemySpeed = 0.5;
-        let enemyDrop = 0;
-        let lastEnemyShot = 0; // For shooting rate
+        let lastEnemyShot = 0;
+
+        // Touch support
+        let isTouching = false;
+        let touchX = 0;
 
         // Initialize enemies
-        for (let row = 0; row < enemyRows; row++) {
-            for (let col = 0; col < enemyCols; col++) {
-                enemies.push({
-                    x: col * (enemyWidth + enemyPadding) + 50,
-                    y: row * (enemyHeight + enemyPadding) + 50,
-                    width: enemyWidth,
-                    height: enemyHeight,
-                    alive: true,
-                    row: row // For color variation
-                });
+        function initEnemies() {
+            enemies.length = 0;
+            for (let row = 0; row < enemyRows; row++) {
+                for (let col = 0; col < enemyCols; col++) {
+                    enemies.push({
+                        x: col * (enemyWidth + enemyPadding) + 50,
+                        y: row * (enemyHeight + enemyPadding) + 50,
+                        width: enemyWidth,
+                        height: enemyHeight,
+                        alive: true,
+                        row: row
+                    });
+                }
             }
         }
 
-        // Input handling
+        // Input handling (Keyboard + Touch)
         const keys = {};
         document.addEventListener('keydown', (e) => {
             keys[e.code] = true;
             if (e.code === 'Space' && gameRunning) {
                 e.preventDefault();
-                if (bullets.length === 0 || bullets[bullets.length - 1].y < player.y - 20) {
-                    bullets.push({
-                        x: player.x + player.width / 2 - 2.5,
-                        y: player.y,
-                        width: 5,
-                        height: 10
-                    });
-                }
+                shootPlayer();
             }
         });
         document.addEventListener('keyup', (e) => {
             keys[e.code] = false;
         });
+
+        // Touch events
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            isTouching = true;
+            const touch = e.touches[0];
+            touchX = touch.clientX - canvas.getBoundingClientRect().left;
+            shootPlayer();
+        });
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            if (isTouching) {
+                const touch = e.touches[0];
+                touchX = touch.clientX - canvas.getBoundingClientRect().left;
+            }
+        });
+        canvas.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            isTouching = false;
+        });
+
+        // Mouse for desktop fallback (optional)
+        canvas.addEventListener('mousemove', (e) => {
+            if (isTouching) return; // Prioritize touch
+            touchX = e.clientX - canvas.getBoundingClientRect().left;
+        });
+
+        function shootPlayer() {
+            const now = Date.now();
+            if (now - lastShotTime > 200 && gameRunning) { // Cooldown
+                bullets.push({
+                    x: player.x + player.width / 2 - 2.5,
+                    y: player.y,
+                    width: 5,
+                    height: 10
+                });
+                lastShotTime = now;
+            }
+        }
 
         // Collision detection
         function collision(rect1, rect2) {
@@ -362,90 +425,154 @@
                    rect1.y + rect1.height > rect2.y;
         }
 
-        // Draw player ship (simple triangle-based spaceship)
+        // Draw player ship (V-shaped with thrusters, inspired by classic)
         function drawPlayer() {
             ctx.fillStyle = 'white';
             ctx.strokeStyle = 'white';
             ctx.lineWidth = 2;
+            // Main body (triangle)
             ctx.beginPath();
-            ctx.moveTo(player.x + player.width / 2, player.y); // Top point
-            ctx.lineTo(player.x, player.y + player.height); // Bottom left
-            ctx.lineTo(player.x + player.width / 3, player.y + player.height / 2); // Left wing
-            ctx.lineTo(player.x + player.width / 2, player.y + player.height / 2 - 5); // Center body
-            ctx.lineTo(player.x + player.width / 3, player.y + player.height / 2); // Right wing symmetric
-            ctx.lineTo(player.x + player.width, player.y + player.height); // Bottom right
+            ctx.moveTo(player.x + player.width / 2, player.y); // Nose
+            ctx.lineTo(player.x, player.y + player.height); // Left tail
+            ctx.lineTo(player.x + player.width, player.y + player.height); // Right tail
             ctx.closePath();
             ctx.fill();
             ctx.stroke();
+            // Wings
+            ctx.beginPath();
+            ctx.moveTo(player.x + 5, player.y + 10);
+            ctx.lineTo(player.x, player.y + 15);
+            ctx.lineTo(player.x + 10, player.y + 10);
+            ctx.moveTo(player.x + player.width - 5, player.y + 10);
+            ctx.lineTo(player.x + player.width, player.y + 15);
+            ctx.lineTo(player.x + player.width - 10, player.y + 10);
+            ctx.stroke();
+            // Thrusters (small flames)
+            ctx.fillStyle = 'orange';
+            ctx.beginPath();
+            ctx.moveTo(player.x + 8, player.y + player.height);
+            ctx.lineTo(player.x + player.width / 2, player.y + player.height + 5);
+            ctx.lineTo(player.x + player.width - 8, player.y + player.height);
+            ctx.closePath();
+            ctx.fill();
         }
 
-        // Draw enemy ship (simple alien-like with variation by row)
+        // Draw enemy ship (Row-based variations, inspired by squid/crab/octopus styles)
         function drawEnemy(enemy) {
-            const colors = ['#00ff00', '#00cc00', '#009900', '#006600', '#003300']; // Green variations
-            ctx.fillStyle = colors[enemy.row % colors.length];
-            ctx.strokeStyle = '#00ff00';
+            const colors = ['#00ff41', '#00cc33', '#009922', '#006611', '#003300']; // Retro greens
+            ctx.fillStyle = colors[enemy.row];
+            ctx.strokeStyle = '#00ff41';
             ctx.lineWidth = 1;
-            ctx.beginPath();
-            // Body
-            ctx.ellipse(enemy.x + enemy.width / 2, enemy.y + enemy.height / 2, enemy.width / 2, enemy.height / 2, 0, 0, 2 * Math.PI);
-            ctx.fill();
-            ctx.stroke();
-            // Eyes
-            ctx.fillStyle = 'red';
-            ctx.beginPath();
-            ctx.arc(enemy.x + enemy.width * 0.3, enemy.y + enemy.height * 0.3, 3, 0, 2 * Math.PI);
-            ctx.arc(enemy.x + enemy.width * 0.7, enemy.y + enemy.height * 0.3, 3, 0, 2 * Math.PI);
-            ctx.fill();
-            // Tentacles or legs
-            ctx.strokeStyle = colors[enemy.row % colors.length];
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(enemy.x + enemy.width * 0.2, enemy.y + enemy.height);
-            ctx.lineTo(enemy.x + enemy.width * 0.2 - 5, enemy.y + enemy.height + 10);
-            ctx.moveTo(enemy.x + enemy.width * 0.5, enemy.y + enemy.height);
-            ctx.lineTo(enemy.x + enemy.width * 0.5, enemy.y + enemy.height + 15);
-            ctx.moveTo(enemy.x + enemy.width * 0.8, enemy.y + enemy.height);
-            ctx.lineTo(enemy.x + enemy.width * 0.8 + 5, enemy.y + enemy.height + 10);
-            ctx.stroke();
+            if (enemy.row === 0) { // Top row: Squid-like (tentacles)
+                // Body (oval)
+                ctx.beginPath();
+                ctx.ellipse(enemy.x + enemy.width / 2, enemy.y + enemy.height / 2, 12, 8, 0, 0, 2 * Math.PI);
+                ctx.fill();
+                ctx.stroke();
+                // Tentacles
+                ctx.strokeStyle = colors[enemy.row];
+                ctx.lineWidth = 2;
+                for (let i = 0; i < 4; i++) {
+                    const angle = (Math.PI * 2 / 4) * i;
+                    const tx = enemy.x + enemy.width / 2 + Math.cos(angle) * 15;
+                    const ty = enemy.y + enemy.height / 2 + Math.sin(angle) * 10;
+                    ctx.beginPath();
+                    ctx.moveTo(enemy.x + enemy.width / 2, enemy.y + enemy.height / 2);
+                    ctx.lineTo(tx, ty);
+                    ctx.stroke();
+                }
+                // Eyes
+                ctx.fillStyle = 'red';
+                ctx.beginPath();
+                ctx.arc(enemy.x + 8, enemy.y + 6, 2, 0, 2 * Math.PI);
+                ctx.arc(enemy.x + 22, enemy.y + 6, 2, 0, 2 * Math.PI);
+                ctx.fill();
+            } else if (enemy.row === 1 || enemy.row === 2) { // Middle: Crab-like (legs)
+                // Body (rect with rounded top)
+                ctx.beginPath();
+                ctx.roundRect(enemy.x + 5, enemy.y, enemy.width - 10, enemy.height, 5);
+                ctx.fill();
+                ctx.stroke();
+                // Legs
+                ctx.strokeStyle = colors[enemy.row];
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(enemy.x + 5, enemy.y + 15);
+                ctx.lineTo(enemy.x, enemy.y + 25);
+                ctx.moveTo(enemy.x + 25, enemy.y + 15);
+                ctx.lineTo(enemy.x + 30, enemy.y + 25);
+                ctx.stroke();
+                // Eyes
+                ctx.fillStyle = 'red';
+                ctx.beginPath();
+                ctx.arc(enemy.x + 12, enemy.y + 8, 2, 0, 2 * Math.PI);
+                ctx.arc(enemy.x + 18, enemy.y + 8, 2, 0, 2 * Math.PI);
+                ctx.fill();
+            } else { // Bottom: Octopus/tank-like (arms)
+                // Body (wider base)
+                ctx.beginPath();
+                ctx.rect(enemy.x + 3, enemy.y + 5, enemy.width - 6, enemy.height - 5);
+                ctx.fill();
+                ctx.stroke();
+                // Arms
+                ctx.strokeStyle = colors[enemy.row];
+                ctx.lineWidth = 2;
+                for (let i = 0; i < 6; i++) {
+                    const x = enemy.x + (i * (enemy.width / 5));
+                    ctx.beginPath();
+                    ctx.moveTo(x, enemy.y + enemy.height);
+                    ctx.lineTo(x, enemy.y + enemy.height + 8);
+                    ctx.stroke();
+                }
+                // Eyes
+                ctx.fillStyle = 'red';
+                ctx.beginPath();
+                ctx.arc(enemy.x + 10, enemy.y + 8, 2, 0, 2 * Math.PI);
+                ctx.arc(enemy.x + 20, enemy.y + 8, 2, 0, 2 * Math.PI);
+                ctx.fill();
+            }
         }
 
         // Update game
         function update() {
             if (!gameRunning) return;
 
-            // Player movement
+            // Player movement (keyboard + touch)
             if (keys['ArrowLeft'] && player.x > 0) {
                 player.x -= player.speed;
             }
             if (keys['ArrowRight'] && player.x < canvas.width - player.width) {
                 player.x += player.speed;
             }
+            // Touch movement
+            if (isTouching) {
+                player.x = Math.max(0, Math.min(canvas.width - player.width, touchX - player.width / 2));
+            }
 
             // Update player bullets
-            bullets.forEach((bullet, bulletIndex) => {
+            for (let i = bullets.length - 1; i >= 0; i--) {
+                const bullet = bullets[i];
                 bullet.y -= bulletSpeed;
                 if (bullet.y < 0) {
-                    bullets.splice(bulletIndex, 1);
+                    bullets.splice(i, 1);
                 }
-            });
+            }
 
             // Update enemy bullets
-            enemyBullets.forEach((bullet, bulletIndex) => {
+            for (let i = enemyBullets.length - 1; i >= 0; i--) {
+                const bullet = enemyBullets[i];
                 bullet.y += enemyBulletSpeed;
                 if (bullet.y > canvas.height) {
-                    enemyBullets.splice(bulletIndex, 1);
-                }
-                // Check collision with player
-                if (collision(bullet, player)) {
+                    enemyBullets.splice(i, 1);
+                } else if (collision(bullet, player)) {
                     lives--;
                     livesElement.textContent = `Lives: ${lives}`;
-                    enemyBullets.splice(bulletIndex, 1);
+                    enemyBullets.splice(i, 1);
                     if (lives <= 0) {
-                        gameRunning = false;
-                        alert(`Game Over! Final Score: ${score}`);
+                        gameOver();
                     }
                 }
-            });
+            }
 
             // Update enemies
             let edgeHit = false;
@@ -453,12 +580,12 @@
                 if (!enemy.alive) return;
 
                 enemy.x += enemyDirection * enemySpeed;
-                if (enemy.x <= 0 || enemy.x >= canvas.width - enemy.width) {
+                if (enemy.x <= 0 || enemy.x + enemy.width >= canvas.width) {
                     edgeHit = true;
                 }
 
-                // Enemy shooting (random, not too frequent)
-                if (Date.now() - lastEnemyShot > 500 && Math.random() < 0.005 && enemy.alive) { // Adjust rate as needed
+                // Enemy shooting
+                if (Date.now() - lastEnemyShot > 800 && Math.random() < 0.003 && enemy.alive) {
                     enemyBullets.push({
                         x: enemy.x + enemy.width / 2 - 2.5,
                         y: enemy.y + enemy.height,
@@ -468,24 +595,23 @@
                     lastEnemyShot = Date.now();
                 }
 
-                // Check player bullet collisions
-                bullets.forEach((bullet, bulletIndex) => {
-                    if (collision(bullet, enemy)) {
+                // Check collisions with player bullets
+                for (let i = bullets.length - 1; i >= 0; i--) {
+                    if (collision(bullets[i], enemy)) {
                         enemy.alive = false;
-                        bullets.splice(bulletIndex, 1);
+                        bullets.splice(i, 1);
                         score += 10;
                         scoreElement.textContent = `Score: ${score}`;
                     }
-                });
+                }
 
-                // Check if enemy reaches bottom or hits player
+                // Enemy hits player or bottom
                 if (enemy.y + enemy.height >= player.y || collision(enemy, player)) {
                     lives--;
                     livesElement.textContent = `Lives: ${lives}`;
                     enemy.alive = false;
                     if (lives <= 0) {
-                        gameRunning = false;
-                        alert(`Game Over! Final Score: ${score}`);
+                        gameOver();
                     }
                 }
             });
@@ -493,18 +619,22 @@
             if (edgeHit) {
                 enemyDirection *= -1;
                 enemies.forEach(enemy => {
-                    if (enemy.alive) {
-                        enemy.y += 20;
-                    }
+                    if (enemy.alive) enemy.y += 20;
                 });
             }
 
-            // Check win condition
+            // Win condition
             const aliveEnemies = enemies.filter(e => e.alive).length;
             if (aliveEnemies === 0) {
                 alert(`You Win! Score: ${score}`);
-                gameRunning = false;
+                gameOver();
             }
+        }
+
+        function gameOver() {
+            gameRunning = false;
+            restartBtn.disabled = false;
+            restartBtn.textContent = 'Restart Game';
         }
 
         // Render game
@@ -516,23 +646,16 @@
             // Draw player
             drawPlayer();
 
-            // Draw player bullets
+            // Draw bullets
             ctx.fillStyle = 'yellow';
-            bullets.forEach(bullet => {
-                ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
-            });
+            bullets.forEach(bullet => ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height));
 
-            // Draw enemy bullets
             ctx.fillStyle = 'red';
-            enemyBullets.forEach(bullet => {
-                ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
-            });
+            enemyBullets.forEach(bullet => ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height));
 
             // Draw enemies
             enemies.forEach(enemy => {
-                if (enemy.alive) {
-                    drawEnemy(enemy);
-                }
+                if (enemy.alive) drawEnemy(enemy);
             });
         }
 
@@ -543,7 +666,28 @@
             requestAnimationFrame(gameLoop);
         }
 
-        // Start game
+        // Restart function
+        function restartGame() {
+            score = 0;
+            lives = 3;
+            gameRunning = true;
+            bullets.length = 0;
+            enemyBullets.length = 0;
+            player.x = canvas.width / 2 - 15;
+            scoreElement.textContent = `Score: ${score}`;
+            livesElement.textContent = `Lives: ${lives}`;
+            initEnemies();
+            lastShotTime = 0;
+            lastEnemyShot = 0;
+            enemyDirection = 1;
+            restartBtn.disabled = true;
+            restartBtn.textContent = 'Playing...';
+        }
+
+        // Initial setup
+        restartBtn.disabled = true;
+        restartBtn.textContent = 'Playing...';
+        initEnemies();
         gameLoop();
     </script>
 </body>
