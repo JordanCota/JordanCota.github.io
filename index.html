@@ -280,7 +280,7 @@
     </script>
 
     <script>
-        // Simple Space Invaders Game
+        // Enhanced Space Invaders Game
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         const scoreElement = document.getElementById('score');
@@ -304,6 +304,10 @@
         const bullets = [];
         const bulletSpeed = 7;
 
+        // Enemy bullets
+        const enemyBullets = [];
+        const enemyBulletSpeed = 3;
+
         // Enemies
         const enemies = [];
         const enemyRows = 5;
@@ -314,6 +318,7 @@
         let enemyDirection = 1;
         let enemySpeed = 0.5;
         let enemyDrop = 0;
+        let lastEnemyShot = 0; // For shooting rate
 
         // Initialize enemies
         for (let row = 0; row < enemyRows; row++) {
@@ -323,7 +328,8 @@
                     y: row * (enemyHeight + enemyPadding) + 50,
                     width: enemyWidth,
                     height: enemyHeight,
-                    alive: true
+                    alive: true,
+                    row: row // For color variation
                 });
             }
         }
@@ -334,7 +340,7 @@
             keys[e.code] = true;
             if (e.code === 'Space' && gameRunning) {
                 e.preventDefault();
-                if (bullets.length === 0 || bullets[bullets.length - 1].y < player.y) {
+                if (bullets.length === 0 || bullets[bullets.length - 1].y < player.y - 20) {
                     bullets.push({
                         x: player.x + player.width / 2 - 2.5,
                         y: player.y,
@@ -356,6 +362,53 @@
                    rect1.y + rect1.height > rect2.y;
         }
 
+        // Draw player ship (simple triangle-based spaceship)
+        function drawPlayer() {
+            ctx.fillStyle = 'white';
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(player.x + player.width / 2, player.y); // Top point
+            ctx.lineTo(player.x, player.y + player.height); // Bottom left
+            ctx.lineTo(player.x + player.width / 3, player.y + player.height / 2); // Left wing
+            ctx.lineTo(player.x + player.width / 2, player.y + player.height / 2 - 5); // Center body
+            ctx.lineTo(player.x + player.width / 3, player.y + player.height / 2); // Right wing symmetric
+            ctx.lineTo(player.x + player.width, player.y + player.height); // Bottom right
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+        }
+
+        // Draw enemy ship (simple alien-like with variation by row)
+        function drawEnemy(enemy) {
+            const colors = ['#00ff00', '#00cc00', '#009900', '#006600', '#003300']; // Green variations
+            ctx.fillStyle = colors[enemy.row % colors.length];
+            ctx.strokeStyle = '#00ff00';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            // Body
+            ctx.ellipse(enemy.x + enemy.width / 2, enemy.y + enemy.height / 2, enemy.width / 2, enemy.height / 2, 0, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.stroke();
+            // Eyes
+            ctx.fillStyle = 'red';
+            ctx.beginPath();
+            ctx.arc(enemy.x + enemy.width * 0.3, enemy.y + enemy.height * 0.3, 3, 0, 2 * Math.PI);
+            ctx.arc(enemy.x + enemy.width * 0.7, enemy.y + enemy.height * 0.3, 3, 0, 2 * Math.PI);
+            ctx.fill();
+            // Tentacles or legs
+            ctx.strokeStyle = colors[enemy.row % colors.length];
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(enemy.x + enemy.width * 0.2, enemy.y + enemy.height);
+            ctx.lineTo(enemy.x + enemy.width * 0.2 - 5, enemy.y + enemy.height + 10);
+            ctx.moveTo(enemy.x + enemy.width * 0.5, enemy.y + enemy.height);
+            ctx.lineTo(enemy.x + enemy.width * 0.5, enemy.y + enemy.height + 15);
+            ctx.moveTo(enemy.x + enemy.width * 0.8, enemy.y + enemy.height);
+            ctx.lineTo(enemy.x + enemy.width * 0.8 + 5, enemy.y + enemy.height + 10);
+            ctx.stroke();
+        }
+
         // Update game
         function update() {
             if (!gameRunning) return;
@@ -368,11 +421,29 @@
                 player.x += player.speed;
             }
 
-            // Update bullets
+            // Update player bullets
             bullets.forEach((bullet, bulletIndex) => {
                 bullet.y -= bulletSpeed;
                 if (bullet.y < 0) {
                     bullets.splice(bulletIndex, 1);
+                }
+            });
+
+            // Update enemy bullets
+            enemyBullets.forEach((bullet, bulletIndex) => {
+                bullet.y += enemyBulletSpeed;
+                if (bullet.y > canvas.height) {
+                    enemyBullets.splice(bulletIndex, 1);
+                }
+                // Check collision with player
+                if (collision(bullet, player)) {
+                    lives--;
+                    livesElement.textContent = `Lives: ${lives}`;
+                    enemyBullets.splice(bulletIndex, 1);
+                    if (lives <= 0) {
+                        gameRunning = false;
+                        alert(`Game Over! Final Score: ${score}`);
+                    }
                 }
             });
 
@@ -386,7 +457,18 @@
                     edgeHit = true;
                 }
 
-                // Check bullet collisions
+                // Enemy shooting (random, not too frequent)
+                if (Date.now() - lastEnemyShot > 500 && Math.random() < 0.005 && enemy.alive) { // Adjust rate as needed
+                    enemyBullets.push({
+                        x: enemy.x + enemy.width / 2 - 2.5,
+                        y: enemy.y + enemy.height,
+                        width: 5,
+                        height: 10
+                    });
+                    lastEnemyShot = Date.now();
+                }
+
+                // Check player bullet collisions
                 bullets.forEach((bullet, bulletIndex) => {
                     if (collision(bullet, enemy)) {
                         enemy.alive = false;
@@ -432,20 +514,24 @@
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             // Draw player
-            ctx.fillStyle = 'white';
-            ctx.fillRect(player.x, player.y, player.width, player.height);
+            drawPlayer();
 
-            // Draw bullets
+            // Draw player bullets
             ctx.fillStyle = 'yellow';
             bullets.forEach(bullet => {
                 ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
             });
 
+            // Draw enemy bullets
+            ctx.fillStyle = 'red';
+            enemyBullets.forEach(bullet => {
+                ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
+            });
+
             // Draw enemies
-            ctx.fillStyle = 'green';
             enemies.forEach(enemy => {
                 if (enemy.alive) {
-                    ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
+                    drawEnemy(enemy);
                 }
             });
         }
