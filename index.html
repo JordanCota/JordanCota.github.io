@@ -142,6 +142,33 @@
             height: 24px;
             fill: currentColor;
         }
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 1rem;
+        }
+        #gameCanvas {
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            background-color: var(--bg-primary);
+            max-width: 100%;
+            height: auto;
+        }
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 800px;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+        .game-controls {
+            text-align: center;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
         @media (max-width: 768px) {
             .container {
                 flex-direction: column;
@@ -183,13 +210,13 @@
                 <p>Engineer / Account Manager | Atlanta, GA</p>
                 <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">🌙</button>
             </div>
-           
+          
             <div class="section">
                 <h2>About Me</h2>
                 <p>I am currently a Solution Deployment Manager at <a href="https://glassdome.com" target="_blank">Glassdome</a>, where I help customers with their real-time reporting for OEE Metrics and KPIs.</p>
                 <p>I studied at the University of West Georgia in Carrollton with a focus in history, where I got an Associate's Degree (hardest degree to get, actually). I have a wide variety of passions and enjoy many activities in my free time. I enjoy pickleball, making kombucha, hiking with friends, long walks on the beach, and the discovery of new hobbies. Hell I built this website with HTML coding!</p>
             </div>
-           
+          
             <div class="section">
                 <h2>Get in Touch</h2>
                 <p>I'm based in Atlanta, Georgia (I hate the traffic). Feel free to email me or connect on LinkedIn using the buttons below. To the right I will have a section clickable for hobbies and Portfolio(ew)</p>
@@ -211,18 +238,30 @@
                     </a>
                 </div>
             </div>
+
+            <div class="section">
+                <h2>Fun Time: Play Space Invaders!</h2>
+                <p>One of my hobbies? Classic games! Built this simple Space Invaders right here. Use arrow keys to move, spacebar to shoot. Survive the invasion!</p>
+                <div class="game-container">
+                    <div class="game-info">
+                        <span id="score">Score: 0</span>
+                        <span id="lives">Lives: 3</span>
+                    </div>
+                    <canvas id="gameCanvas" width="800" height="600"></canvas>
+                    <div class="game-controls">
+                        <p>← → to move | Space to shoot | Refresh to restart</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-
     <script>
         const toggle = document.getElementById('themeToggle');
         const body = document.body;
-
         // Load saved theme or default to system
         const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
         body.setAttribute('data-theme', savedTheme);
         toggle.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
-
         // Toggle function
         toggle.addEventListener('click', () => {
             const current = body.getAttribute('data-theme');
@@ -231,7 +270,6 @@
             localStorage.setItem('theme', next);
             toggle.textContent = next === 'dark' ? '☀️' : '🌙';
         });
-
         // Listen for system changes (if no manual toggle)
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
             if (!localStorage.getItem('theme')) {
@@ -239,6 +277,188 @@
                 toggle.textContent = e.matches ? '☀️' : '🌙';
             }
         });
+    </script>
+
+    <script>
+        // Simple Space Invaders Game
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreElement = document.getElementById('score');
+        const livesElement = document.getElementById('lives');
+
+        // Game variables
+        let score = 0;
+        let lives = 3;
+        let gameRunning = true;
+
+        // Player
+        const player = {
+            x: canvas.width / 2 - 15,
+            y: canvas.height - 50,
+            width: 30,
+            height: 20,
+            speed: 5
+        };
+
+        // Bullets
+        const bullets = [];
+        const bulletSpeed = 7;
+
+        // Enemies
+        const enemies = [];
+        const enemyRows = 5;
+        const enemyCols = 10;
+        const enemyWidth = 30;
+        const enemyHeight = 20;
+        const enemyPadding = 10;
+        let enemyDirection = 1;
+        let enemySpeed = 0.5;
+        let enemyDrop = 0;
+
+        // Initialize enemies
+        for (let row = 0; row < enemyRows; row++) {
+            for (let col = 0; col < enemyCols; col++) {
+                enemies.push({
+                    x: col * (enemyWidth + enemyPadding) + 50,
+                    y: row * (enemyHeight + enemyPadding) + 50,
+                    width: enemyWidth,
+                    height: enemyHeight,
+                    alive: true
+                });
+            }
+        }
+
+        // Input handling
+        const keys = {};
+        document.addEventListener('keydown', (e) => {
+            keys[e.code] = true;
+            if (e.code === 'Space' && gameRunning) {
+                e.preventDefault();
+                if (bullets.length === 0 || bullets[bullets.length - 1].y < player.y) {
+                    bullets.push({
+                        x: player.x + player.width / 2 - 2.5,
+                        y: player.y,
+                        width: 5,
+                        height: 10
+                    });
+                }
+            }
+        });
+        document.addEventListener('keyup', (e) => {
+            keys[e.code] = false;
+        });
+
+        // Collision detection
+        function collision(rect1, rect2) {
+            return rect1.x < rect2.x + rect2.width &&
+                   rect1.x + rect1.width > rect2.x &&
+                   rect1.y < rect2.y + rect2.height &&
+                   rect1.y + rect1.height > rect2.y;
+        }
+
+        // Update game
+        function update() {
+            if (!gameRunning) return;
+
+            // Player movement
+            if (keys['ArrowLeft'] && player.x > 0) {
+                player.x -= player.speed;
+            }
+            if (keys['ArrowRight'] && player.x < canvas.width - player.width) {
+                player.x += player.speed;
+            }
+
+            // Update bullets
+            bullets.forEach((bullet, bulletIndex) => {
+                bullet.y -= bulletSpeed;
+                if (bullet.y < 0) {
+                    bullets.splice(bulletIndex, 1);
+                }
+            });
+
+            // Update enemies
+            let edgeHit = false;
+            enemies.forEach(enemy => {
+                if (!enemy.alive) return;
+
+                enemy.x += enemyDirection * enemySpeed;
+                if (enemy.x <= 0 || enemy.x >= canvas.width - enemy.width) {
+                    edgeHit = true;
+                }
+
+                // Check bullet collisions
+                bullets.forEach((bullet, bulletIndex) => {
+                    if (collision(bullet, enemy)) {
+                        enemy.alive = false;
+                        bullets.splice(bulletIndex, 1);
+                        score += 10;
+                        scoreElement.textContent = `Score: ${score}`;
+                    }
+                });
+
+                // Check if enemy reaches bottom or hits player
+                if (enemy.y + enemy.height >= player.y || collision(enemy, player)) {
+                    lives--;
+                    livesElement.textContent = `Lives: ${lives}`;
+                    enemy.alive = false;
+                    if (lives <= 0) {
+                        gameRunning = false;
+                        alert(`Game Over! Final Score: ${score}`);
+                    }
+                }
+            });
+
+            if (edgeHit) {
+                enemyDirection *= -1;
+                enemies.forEach(enemy => {
+                    if (enemy.alive) {
+                        enemy.y += 20;
+                    }
+                });
+            }
+
+            // Check win condition
+            const aliveEnemies = enemies.filter(e => e.alive).length;
+            if (aliveEnemies === 0) {
+                alert(`You Win! Score: ${score}`);
+                gameRunning = false;
+            }
+        }
+
+        // Render game
+        function render() {
+            // Clear canvas
+            ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--bg-primary');
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw player
+            ctx.fillStyle = 'white';
+            ctx.fillRect(player.x, player.y, player.width, player.height);
+
+            // Draw bullets
+            ctx.fillStyle = 'yellow';
+            bullets.forEach(bullet => {
+                ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
+            });
+
+            // Draw enemies
+            ctx.fillStyle = 'green';
+            enemies.forEach(enemy => {
+                if (enemy.alive) {
+                    ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
+                }
+            });
+        }
+
+        // Game loop
+        function gameLoop() {
+            update();
+            render();
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Start game
+        gameLoop();
     </script>
 </body>
 </html>
