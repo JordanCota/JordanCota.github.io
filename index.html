@@ -98,27 +98,20 @@
             overflow: hidden;
             box-shadow: 0 4px 12px var(--shadow);
         }
-
-        /* Hide all slides by default */
         .mySlides {
             display: none;
             width: 100%;
-            /* Fade animation */
             animation-name: fade;
             animation-duration: 0.8s;
         }
-
         @keyframes fade {
           from {opacity: .4}
           to {opacity: 1}
         }
-
         .mySlides img {
             width: 100%;
-            vertical-align: middle; /* Fixes small space below the image */
+            vertical-align: middle;
         }
-
-        /* Next & previous buttons */
         .prev, .next {
             cursor: pointer;
             position: absolute;
@@ -135,17 +128,13 @@
             background-color: rgba(0,0,0,0.5);
             z-index: 10;
         }
-
         .next {
             right: 0;
             border-radius: 3px 0 0 3px;
         }
-
         .prev:hover, .next:hover {
             background-color: rgba(0,0,0,0.8);
         }
-
-        /* Caption container */
         .caption-container {
             text-align: center;
             position: absolute;
@@ -155,7 +144,6 @@
             background-color: rgba(0,0,0,0.6);
             padding: 8px;
         }
-
         #caption {
             margin: 0;
             font-size: 15px;
@@ -280,7 +268,7 @@
             display: flex;
             gap: 1rem;
             margin-top: 1rem;
-            justify-content: center; /* Centers the buttons */
+            justify-content: center;
         }
         .contact-buttons a {
             display: inline-flex;
@@ -315,7 +303,7 @@
             background-color: var(--bg-primary);
             max-width: 100%;
             height: auto;
-            touch-action: none; /* Prevent scrolling on touch */
+            touch-action: none;
         }
         .game-info {
             display: flex;
@@ -363,7 +351,7 @@
                 right: 0.5rem;
             }
             .contact-buttons {
-                justify-content: center; /* Ensures centering on mobile */
+                justify-content: center;
             }
             .tabs {
                 flex-direction: column;
@@ -375,7 +363,6 @@
                 content: "Tilt to move (auto-fire) | ";
             }
         }
-        /* Auto-detect system preference */
         @media (prefers-color-scheme: dark) {
             body:not([data-theme="light"]) {
                 --bg-primary: #121212;
@@ -457,7 +444,7 @@
                             <span id="lives">Lives: 3</span>
                         </div>
                         <canvas id="gameCanvas" width="800" height="600"></canvas>
-                        <button class="restart-btn" id="restartBtn" onclick="restartGame()">Restart Game</button>
+                        <button class="restart-btn" id="restartBtn" onclick="restartGame()">Start Game</button>
                         <div class="game-controls">
                             <p>← → to move | Space to shoot | Refresh to restart</p>
                         </div>
@@ -532,11 +519,9 @@
         // --- Theme and Tab Controls ---
         const toggle = document.getElementById('themeToggle');
         const body = document.body;
-        // Load saved theme or default to system
         const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
         body.setAttribute('data-theme', savedTheme);
         toggle.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
-        // Toggle function
         toggle.addEventListener('click', () => {
             const current = body.getAttribute('data-theme');
             const next = current === 'dark' ? 'light' : 'dark';
@@ -544,23 +529,19 @@
             localStorage.setItem('theme', next);
             toggle.textContent = next === 'dark' ? '☀️' : '🌙';
         });
-        // Listen for system changes (if no manual toggle)
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
             if (!localStorage.getItem('theme')) {
                 body.setAttribute('data-theme', e.matches ? 'dark' : 'light');
                 toggle.textContent = e.matches ? '☀️' : '🌙';
             }
         });
-        // Tab navigation
         const tabBtns = document.querySelectorAll('.tab-btn');
         const tabContents = document.querySelectorAll('.tab-content');
         tabBtns.forEach(btn => {
             btn.addEventListener('click', () => {
                 const tabId = btn.dataset.tab;
-                // Update active tab button
                 tabBtns.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
-                // Update active tab content
                 tabContents.forEach(content => content.classList.remove('active'));
                 document.getElementById(`${tabId}-tab`).classList.add('active');
             });
@@ -570,41 +551,22 @@
     <script>
         // --- Corrected Slideshow Script ---
         let slideIndex = 1;
-        // This array MUST match the order of your images.
         const captions = ["ML1 Dashboard", "Main Line Dashboard", "PLC Code", "Downtime Entry ML1", "iPad ML1 Interface"];
-
-        // Initial call to show the first slide when the page loads
         showSlides(slideIndex);
-
-        // Function to advance to the next or previous slide
         function plusSlides(n) {
           showSlides(slideIndex += n);
         }
-
-        // Main function to display the correct slide and caption
         function showSlides(n) {
           let i;
           let slides = document.getElementsByClassName("mySlides");
           let captionText = document.getElementById("caption");
-
-          // Loop back to the first slide if you go past the last one
-          if (n > slides.length) {
-            slideIndex = 1;
-          }
-          // Loop to the last slide if you go before the first one
-          if (n < 1) {
-            slideIndex = slides.length;
-          }
-
-          // Hide all the slides
+          if (n > slides.length) {slideIndex = 1}
+          if (n < 1) {slideIndex = slides.length}
           for (i = 0; i < slides.length; i++) {
             slides[i].style.display = "none";
           }
-
-          // Display only the current slide
           if (slides.length > 0) {
             slides[slideIndex - 1].style.display = "block";
-            // Update the caption text
             captionText.innerHTML = captions[slideIndex - 1];
           }
         }
@@ -618,31 +580,20 @@
         const levelElement = document.getElementById('level');
         const livesElement = document.getElementById('lives');
         const restartBtn = document.getElementById('restartBtn');
-        // Game variables
         let score = 0;
         let lives = 3;
         let level = 1;
-        let gameRunning = true;
-        let lastShotTime = 0; // For shoot cooldown
+        let gameRunning = false; // Set to false to wait for start
+        let lastShotTime = 0;
         let tiltEnabled = false;
         let mobileDetected = false;
-        let tiltSensitivity = 3; // Adjust for tilt responsiveness
-        let autoFireInterval = 300; // ms between auto-fires on mobile
-        // Player
-        const player = {
-            x: canvas.width / 2 - 15,
-            y: canvas.height - 50,
-            width: 30,
-            height: 20,
-            speed: 5
-        };
-        // Bullets
+        let tiltSensitivity = 3;
+        let autoFireInterval = 300;
+        const player = { x: canvas.width/2-15, y: canvas.height-50, width: 30, height: 20, speed: 5 };
         const bullets = [];
         const bulletSpeed = 7;
-        // Enemy bullets
         const enemyBullets = [];
         let enemyBulletSpeed = 3;
-        // Enemies
         const enemies = [];
         let enemyRows = 5;
         let enemyCols = 10;
@@ -652,15 +603,13 @@
         let enemyDirection = 1;
         let enemySpeed = 0.5;
         let lastEnemyShot = 0;
-        // Touch support
         let isTouching = false;
         let touchX = 0;
-        // Tilt support (mobile only)
+
         function initTilt() {
             if (!('DeviceOrientationEvent' in window)) return;
-            mobileDetected = true; // Assume tilt support means mobile
+            mobileDetected = true;
             if (/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream) {
-                // iOS requires permission
                 canvas.addEventListener('touchstart', async (e) => {
                     try {
                         const permission = await DeviceOrientationEvent.requestPermission();
@@ -668,307 +617,105 @@
                             tiltEnabled = true;
                             window.addEventListener('deviceorientation', handleTilt);
                         }
-                    } catch (err) {
-                        console.log('Tilt permission denied');
-                    }
+                    } catch (err) { console.log('Tilt permission denied'); }
                 }, { once: true });
             } else {
-                // Android/other mobile
                 tiltEnabled = true;
                 window.addEventListener('deviceorientation', handleTilt);
             }
         }
         function handleTilt(e) {
-            const gamma = e.gamma || 0; // Left-right tilt (-90 to 90)
+            const gamma = e.gamma || 0;
             const tiltDelta = gamma * tiltSensitivity;
             player.x += tiltDelta;
             player.x = Math.max(0, Math.min(canvas.width - player.width, player.x));
         }
-        // Initialize enemies
         function initEnemies() {
             enemies.length = 0;
-            for (let row = 0; row < enemyRows; row++) {
-                for (let col = 0; col < enemyCols; col++) {
-                    enemies.push({
-                        x: col * (enemyWidth + enemyPadding) + 50,
-                        y: row * (enemyHeight + enemyPadding) + 50,
-                        width: enemyWidth,
-                        height: enemyHeight,
-                        alive: true,
-                        row: row
-                    });
+            for (let row=0; row<enemyRows; row++) {
+                for (let col=0; col<enemyCols; col++) {
+                    enemies.push({ x: col*(enemyWidth+enemyPadding)+50, y: row*(enemyHeight+enemyPadding)+50, width: enemyWidth, height: enemyHeight, alive: true, row: row });
                 }
             }
         }
-        // Input handling (Keyboard + Touch + Tilt)
         const keys = {};
         document.addEventListener('keydown', (e) => {
             keys[e.code] = true;
-            if (e.code === 'Space' && gameRunning && !mobileDetected) {
-                e.preventDefault();
-                shootPlayer();
-            }
+            if (e.code === 'Space' && gameRunning && !mobileDetected) { e.preventDefault(); shootPlayer(); }
         });
-        document.addEventListener('keyup', (e) => {
-            keys[e.code] = false;
-        });
-        // Touch events (movement on all, shoot only on non-mobile)
+        document.addEventListener('keyup', (e) => { keys[e.code] = false; });
         canvas.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            isTouching = true;
-            const touch = e.touches[0];
+            e.preventDefault(); isTouching = true; const touch = e.touches[0];
             touchX = touch.clientX - canvas.getBoundingClientRect().left;
-            if (!mobileDetected) shootPlayer(); // Manual shoot on non-mobile
-            // Init tilt on first touch if not yet
-            if (!tiltEnabled) initTilt();
+            if (!mobileDetected) shootPlayer(); if (!tiltEnabled) initTilt();
         });
         canvas.addEventListener('touchmove', (e) => {
-            e.preventDefault();
-            if (isTouching) {
-                const touch = e.touches[0];
-                touchX = touch.clientX - canvas.getBoundingClientRect().left;
-            }
+            e.preventDefault(); if (isTouching) { const touch = e.touches[0]; touchX = touch.clientX - canvas.getBoundingClientRect().left; }
         });
-        canvas.addEventListener('touchend', (e) => {
-            e.preventDefault();
-            isTouching = false;
-        });
-        // Mouse for desktop fallback (optional, movement only)
+        canvas.addEventListener('touchend', (e) => { e.preventDefault(); isTouching = false; });
         canvas.addEventListener('mousemove', (e) => {
-            if (isTouching || tiltEnabled) return; // Prioritize touch/tilt
+            if (isTouching || tiltEnabled) return;
             touchX = e.clientX - canvas.getBoundingClientRect().left;
         });
         function shootPlayer() {
             const now = Date.now();
-            if (now - lastShotTime > (mobileDetected ? autoFireInterval : 200) && gameRunning) { // Different cooldowns
-                bullets.push({
-                    x: player.x + player.width / 2 - 2.5,
-                    y: player.y,
-                    width: 5,
-                    height: 10
-                });
+            if (now - lastShotTime > (mobileDetected ? autoFireInterval : 200) && gameRunning) {
+                bullets.push({ x: player.x + player.width/2 - 2.5, y: player.y, width: 5, height: 10 });
                 lastShotTime = now;
             }
         }
-        // Collision detection
         function collision(rect1, rect2) {
-            return rect1.x < rect2.x + rect2.width &&
-                   rect1.x + rect1.width > rect2.x &&
-                   rect1.y < rect2.y + rect2.height &&
-                   rect1.y + rect1.height > rect2.y;
+            return rect1.x < rect2.x + rect2.width && rect1.x + rect1.width > rect2.x && rect1.y < rect2.y + rect2.height && rect1.y + rect1.height > rect2.y;
         }
-        // Draw player ship (V-shaped with thrusters, inspired by classic)
         function drawPlayer() {
-            ctx.fillStyle = 'white';
-            ctx.strokeStyle = 'white';
-            ctx.lineWidth = 2;
-            // Main body (triangle)
-            ctx.beginPath();
-            ctx.moveTo(player.x + player.width / 2, player.y); // Nose
-            ctx.lineTo(player.x, player.y + player.height); // Left tail
-            ctx.lineTo(player.x + player.width, player.y + player.height); // Right tail
-            ctx.closePath();
-            ctx.fill();
-            ctx.stroke();
-            // Wings
-            ctx.beginPath();
-            ctx.moveTo(player.x + 5, player.y + 10);
-            ctx.lineTo(player.x, player.y + 15);
-            ctx.lineTo(player.x + 10, player.y + 10);
-            ctx.moveTo(player.x + player.width - 5, player.y + 10);
-            ctx.lineTo(player.x + player.width, player.y + 15);
-            ctx.lineTo(player.x + player.width - 10, player.y + 10);
-            ctx.stroke();
-            // Thrusters (small flames)
-            ctx.fillStyle = 'orange';
-            ctx.beginPath();
-            ctx.moveTo(player.x + 8, player.y + player.height);
-            ctx.lineTo(player.x + player.width / 2, player.y + player.height + 5);
-            ctx.lineTo(player.x + player.width - 8, player.y + player.height);
-            ctx.closePath();
-            ctx.fill();
+            ctx.fillStyle = 'white'; ctx.strokeStyle = 'white'; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.moveTo(player.x+player.width/2, player.y); ctx.lineTo(player.x, player.y+player.height); ctx.lineTo(player.x+player.width, player.y+player.height); ctx.closePath(); ctx.fill(); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(player.x+5, player.y+10); ctx.lineTo(player.x, player.y+15); ctx.lineTo(player.x+10, player.y+10); ctx.moveTo(player.x+player.width-5, player.y+10); ctx.lineTo(player.x+player.width, player.y+15); ctx.lineTo(player.x+player.width-10, player.y+10); ctx.stroke();
+            ctx.fillStyle = 'orange'; ctx.beginPath(); ctx.moveTo(player.x+8, player.y+player.height); ctx.lineTo(player.x+player.width/2, player.y+player.height+5); ctx.lineTo(player.x+player.width-8, player.y+player.height); ctx.closePath(); ctx.fill();
         }
-        // Draw enemy ship (Row-based variations, inspired by squid/crab/octopus styles)
         function drawEnemy(enemy) {
-            const colors = ['#00ff41', '#00cc33', '#009922', '#006611', '#003300']; // Retro greens
-            ctx.fillStyle = colors[enemy.row];
-            ctx.strokeStyle = '#00ff41';
-            ctx.lineWidth = 1;
-            if (enemy.row === 0) { // Top row: Squid-like (tentacles)
-                // Body (oval)
-                ctx.beginPath();
-                ctx.ellipse(enemy.x + enemy.width / 2, enemy.y + enemy.height / 2, 12, 8, 0, 0, 2 * Math.PI);
-                ctx.fill();
-                ctx.stroke();
-                // Tentacles
-                ctx.strokeStyle = colors[enemy.row];
-                ctx.lineWidth = 2;
-                for (let i = 0; i < 4; i++) {
-                    const angle = (Math.PI * 2 / 4) * i;
-                    const tx = enemy.x + enemy.width / 2 + Math.cos(angle) * 15;
-                    const ty = enemy.y + enemy.height / 2 + Math.sin(angle) * 10;
-                    ctx.beginPath();
-                    ctx.moveTo(enemy.x + enemy.width / 2, enemy.y + enemy.height / 2);
-                    ctx.lineTo(tx, ty);
-                    ctx.stroke();
-                }
-                // Eyes
-                ctx.fillStyle = 'red';
-                ctx.beginPath();
-                ctx.arc(enemy.x + 8, enemy.y + 6, 2, 0, 2 * Math.PI);
-                ctx.arc(enemy.x + 22, enemy.y + 6, 2, 0, 2 * Math.PI);
-                ctx.fill();
-            } else if (enemy.row === 1 || enemy.row === 2) { // Middle: Crab-like (legs)
-                // Body (rect with rounded top)
-                ctx.beginPath();
-                ctx.roundRect(enemy.x + 5, enemy.y, enemy.width - 10, enemy.height, 5);
-                ctx.fill();
-                ctx.stroke();
-                // Legs
-                ctx.strokeStyle = colors[enemy.row];
-                ctx.lineWidth = 2;
-                ctx.beginPath();
-                ctx.moveTo(enemy.x + 5, enemy.y + 15);
-                ctx.lineTo(enemy.x, enemy.y + 25);
-                ctx.moveTo(enemy.x + 25, enemy.y + 15);
-                ctx.lineTo(enemy.x + 30, enemy.y + 25);
-                ctx.stroke();
-                // Eyes
-                ctx.fillStyle = 'red';
-                ctx.beginPath();
-                ctx.arc(enemy.x + 12, enemy.y + 8, 2, 0, 2 * Math.PI);
-                ctx.arc(enemy.x + 18, enemy.y + 8, 2, 0, 2 * Math.PI);
-                ctx.fill();
-            } else { // Bottom: Octopus/tank-like (arms)
-                // Body (wider base)
-                ctx.beginPath();
-                ctx.rect(enemy.x + 3, enemy.y + 5, enemy.width - 6, enemy.height - 5);
-                ctx.fill();
-                ctx.stroke();
-                // Arms
-                ctx.strokeStyle = colors[enemy.row];
-                ctx.lineWidth = 2;
-                for (let i = 0; i < 6; i++) {
-                    const x = enemy.x + (i * (enemy.width / 5));
-                    ctx.beginPath();
-                    ctx.moveTo(x, enemy.y + enemy.height);
-                    ctx.lineTo(x, enemy.y + enemy.height + 8);
-                    ctx.stroke();
-                }
-                // Eyes
-                ctx.fillStyle = 'red';
-                ctx.beginPath();
-                ctx.arc(enemy.x + 10, enemy.y + 8, 2, 0, 2 * Math.PI);
-                ctx.arc(enemy.x + 20, enemy.y + 8, 2, 0, 2 * Math.PI);
-                ctx.fill();
+            const colors = ['#00ff41', '#00cc33', '#009922', '#006611', '#003300'];
+            ctx.fillStyle = colors[enemy.row]; ctx.strokeStyle = '#00ff41'; ctx.lineWidth = 1;
+            if (enemy.row === 0) {
+                ctx.beginPath(); ctx.ellipse(enemy.x+enemy.width/2, enemy.y+enemy.height/2, 12, 8, 0, 0, 2 * Math.PI); ctx.fill(); ctx.stroke();
+                ctx.strokeStyle=colors[enemy.row]; ctx.lineWidth=2;
+                for (let i=0; i<4; i++) { const angle=(Math.PI*2/4)*i; const tx=enemy.x+enemy.width/2+Math.cos(angle)*15; const ty=enemy.y+enemy.height/2+Math.sin(angle)*10; ctx.beginPath(); ctx.moveTo(enemy.x+enemy.width/2, enemy.y+enemy.height/2); ctx.lineTo(tx, ty); ctx.stroke(); }
+                ctx.fillStyle='red'; ctx.beginPath(); ctx.arc(enemy.x+8, enemy.y+6, 2, 0, 2*Math.PI); ctx.arc(enemy.x+22, enemy.y+6, 2, 0, 2*Math.PI); ctx.fill();
+            } else if (enemy.row === 1 || enemy.row === 2) {
+                ctx.beginPath(); ctx.roundRect(enemy.x+5, enemy.y, enemy.width-10, enemy.height, 5); ctx.fill(); ctx.stroke();
+                ctx.strokeStyle=colors[enemy.row]; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(enemy.x+5, enemy.y+15); ctx.lineTo(enemy.x, enemy.y+25); ctx.moveTo(enemy.x+25, enemy.y+15); ctx.lineTo(enemy.x+30, enemy.y+25); ctx.stroke();
+                ctx.fillStyle='red'; ctx.beginPath(); ctx.arc(enemy.x+12, enemy.y+8, 2, 0, 2*Math.PI); ctx.arc(enemy.x+18, enemy.y+8, 2, 0, 2*Math.PI); ctx.fill();
+            } else {
+                ctx.beginPath(); ctx.rect(enemy.x+3, enemy.y+5, enemy.width-6, enemy.height-5); ctx.fill(); ctx.stroke();
+                ctx.strokeStyle=colors[enemy.row]; ctx.lineWidth=2;
+                for (let i=0; i<6; i++) { const x=enemy.x+(i*(enemy.width/5)); ctx.beginPath(); ctx.moveTo(x, enemy.y+enemy.height); ctx.lineTo(x, enemy.y+enemy.height+8); ctx.stroke(); }
+                ctx.fillStyle='red'; ctx.beginPath(); ctx.arc(enemy.x+10, enemy.y+8, 2, 0, 2*Math.PI); ctx.arc(enemy.x+20, enemy.y+8, 2, 0, 2*Math.PI); ctx.fill();
             }
         }
-        // Level up function
         function levelUp() {
-            level++;
-            enemySpeed += 0.2; // Faster horizontal movement
-            enemyBulletSpeed += 0.5; // Faster enemy bullets
-            enemyRows = Math.min(7, enemyRows + 1); // More rows (up to 7)
-            enemyCols = Math.min(12, enemyCols + 1); // More columns (up to 12)
-            bullets.length = 0;
-            enemyBullets.length = 0;
-            player.x = canvas.width / 2 - 15;
-            alert(`Level Up! Level ${level} - Enemies are faster and more numerous!`);
-            levelElement.textContent = `Level: ${level}`;
-            initEnemies();
+            level++; enemySpeed+=0.2; enemyBulletSpeed+=0.5; enemyRows=Math.min(7, enemyRows+1); enemyCols=Math.min(12, enemyCols+1);
+            bullets.length=0; enemyBullets.length=0; player.x=canvas.width/2-15; alert(`Level Up! Level ${level} - Enemies are faster and more numerous!`); levelElement.textContent=`Level: ${level}`; initEnemies();
         }
-        // Update game
         function update() {
             if (!gameRunning) return;
-            // Auto-fire on mobile
-            if (mobileDetected) {
-                shootPlayer();
-            }
-            // Player movement (keyboard + touch + tilt)
-            if (keys['ArrowLeft'] && player.x > 0) {
-                player.x -= player.speed;
-            }
-            if (keys['ArrowRight'] && player.x < canvas.width - player.width) {
-                player.x += player.speed;
-            }
-            // Touch movement
-            if (isTouching) {
-                player.x = Math.max(0, Math.min(canvas.width - player.width, touchX - player.width / 2));
-            }
-            // Tilt is handled in event listener for smoother real-time update
-            // Update player bullets
-            for (let i = bullets.length - 1; i >= 0; i--) {
-                const bullet = bullets[i];
-                bullet.y -= bulletSpeed;
-                if (bullet.y < 0) {
-                    bullets.splice(i, 1);
-                }
-            }
-            // Update enemy bullets
-            for (let i = enemyBullets.length - 1; i >= 0; i--) {
-                const bullet = enemyBullets[i];
-                bullet.y += enemyBulletSpeed;
-                if (bullet.y > canvas.height) {
-                    enemyBullets.splice(i, 1);
-                } else if (collision(bullet, player)) {
-                    lives--;
-                    livesElement.textContent = `Lives: ${lives}`;
-                    enemyBullets.splice(i, 1);
-                    if (lives <= 0) {
-                        gameOver();
-                    }
-                }
-            }
-            // Update enemies
+            if (mobileDetected) { shootPlayer(); }
+            if (keys['ArrowLeft'] && player.x > 0) { player.x -= player.speed; }
+            if (keys['ArrowRight'] && player.x < canvas.width - player.width) { player.x += player.speed; }
+            if (isTouching) { player.x = Math.max(0, Math.min(canvas.width - player.width, touchX - player.width/2)); }
+            for (let i=bullets.length-1; i>=0; i--) { const bullet=bullets[i]; bullet.y-=bulletSpeed; if (bullet.y < 0) { bullets.splice(i, 1); } }
+            for (let i=enemyBullets.length-1; i>=0; i--) { const bullet=enemyBullets[i]; bullet.y+=enemyBulletSpeed; if(bullet.y > canvas.height){ enemyBullets.splice(i,1); } else if (collision(bullet, player)) { lives--; livesElement.textContent=`Lives: ${lives}`; enemyBullets.splice(i,1); if (lives <= 0) { gameOver(); } } }
             let edgeHit = false;
             enemies.forEach(enemy => {
                 if (!enemy.alive) return;
                 enemy.x += enemyDirection * enemySpeed;
-                if (enemy.x <= 0 || enemy.x + enemy.width >= canvas.width) {
-                    edgeHit = true;
-                }
-                // Enemy shooting (rarer at higher levels)
+                if (enemy.x <= 0 || enemy.x + enemy.width >= canvas.width) { edgeHit = true; }
                 const shootInterval = Math.max(300, 800 - (level * 50));
-                if (Date.now() - lastEnemyShot > shootInterval && Math.random() < 0.003 + (level * 0.001) && enemy.alive) {
-                    enemyBullets.push({
-                        x: enemy.x + enemy.width / 2 - 2.5,
-                        y: enemy.y + enemy.height,
-                        width: 5,
-                        height: 10
-                    });
-                    lastEnemyShot = Date.now();
-                }
-                // Check collisions with player bullets
-                for (let i = bullets.length - 1; i >= 0; i--) {
-                    if (collision(bullets[i], enemy)) {
-                        enemy.alive = false;
-                        bullets.splice(i, 1);
-                        score += 10 * level; // Bonus points per level
-                        scoreElement.textContent = `Score: ${score}`;
-                        break;
-                    }
-                }
-                // Enemy hits player or bottom
-                if (enemy.y + enemy.height >= player.y || collision(enemy, player)) {
-                    lives--;
-                    livesElement.textContent = `Lives: ${lives}`;
-                    enemy.alive = false;
-                    if (lives <= 0) {
-                        gameOver();
-                    }
-                }
+                if (Date.now() - lastEnemyShot > shootInterval && Math.random() < 0.003 + (level * 0.001) && enemy.alive) { enemyBullets.push({ x: enemy.x+enemy.width/2-2.5, y: enemy.y+enemy.height, width: 5, height: 10 }); lastEnemyShot=Date.now(); }
+                for (let i=bullets.length-1; i>=0; i--) { if (collision(bullets[i], enemy)) { enemy.alive=false; bullets.splice(i,1); score+=10*level; scoreElement.textContent=`Score: ${score}`; break; } }
+                if (enemy.y + enemy.height >= player.y || collision(enemy, player)) { lives--; livesElement.textContent=`Lives: ${lives}`; enemy.alive=false; if (lives <= 0) { gameOver(); } }
             });
-            if (edgeHit) {
-                enemyDirection *= -1;
-                enemies.forEach(enemy => {
-                    if (enemy.alive) enemy.y += 20;
-                });
-            }
-            // Level complete
-            const aliveEnemies = enemies.filter(e => e.alive).length;
-            if (aliveEnemies === 0) {
-                levelUp();
-            }
+            if (edgeHit) { enemyDirection*=-1; enemies.forEach(enemy => { if (enemy.alive) enemy.y += 20; }); }
+            if (enemies.filter(e => e.alive).length === 0) { levelUp(); }
         }
         function gameOver() {
             gameRunning = false;
@@ -976,60 +723,29 @@
             restartBtn.disabled = false;
             restartBtn.textContent = 'Restart Game';
         }
-        // Render game
         function render() {
-            // Clear canvas
             ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--bg-primary');
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            // Draw player
             drawPlayer();
-            // Draw bullets
-            ctx.fillStyle = 'yellow';
-            bullets.forEach(bullet => ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height));
-            ctx.fillStyle = 'red';
-            enemyBullets.forEach(bullet => ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height));
-            // Draw enemies
-            enemies.forEach(enemy => {
-                if (enemy.alive) drawEnemy(enemy);
-            });
+            ctx.fillStyle = 'yellow'; bullets.forEach(bullet => ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height));
+            ctx.fillStyle = 'red'; enemyBullets.forEach(bullet => ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height));
+            enemies.forEach(enemy => { if (enemy.alive) drawEnemy(enemy); });
         }
-        // Game loop
         function gameLoop() {
-            update();
-            render();
-            requestAnimationFrame(gameLoop);
+            update(); render(); requestAnimationFrame(gameLoop);
         }
-        // Restart function
         function restartGame() {
-            score = 0;
-            lives = 3;
-            level = 1;
-            gameRunning = true;
-            bullets.length = 0;
-            enemyBullets.length = 0;
-            player.x = canvas.width / 2 - 15;
-            enemySpeed = 0.5;
-            enemyBulletSpeed = 3;
-            enemyRows = 5;
-            enemyCols = 10;
-            scoreElement.textContent = `Score: ${score}`;
-            levelElement.textContent = `Level: ${level}`;
-            livesElement.textContent = `Lives: ${lives}`;
-            initEnemies();
-            lastShotTime = 0;
-            lastEnemyShot = 0;
-            enemyDirection = 1;
-            restartBtn.disabled = true;
-            restartBtn.textContent = 'Playing...';
-            // Reset mobile/tilt on restart
-            tiltEnabled = false;
-            if (mobileDetected) initTilt();
+            score=0; lives=3; level=1; gameRunning=true; bullets.length=0; enemyBullets.length=0;
+            player.x = canvas.width/2-15; enemySpeed=0.5; enemyBulletSpeed=3; enemyRows=5; enemyCols=10;
+            scoreElement.textContent=`Score: ${score}`; levelElement.textContent=`Level: ${level}`; livesElement.textContent=`Lives: ${lives}`;
+            initEnemies(); lastShotTime=0; lastEnemyShot=0; enemyDirection=1;
+            restartBtn.disabled = true; restartBtn.textContent = 'Playing...';
+            tiltEnabled=false; if(mobileDetected) initTilt();
         }
+        
         // Initial setup
-        restartBtn.disabled = true;
-        restartBtn.textContent = 'Playing...';
+        restartBtn.disabled = false;
         initEnemies();
-        // Auto-detect and init tilt if mobile
         if (/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
             initTilt();
         }
