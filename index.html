@@ -442,4 +442,576 @@
                         <a href="mailto:cotafam10@gmail.com" aria-label="Email Jordan" title="Send Email">
                             <svg class="icon-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                 <!-- Official Gmail-style envelope (Material Design) -->
-                                <path d="M20 4H4c-1.1 0-1.99.9-1.99
+                                <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                            </svg>
+                        </a>
+                        <a href="https://linkedin.com/in/jordan-cota-19269117a" target="_blank" aria-label="Connect on LinkedIn" title="LinkedIn Profile">
+                            <svg class="icon-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <!-- Official LinkedIn "in" logo -->
+                                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                            </svg>
+                        </a>
+                        <a href="https://glassdome.com" target="_blank" aria-label="Glassdome" title="Glassdome Website">
+                            <img src="glassdome_us_logo.jpg" alt="Glassdome" class="icon-svg">
+                        </a>
+                    </div>
+                </div>
+                <div class="section">
+                    <h2>Fun Time: Play Space Invaders!</h2>
+                    <p>One of my hobbies? Classic games! Built this simple Space Invaders right here. Use arrow keys to move, spacebar to shoot. Survive the invasion!</p>
+                    <div class="game-container">
+                        <div class="game-info">
+                            <span id="score">Score: 0</span>
+                            <span id="level">Level: 1</span>
+                            <span id="lives">Lives: 3</span>
+                        </div>
+                        <canvas id="gameCanvas" width="800" height="600"></canvas>
+                        <button class="restart-btn" id="restartBtn" onclick="restartGame()">Restart Game</button>
+                        <div class="game-controls">
+                            <p>← → to move | Space to shoot | Refresh to restart</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="portfolio-tab" class="tab-content">
+                <div class="section">
+                    <h2>Portfolio</h2>
+                    <p>Showcasing my professional projects and contributions in manufacturing and OT solutions.</p>
+                   <div class="project">
+    <div class="project-images">
+        <img src="images/ML1 Dash.png" alt="ML1 Dashboard">
+        <img src="images/Main Line Dash.png" alt="Main Line Dashboard">
+        <img src="images/PLC Code.png" alt="PLC Code">
+        <img src="images/Downtime Entry ML1.png" alt="Downtime Entry ML1">
+        <img src="images/ipad ML1.png" alt="iPad ML1 Interface"> <!-- Note: Converted .HEIC to .PNG for web compatibility; adjust path if needed -->
+    </div>
+    <h3>Forklift Conveyor OEE System</h3>
+            <p>This was a project that involved a forklift conveyor system. The customer wanted to see full OEE metrics on this conveyor system, such as part count, downtime, etc. Luckily, there was an Allen-Bradley PLC available. I pulled the PLC code, built a tag list, and connected with the PLC using the EIP protocol. I built the dashboard and OEE reporting for visualization for the customer. I also built displays for downtime code entries and utilize iPads along the conveyance system for operators.</p>
+            </div>
+                        <button class="slideshow-nav prev" onclick="changeSlide(-1)">&#10094;</button>
+                        <button class="slideshow-nav next" onclick="changeSlide(1)">&#10095;</button>
+                    </div>
+                    <div class="slideshow-dots">
+                        <span class="dot active" onclick="currentSlide(1)"></span>
+                        <span class="dot" onclick="currentSlide(2)"></span>
+                    </div>
+                </div>
+            </div>
+            <div id="hobbies-tab" class="tab-content">
+                <div class="section">
+                    <h2>Hobby Photos</h2>
+                    <p>Snapshots from my downtime adventures—pickleball courts, kombucha brews, and trail hikes!</p>
+                    <div class="portfolio-grid">
+                        <div class="hobby-item">
+                            <img src="https://via.placeholder.com/250x200?text=Pickleball+Game" alt="Pickleball">
+                            <h3>Pickleball Match</h3>
+                            <p>Intense rally on the court—nothing beats a good game with friends.</p>
+                        </div>
+                        <div class="hobby-item">
+                            <img src="https://via.placeholder.com/250x200?text=Kombucha+Brew" alt="Kombucha">
+                            <h3>Kombucha Brewing</h3>
+                            <p>Second fermentation in progress—flavors: ginger and berry this batch.</p>
+                        </div>
+                        <div class="hobby-item">
+                            <img src="https://via.placeholder.com/250x200?text=Hiking+Trail" alt="Hiking">
+                            <h3>Trail Hike</h3>
+                            <p>Sunset views from the Appalachian foothills—recharge mode activated.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        const toggle = document.getElementById('themeToggle');
+        const body = document.body;
+        // Load saved theme or default to system
+        const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        body.setAttribute('data-theme', savedTheme);
+        toggle.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+        // Toggle function
+        toggle.addEventListener('click', () => {
+            const current = body.getAttribute('data-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            body.setAttribute('data-theme', next);
+            localStorage.setItem('theme', next);
+            toggle.textContent = next === 'dark' ? '☀️' : '🌙';
+        });
+        // Listen for system changes (if no manual toggle)
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+            if (!localStorage.getItem('theme')) {
+                body.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+                toggle.textContent = e.matches ? '☀️' : '🌙';
+            }
+        });
+        // Tab navigation
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tabId = btn.dataset.tab;
+                // Update active tab button
+                tabBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                // Update active tab content
+                tabContents.forEach(content => content.classList.remove('active'));
+                document.getElementById(`${tabId}-tab`).classList.add('active');
+            });
+        });
+    </script>
+    <script>
+        // Portfolio Slideshow
+        let slideIndex = 1;
+        showSlide(slideIndex);
+
+        function changeSlide(n) {
+            showSlide(slideIndex += n);
+        }
+
+        function currentSlide(n) {
+            showSlide(slideIndex = n);
+        }
+
+        function showSlide(n) {
+            const slides = document.querySelectorAll('.slideshow-container .slide');
+            const dots = document.querySelectorAll('.slideshow-dots .dot');
+            if (n > slides.length) { slideIndex = 1; }
+            if (n < 1) { slideIndex = slides.length; }
+            slides.forEach(slide => slide.classList.remove('active'));
+            dots.forEach(dot => dot.classList.remove('active'));
+            slides[slideIndex - 1].classList.add('active');
+            dots[slideIndex - 1].classList.add('active');
+        }
+
+        // Auto-advance slideshow every 5 seconds (optional - can be removed)
+        setInterval(() => {
+            changeSlide(1);
+        }, 5000);
+    </script>
+    <script>
+        // Enhanced Space Invaders Game with Levels, Tilt Controls & Mobile Support
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreElement = document.getElementById('score');
+        const levelElement = document.getElementById('level');
+        const livesElement = document.getElementById('lives');
+        const restartBtn = document.getElementById('restartBtn');
+        // Game variables
+        let score = 0;
+        let lives = 3;
+        let level = 1;
+        let gameRunning = true;
+        let lastShotTime = 0; // For shoot cooldown
+        let tiltEnabled = false;
+        let mobileDetected = false;
+        let tiltSensitivity = 3; // Adjust for tilt responsiveness
+        let autoFireInterval = 300; // ms between auto-fires on mobile
+        // Player
+        const player = {
+            x: canvas.width / 2 - 15,
+            y: canvas.height - 50,
+            width: 30,
+            height: 20,
+            speed: 5
+        };
+        // Bullets
+        const bullets = [];
+        const bulletSpeed = 7;
+        // Enemy bullets
+        const enemyBullets = [];
+        let enemyBulletSpeed = 3;
+        // Enemies
+        const enemies = [];
+        let enemyRows = 5;
+        let enemyCols = 10;
+        const enemyWidth = 30;
+        const enemyHeight = 20;
+        const enemyPadding = 10;
+        let enemyDirection = 1;
+        let enemySpeed = 0.5;
+        let lastEnemyShot = 0;
+        // Touch support
+        let isTouching = false;
+        let touchX = 0;
+        // Tilt support (mobile only)
+        function initTilt() {
+            if (!('DeviceOrientationEvent' in window)) return;
+            mobileDetected = true; // Assume tilt support means mobile
+            if (/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream) {
+                // iOS requires permission
+                canvas.addEventListener('touchstart', async (e) => {
+                    try {
+                        const permission = await DeviceOrientationEvent.requestPermission();
+                        if (permission === 'granted') {
+                            tiltEnabled = true;
+                            window.addEventListener('deviceorientation', handleTilt);
+                        }
+                    } catch (err) {
+                        console.log('Tilt permission denied');
+                    }
+                }, { once: true });
+            } else {
+                // Android/other mobile
+                tiltEnabled = true;
+                window.addEventListener('deviceorientation', handleTilt);
+            }
+        }
+        function handleTilt(e) {
+            const gamma = e.gamma || 0; // Left-right tilt (-90 to 90)
+            const tiltDelta = gamma * tiltSensitivity;
+            player.x += tiltDelta;
+            player.x = Math.max(0, Math.min(canvas.width - player.width, player.x));
+        }
+        // Initialize enemies
+        function initEnemies() {
+            enemies.length = 0;
+            for (let row = 0; row < enemyRows; row++) {
+                for (let col = 0; col < enemyCols; col++) {
+                    enemies.push({
+                        x: col * (enemyWidth + enemyPadding) + 50,
+                        y: row * (enemyHeight + enemyPadding) + 50,
+                        width: enemyWidth,
+                        height: enemyHeight,
+                        alive: true,
+                        row: row
+                    });
+                }
+            }
+        }
+        // Input handling (Keyboard + Touch + Tilt)
+        const keys = {};
+        document.addEventListener('keydown', (e) => {
+            keys[e.code] = true;
+            if (e.code === 'Space' && gameRunning && !mobileDetected) {
+                e.preventDefault();
+                shootPlayer();
+            }
+        });
+        document.addEventListener('keyup', (e) => {
+            keys[e.code] = false;
+        });
+        // Touch events (movement on all, shoot only on non-mobile)
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            isTouching = true;
+            const touch = e.touches[0];
+            touchX = touch.clientX - canvas.getBoundingClientRect().left;
+            if (!mobileDetected) shootPlayer(); // Manual shoot on non-mobile
+            // Init tilt on first touch if not yet
+            if (!tiltEnabled) initTilt();
+        });
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            if (isTouching) {
+                const touch = e.touches[0];
+                touchX = touch.clientX - canvas.getBoundingClientRect().left;
+            }
+        });
+        canvas.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            isTouching = false;
+        });
+        // Mouse for desktop fallback (optional, movement only)
+        canvas.addEventListener('mousemove', (e) => {
+            if (isTouching || tiltEnabled) return; // Prioritize touch/tilt
+            touchX = e.clientX - canvas.getBoundingClientRect().left;
+        });
+        function shootPlayer() {
+            const now = Date.now();
+            if (now - lastShotTime > (mobileDetected ? autoFireInterval : 200) && gameRunning) { // Different cooldowns
+                bullets.push({
+                    x: player.x + player.width / 2 - 2.5,
+                    y: player.y,
+                    width: 5,
+                    height: 10
+                });
+                lastShotTime = now;
+            }
+        }
+        // Collision detection
+        function collision(rect1, rect2) {
+            return rect1.x < rect2.x + rect2.width &&
+                   rect1.x + rect1.width > rect2.x &&
+                   rect1.y < rect2.y + rect2.height &&
+                   rect1.y + rect1.height > rect2.y;
+        }
+        // Draw player ship (V-shaped with thrusters, inspired by classic)
+        function drawPlayer() {
+            ctx.fillStyle = 'white';
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = 2;
+            // Main body (triangle)
+            ctx.beginPath();
+            ctx.moveTo(player.x + player.width / 2, player.y); // Nose
+            ctx.lineTo(player.x, player.y + player.height); // Left tail
+            ctx.lineTo(player.x + player.width, player.y + player.height); // Right tail
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+            // Wings
+            ctx.beginPath();
+            ctx.moveTo(player.x + 5, player.y + 10);
+            ctx.lineTo(player.x, player.y + 15);
+            ctx.lineTo(player.x + 10, player.y + 10);
+            ctx.moveTo(player.x + player.width - 5, player.y + 10);
+            ctx.lineTo(player.x + player.width, player.y + 15);
+            ctx.lineTo(player.x + player.width - 10, player.y + 10);
+            ctx.stroke();
+            // Thrusters (small flames)
+            ctx.fillStyle = 'orange';
+            ctx.beginPath();
+            ctx.moveTo(player.x + 8, player.y + player.height);
+            ctx.lineTo(player.x + player.width / 2, player.y + player.height + 5);
+            ctx.lineTo(player.x + player.width - 8, player.y + player.height);
+            ctx.closePath();
+            ctx.fill();
+        }
+        // Draw enemy ship (Row-based variations, inspired by squid/crab/octopus styles)
+        function drawEnemy(enemy) {
+            const colors = ['#00ff41', '#00cc33', '#009922', '#006611', '#003300']; // Retro greens
+            ctx.fillStyle = colors[enemy.row];
+            ctx.strokeStyle = '#00ff41';
+            ctx.lineWidth = 1;
+            if (enemy.row === 0) { // Top row: Squid-like (tentacles)
+                // Body (oval)
+                ctx.beginPath();
+                ctx.ellipse(enemy.x + enemy.width / 2, enemy.y + enemy.height / 2, 12, 8, 0, 0, 2 * Math.PI);
+                ctx.fill();
+                ctx.stroke();
+                // Tentacles
+                ctx.strokeStyle = colors[enemy.row];
+                ctx.lineWidth = 2;
+                for (let i = 0; i < 4; i++) {
+                    const angle = (Math.PI * 2 / 4) * i;
+                    const tx = enemy.x + enemy.width / 2 + Math.cos(angle) * 15;
+                    const ty = enemy.y + enemy.height / 2 + Math.sin(angle) * 10;
+                    ctx.beginPath();
+                    ctx.moveTo(enemy.x + enemy.width / 2, enemy.y + enemy.height / 2);
+                    ctx.lineTo(tx, ty);
+                    ctx.stroke();
+                }
+                // Eyes
+                ctx.fillStyle = 'red';
+                ctx.beginPath();
+                ctx.arc(enemy.x + 8, enemy.y + 6, 2, 0, 2 * Math.PI);
+                ctx.arc(enemy.x + 22, enemy.y + 6, 2, 0, 2 * Math.PI);
+                ctx.fill();
+            } else if (enemy.row === 1 || enemy.row === 2) { // Middle: Crab-like (legs)
+                // Body (rect with rounded top)
+                ctx.beginPath();
+                ctx.roundRect(enemy.x + 5, enemy.y, enemy.width - 10, enemy.height, 5);
+                ctx.fill();
+                ctx.stroke();
+                // Legs
+                ctx.strokeStyle = colors[enemy.row];
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(enemy.x + 5, enemy.y + 15);
+                ctx.lineTo(enemy.x, enemy.y + 25);
+                ctx.moveTo(enemy.x + 25, enemy.y + 15);
+                ctx.lineTo(enemy.x + 30, enemy.y + 25);
+                ctx.stroke();
+                // Eyes
+                ctx.fillStyle = 'red';
+                ctx.beginPath();
+                ctx.arc(enemy.x + 12, enemy.y + 8, 2, 0, 2 * Math.PI);
+                ctx.arc(enemy.x + 18, enemy.y + 8, 2, 0, 2 * Math.PI);
+                ctx.fill();
+            } else { // Bottom: Octopus/tank-like (arms)
+                // Body (wider base)
+                ctx.beginPath();
+                ctx.rect(enemy.x + 3, enemy.y + 5, enemy.width - 6, enemy.height - 5);
+                ctx.fill();
+                ctx.stroke();
+                // Arms
+                ctx.strokeStyle = colors[enemy.row];
+                ctx.lineWidth = 2;
+                for (let i = 0; i < 6; i++) {
+                    const x = enemy.x + (i * (enemy.width / 5));
+                    ctx.beginPath();
+                    ctx.moveTo(x, enemy.y + enemy.height);
+                    ctx.lineTo(x, enemy.y + enemy.height + 8);
+                    ctx.stroke();
+                }
+                // Eyes
+                ctx.fillStyle = 'red';
+                ctx.beginPath();
+                ctx.arc(enemy.x + 10, enemy.y + 8, 2, 0, 2 * Math.PI);
+                ctx.arc(enemy.x + 20, enemy.y + 8, 2, 0, 2 * Math.PI);
+                ctx.fill();
+            }
+        }
+        // Level up function
+        function levelUp() {
+            level++;
+            enemySpeed += 0.2; // Faster horizontal movement
+            enemyBulletSpeed += 0.5; // Faster enemy bullets
+            enemyRows = Math.min(7, enemyRows + 1); // More rows (up to 7)
+            enemyCols = Math.min(12, enemyCols + 1); // More columns (up to 12)
+            bullets.length = 0;
+            enemyBullets.length = 0;
+            player.x = canvas.width / 2 - 15;
+            alert(`Level Up! Level ${level} - Enemies are faster and more numerous!`);
+            levelElement.textContent = `Level: ${level}`;
+            initEnemies();
+        }
+        // Update game
+        function update() {
+            if (!gameRunning) return;
+            // Auto-fire on mobile
+            if (mobileDetected) {
+                shootPlayer();
+            }
+            // Player movement (keyboard + touch + tilt)
+            if (keys['ArrowLeft'] && player.x > 0) {
+                player.x -= player.speed;
+            }
+            if (keys['ArrowRight'] && player.x < canvas.width - player.width) {
+                player.x += player.speed;
+            }
+            // Touch movement
+            if (isTouching) {
+                player.x = Math.max(0, Math.min(canvas.width - player.width, touchX - player.width / 2));
+            }
+            // Tilt is handled in event listener for smoother real-time update
+            // Update player bullets
+            for (let i = bullets.length - 1; i >= 0; i--) {
+                const bullet = bullets[i];
+                bullet.y -= bulletSpeed;
+                if (bullet.y < 0) {
+                    bullets.splice(i, 1);
+                }
+            }
+            // Update enemy bullets
+            for (let i = enemyBullets.length - 1; i >= 0; i--) {
+                const bullet = enemyBullets[i];
+                bullet.y += enemyBulletSpeed;
+                if (bullet.y > canvas.height) {
+                    enemyBullets.splice(i, 1);
+                } else if (collision(bullet, player)) {
+                    lives--;
+                    livesElement.textContent = `Lives: ${lives}`;
+                    enemyBullets.splice(i, 1);
+                    if (lives <= 0) {
+                        gameOver();
+                    }
+                }
+            }
+            // Update enemies
+            let edgeHit = false;
+            enemies.forEach(enemy => {
+                if (!enemy.alive) return;
+                enemy.x += enemyDirection * enemySpeed;
+                if (enemy.x <= 0 || enemy.x + enemy.width >= canvas.width) {
+                    edgeHit = true;
+                }
+                // Enemy shooting (rarer at higher levels)
+                const shootInterval = Math.max(300, 800 - (level * 50));
+                if (Date.now() - lastEnemyShot > shootInterval && Math.random() < 0.003 + (level * 0.001) && enemy.alive) {
+                    enemyBullets.push({
+                        x: enemy.x + enemy.width / 2 - 2.5,
+                        y: enemy.y + enemy.height,
+                        width: 5,
+                        height: 10
+                    });
+                    lastEnemyShot = Date.now();
+                }
+                // Check collisions with player bullets
+                for (let i = bullets.length - 1; i >= 0; i--) {
+                    if (collision(bullets[i], enemy)) {
+                        enemy.alive = false;
+                        bullets.splice(i, 1);
+                        score += 10 * level; // Bonus points per level
+                        scoreElement.textContent = `Score: ${score}`;
+                        break;
+                    }
+                }
+                // Enemy hits player or bottom
+                if (enemy.y + enemy.height >= player.y || collision(enemy, player)) {
+                    lives--;
+                    livesElement.textContent = `Lives: ${lives}`;
+                    enemy.alive = false;
+                    if (lives <= 0) {
+                        gameOver();
+                    }
+                }
+            });
+            if (edgeHit) {
+                enemyDirection *= -1;
+                enemies.forEach(enemy => {
+                    if (enemy.alive) enemy.y += 20;
+                });
+            }
+            // Level complete
+            const aliveEnemies = enemies.filter(e => e.alive).length;
+            if (aliveEnemies === 0) {
+                levelUp();
+            }
+        }
+        function gameOver() {
+            gameRunning = false;
+            alert(`Game Over! Final Score: ${score} | Reached Level ${level}`);
+            restartBtn.disabled = false;
+            restartBtn.textContent = 'Restart Game';
+        }
+        // Render game
+        function render() {
+            // Clear canvas
+            ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--bg-primary');
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            // Draw player
+            drawPlayer();
+            // Draw bullets
+            ctx.fillStyle = 'yellow';
+            bullets.forEach(bullet => ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height));
+            ctx.fillStyle = 'red';
+            enemyBullets.forEach(bullet => ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height));
+            // Draw enemies
+            enemies.forEach(enemy => {
+                if (enemy.alive) drawEnemy(enemy);
+            });
+        }
+        // Game loop
+        function gameLoop() {
+            update();
+            render();
+            requestAnimationFrame(gameLoop);
+        }
+        // Restart function
+        function restartGame() {
+            score = 0;
+            lives = 3;
+            level = 1;
+            gameRunning = true;
+            bullets.length = 0;
+            enemyBullets.length = 0;
+            player.x = canvas.width / 2 - 15;
+            enemySpeed = 0.5;
+            enemyBulletSpeed = 3;
+            enemyRows = 5;
+            enemyCols = 10;
+            scoreElement.textContent = `Score: ${score}`;
+            levelElement.textContent = `Level: ${level}`;
+            livesElement.textContent = `Lives: ${lives}`;
+            initEnemies();
+            lastShotTime = 0;
+            lastEnemyShot = 0;
+            enemyDirection = 1;
+            restartBtn.disabled = true;
+            restartBtn.textContent = 'Playing...';
+            // Reset mobile/tilt on restart
+            tiltEnabled = false;
+            if (mobileDetected) initTilt();
+        }
+        // Initial setup
+        restartBtn.disabled = true;
+        restartBtn.textContent = 'Playing...';
+        initEnemies();
+        // Auto-detect and init tilt if mobile
+        if (/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+            initTilt();
+        }
+        gameLoop();
+    </script>
+</body>
+</html>
