@@ -1,5 +1,134 @@
 <!DOCTYPE html>
-<html>
-<head><title>Jordan's Site</title></head>
-<body><h1>Hello, World! 🚀</h1></body>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jordan Cota | Personal Site</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            display: flex;
+            gap: 2rem;
+            align-items: flex-start;
+        }
+        .photo {
+            flex: 0 0 250px;
+        }
+        .photo img {
+            width: 100%;
+            height: auto;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .content {
+            flex: 1;
+        }
+        .header {
+            background: linear-gradient(135deg, #0d6efd, #0b5ed7);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 12px 12px 0 0;
+            margin-bottom: 1rem;
+        }
+        .header h1 {
+            margin: 0 0 0.5rem 0;
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+        .header p {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+        .section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 0 12px 12px 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-bottom: 1rem;
+        }
+        .section h2 {
+            margin: 0 0 1rem 0;
+            color: #0d6efd;
+            font-size: 1.5rem;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 0.5rem;
+        }
+        .section p {
+            margin: 0 0 1rem 0;
+            text-align: justify;
+        }
+        .contact-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .contact-buttons a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            background: #0d6efd;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            transition: background 0.2s;
+        }
+        .contact-buttons a:hover {
+            background: #0b5ed7;
+        }
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                padding: 1rem;
+            }
+            .photo {
+                flex: none;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="photo">
+            <img src="profile.jpg" alt="Jordan Cota">
+        </div>
+        <div class="content">
+            <div class="header">
+                <h1>Jordan Cota</h1>
+                <p>Software Engineer | Charlotte, NC</p>
+            </div>
+            
+            <div class="section">
+                <h2>About Me</h2>
+                <p>I'm currently a Software Engineer at [Your Company], focusing on [your focus, e.g., full-stack development and cloud solutions]. In the past, I've built scalable apps and driven tech transformations at [past companies or projects].</p>
+                <p>I studied [your degree/field] at [your university], with a focus on [e.g., computer science and data structures]. A shoutout to my [family/pets/hobbies]—they're my world! I love [hobbies, e.g., coding side projects, hiking, and tinkering with hardware].</p>
+            </div>
+            
+            <div class="section">
+                <h2>Get in Touch</h2>
+                <p>I'm based in [your city, e.g., Charlotte, NC], living with [family/friends/pets]. Feel free to email me or connect on LinkedIn using the buttons below.</p>
+                <div class="contact-buttons">
+                    <a href="mailto:your.email@example.com">📧</a>
+                    <a href="https://linkedin.com/in/yourprofile" target="_blank">💼</a>
+                    <a href="https://twitter.com/yourhandle" target="_blank">🐦</a>
+                    <!-- Add more icons/links as needed, e.g., GitHub: <a href="https://github.com/JordanCota">🐙</a> -->
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
 </html>
