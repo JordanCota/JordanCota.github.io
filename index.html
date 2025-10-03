@@ -205,7 +205,7 @@
                 justify-content: center; /* Ensures centering on mobile */
             }
             .game-controls p::before {
-                content: "Touch to move/shoot | ";
+                content: "Touch/tilt to move/shoot | ";
             }
         }
         /* Auto-detect system preference */
@@ -267,6 +267,7 @@
                 <div class="game-container">
                     <div class="game-info">
                         <span id="score">Score: 0</span>
+                        <span id="level">Level: 1</span>
                         <span id="lives">Lives: 3</span>
                     </div>
                     <canvas id="gameCanvas" width="800" height="600"></canvas>
@@ -303,18 +304,22 @@
     </script>
 
     <script>
-        // Enhanced Space Invaders Game with Mobile Support & Restart
+        // Enhanced Space Invaders Game with Levels, Tilt Controls & Mobile Support
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         const scoreElement = document.getElementById('score');
+        const levelElement = document.getElementById('level');
         const livesElement = document.getElementById('lives');
         const restartBtn = document.getElementById('restartBtn');
 
         // Game variables
         let score = 0;
         let lives = 3;
+        let level = 1;
         let gameRunning = true;
         let lastShotTime = 0; // For shoot cooldown
+        let tiltEnabled = false;
+        let tiltSensitivity = 3; // Adjust for tilt responsiveness
 
         // Player
         const player = {
@@ -331,12 +336,12 @@
 
         // Enemy bullets
         const enemyBullets = [];
-        const enemyBulletSpeed = 3;
+        let enemyBulletSpeed = 3;
 
         // Enemies
         const enemies = [];
-        const enemyRows = 5;
-        const enemyCols = 10;
+        let enemyRows = 5;
+        let enemyCols = 10;
         const enemyWidth = 30;
         const enemyHeight = 20;
         const enemyPadding = 10;
@@ -347,6 +352,36 @@
         // Touch support
         let isTouching = false;
         let touchX = 0;
+
+        // Tilt support
+        function initTilt() {
+            if (!('DeviceOrientationEvent' in window)) return;
+            if (/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream) {
+                // iOS requires permission
+                canvas.addEventListener('touchstart', async () => {
+                    try {
+                        const permission = await DeviceOrientationEvent.requestPermission();
+                        if (permission === 'granted') {
+                            tiltEnabled = true;
+                            window.addEventListener('deviceorientation', handleTilt);
+                        }
+                    } catch (err) {
+                        console.log('Tilt permission denied');
+                    }
+                }, { once: true });
+            } else {
+                // Android/other
+                tiltEnabled = true;
+                window.addEventListener('deviceorientation', handleTilt);
+            }
+        }
+
+        function handleTilt(e) {
+            const gamma = e.gamma || 0; // Left-right tilt (-90 to 90)
+            const tiltDelta = gamma * tiltSensitivity;
+            player.x += tiltDelta;
+            player.x = Math.max(0, Math.min(canvas.width - player.width, player.x));
+        }
 
         // Initialize enemies
         function initEnemies() {
@@ -365,7 +400,7 @@
             }
         }
 
-        // Input handling (Keyboard + Touch)
+        // Input handling (Keyboard + Touch + Tilt)
         const keys = {};
         document.addEventListener('keydown', (e) => {
             keys[e.code] = true;
@@ -385,6 +420,8 @@
             const touch = e.touches[0];
             touchX = touch.clientX - canvas.getBoundingClientRect().left;
             shootPlayer();
+            // Init tilt on first touch if mobile
+            if (!tiltEnabled) initTilt();
         });
         canvas.addEventListener('touchmove', (e) => {
             e.preventDefault();
@@ -400,7 +437,7 @@
 
         // Mouse for desktop fallback (optional)
         canvas.addEventListener('mousemove', (e) => {
-            if (isTouching) return; // Prioritize touch
+            if (isTouching || tiltEnabled) return; // Prioritize touch/tilt
             touchX = e.clientX - canvas.getBoundingClientRect().left;
         });
 
@@ -533,11 +570,26 @@
             }
         }
 
+        // Level up function
+        function levelUp() {
+            level++;
+            enemySpeed += 0.2; // Faster horizontal movement
+            enemyBulletSpeed += 0.5; // Faster enemy bullets
+            enemyRows = Math.min(7, enemyRows + 1); // More rows (up to 7)
+            enemyCols = Math.min(12, enemyCols + 1); // More columns (up to 12)
+            bullets.length = 0;
+            enemyBullets.length = 0;
+            player.x = canvas.width / 2 - 15;
+            alert(`Level Up! Level ${level} - Enemies are faster and more numerous!`);
+            levelElement.textContent = `Level: ${level}`;
+            initEnemies();
+        }
+
         // Update game
         function update() {
             if (!gameRunning) return;
 
-            // Player movement (keyboard + touch)
+            // Player movement (keyboard + touch + tilt)
             if (keys['ArrowLeft'] && player.x > 0) {
                 player.x -= player.speed;
             }
@@ -548,6 +600,7 @@
             if (isTouching) {
                 player.x = Math.max(0, Math.min(canvas.width - player.width, touchX - player.width / 2));
             }
+            // Tilt is handled in event listener for smoother real-time update
 
             // Update player bullets
             for (let i = bullets.length - 1; i >= 0; i--) {
@@ -584,8 +637,9 @@
                     edgeHit = true;
                 }
 
-                // Enemy shooting
-                if (Date.now() - lastEnemyShot > 800 && Math.random() < 0.003 && enemy.alive) {
+                // Enemy shooting (rarer at higher levels)
+                const shootInterval = Math.max(300, 800 - (level * 50));
+                if (Date.now() - lastEnemyShot > shootInterval && Math.random() < 0.003 + (level * 0.001) && enemy.alive) {
                     enemyBullets.push({
                         x: enemy.x + enemy.width / 2 - 2.5,
                         y: enemy.y + enemy.height,
@@ -600,8 +654,9 @@
                     if (collision(bullets[i], enemy)) {
                         enemy.alive = false;
                         bullets.splice(i, 1);
-                        score += 10;
+                        score += 10 * level; // Bonus points per level
                         scoreElement.textContent = `Score: ${score}`;
+                        break;
                     }
                 }
 
@@ -623,16 +678,16 @@
                 });
             }
 
-            // Win condition
+            // Level complete
             const aliveEnemies = enemies.filter(e => e.alive).length;
             if (aliveEnemies === 0) {
-                alert(`You Win! Score: ${score}`);
-                gameOver();
+                levelUp();
             }
         }
 
         function gameOver() {
             gameRunning = false;
+            alert(`Game Over! Final Score: ${score} | Reached Level ${level}`);
             restartBtn.disabled = false;
             restartBtn.textContent = 'Restart Game';
         }
@@ -670,11 +725,17 @@
         function restartGame() {
             score = 0;
             lives = 3;
+            level = 1;
             gameRunning = true;
             bullets.length = 0;
             enemyBullets.length = 0;
             player.x = canvas.width / 2 - 15;
+            enemySpeed = 0.5;
+            enemyBulletSpeed = 3;
+            enemyRows = 5;
+            enemyCols = 10;
             scoreElement.textContent = `Score: ${score}`;
+            levelElement.textContent = `Level: ${level}`;
             livesElement.textContent = `Lives: ${lives}`;
             initEnemies();
             lastShotTime = 0;
