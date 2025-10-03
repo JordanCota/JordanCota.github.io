@@ -88,13 +88,49 @@
         .theme-toggle:hover {
             border-color: rgba(255,255,255,0.6);
         }
-        .section {
+        .tabs {
+            display: flex;
             background: var(--bg-secondary);
-            padding: 1.5rem;
-            border-radius: 0 12px 12px 12px;
-            box-shadow: 0 4px 12px var(--shadow);
-            margin-bottom: 1rem;
+            border-radius: 8px 8px 0 0;
+            margin-bottom: -1px;
+            overflow: hidden;
             border: 1px solid var(--border);
+            border-bottom: none;
+        }
+        .tabs button {
+            flex: 1;
+            padding: 1rem;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s;
+            border-bottom: 3px solid transparent;
+        }
+        .tabs button.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+            background: var(--bg-primary);
+        }
+        .tabs button:hover {
+            background: var(--bg-primary);
+            color: var(--accent);
+        }
+        .tab-content {
+            display: none;
+            background: var(--bg-secondary);
+            border-radius: 0 0 12px 12px;
+            box-shadow: 0 4px 12px var(--shadow);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .section {
+            margin-bottom: 1rem;
         }
         .section h2 {
             margin: 0 0 1rem 0;
@@ -114,6 +150,57 @@
         }
         .section a:hover {
             text-decoration: underline;
+        }
+        .articles-list {
+            list-style: none;
+            padding: 0;
+        }
+        .articles-list li {
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: var(--bg-primary);
+            border-radius: 8px;
+            border-left: 4px solid var(--accent);
+        }
+        .articles-list h3 {
+            margin: 0 0 0.5rem 0;
+            color: var(--text-primary);
+            font-size: 1.1rem;
+        }
+        .articles-list p {
+            margin: 0;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+        .portfolio-item, .hobby-item {
+            background: var(--bg-primary);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px var(--shadow);
+            transition: transform 0.2s;
+        }
+        .portfolio-item:hover, .hobby-item:hover {
+            transform: translateY(-2px);
+        }
+        .portfolio-item img, .hobby-item img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        .portfolio-item h3, .hobby-item h3 {
+            margin: 0.5rem;
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+        .portfolio-item p, .hobby-item p {
+            margin: 0 0.5rem 1rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
         }
         .contact-buttons {
             display: flex;
@@ -204,8 +291,14 @@
             .contact-buttons {
                 justify-content: center; /* Ensures centering on mobile */
             }
+            .tabs {
+                flex-direction: column;
+            }
+            .tabs button {
+                border-bottom: 1px solid var(--border);
+            }
             .game-controls p::before {
-                content: "Touch/tilt to move/shoot | ";
+                content: "Tilt to move (auto-fire) | ";
             }
         }
         /* Auto-detect system preference */
@@ -232,48 +325,123 @@
                 <p>Engineer / Account Manager | Atlanta, GA</p>
                 <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">🌙</button>
             </div>
-          
-            <div class="section">
-                <h2>About Me</h2>
-                <p>I am currently a Solution Deployment Manager at <a href="https://glassdome.com" target="_blank">Glassdome</a>, where I help customers with their real-time reporting for OEE Metrics and KPIs.</p>
-                <p>I studied at the University of West Georgia in Carrollton with a focus in history, where I got an Associate's Degree (hardest degree to get, actually). I have a wide variety of passions and enjoy many activities in my free time. I enjoy pickleball, making kombucha, hiking with friends, long walks on the beach, and the discovery of new hobbies. Hell I built this website with HTML coding!</p>
-            </div>
-          
-            <div class="section">
-                <h2>Get in Touch</h2>
-                <p>I'm based in Atlanta, Georgia (I hate the traffic). Feel free to email me or connect on LinkedIn using the buttons below. To the right I will have a section clickable for hobbies and Portfolio(ew)</p>
-                <div class="contact-buttons">
-                    <a href="mailto:cotafam10@gmail.com" aria-label="Email Jordan" title="Send Email">
-                        <svg class="icon-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <!-- Official Gmail-style envelope (Material Design) -->
-                            <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
-                        </svg>
-                    </a>
-                    <a href="https://linkedin.com/in/jordan-cota-19269117a" target="_blank" aria-label="Connect on LinkedIn" title="LinkedIn Profile">
-                        <svg class="icon-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <!-- Official LinkedIn "in" logo -->
-                            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-                        </svg>
-                    </a>
+
+            <nav class="tabs">
+                <button class="tab-btn active" data-tab="home">Home</button>
+                <button class="tab-btn" data-tab="portfolio">Portfolio</button>
+                <button class="tab-btn" data-tab="hobbies">Hobbies</button>
+            </nav>
+
+            <div id="home-tab" class="tab-content active">
+                <div class="section">
+                    <h2>About Me</h2>
+                    <p>I am currently a Solution Deployment Manager at <a href="https://glassdome.com" target="_blank">Glassdome</a>, where I help customers with their real-time reporting for OEE Metrics and KPIs.</p>
+                    <p>I studied at the University of West Georgia in Carrollton with a focus in history, where I got an Associate's Degree (hardest degree to get, actually). I have a wide variety of passions and enjoy many activities in my free time. I enjoy pickleball, making kombucha, hiking with friends, long walks on the beach, and the discovery of new hobbies. Hell I built this website with HTML coding!</p>
+                </div>
+
+                <div class="section">
+                    <h2>Published Articles</h2>
+                    <p>Check out some of my contributions to the Glassdome Sustainable Manufacturing Blog. These articles dive into practical tips for OT networks, continuous improvement, and more.</p>
+                    <ul class="articles-list">
+                        <li>
+                            <h3><a href="https://glassdome.com/technical-guide-how-to-configure-mtconnect-on-a-haas-ngc-controller/" target="_blank">Technical Guide: How to Configure MTConnect on a Haas NGC Controller</a></h3>
+                            <p>A step-by-step guide to integrating MTConnect for real-time data on Haas CNC machines.</p>
+                        </li>
+                        <li>
+                            <h3><a href="https://glassdome.com/why-you-need-a-nat-device-for-your-ot-network/" target="_blank">Why You Need a NAT Device for Your OT Network</a></h3>
+                            <p>Explore the role of NAT in securing and optimizing operational technology networks.</p>
+                        </li>
+                        <li>
+                            <h3><a href="https://glassdome.com/what-is-kaizen-unlocking-continuous-improvement-on-the-shop-floor/" target="_blank">What is Kaizen? Unlocking Continuous Improvement on the Shop Floor</a></h3>
+                            <p>An introduction to Kaizen principles and how they drive efficiency in manufacturing.</p>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2>Get in Touch</h2>
+                    <p>I'm based in Atlanta, Georgia (I hate the traffic). Feel free to email me or connect on LinkedIn using the buttons below.</p>
+                    <div class="contact-buttons">
+                        <a href="mailto:cotafam10@gmail.com" aria-label="Email Jordan" title="Send Email">
+                            <svg class="icon-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <!-- Official Gmail-style envelope (Material Design) -->
+                                <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                            </svg>
+                        </a>
+                        <a href="https://linkedin.com/in/jordan-cota-19269117a" target="_blank" aria-label="Connect on LinkedIn" title="LinkedIn Profile">
+                            <svg class="icon-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <!-- Official LinkedIn "in" logo -->
+                                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                            </svg>
+                        </a>
                         <a href="https://glassdome.com" target="_blank" aria-label="Glassdome" title="Glassdome Website">
-                        <img src="glassdome_us_logo.jpg" alt="Glassdome" class="icon-svg">
-                    </a>
+                            <img src="glassdome_us_logo.jpg" alt="Glassdome" class="icon-svg">
+                        </a>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2>Fun Time: Play Space Invaders!</h2>
+                    <p>One of my hobbies? Classic games! Built this simple Space Invaders right here. Use arrow keys to move, spacebar to shoot. Survive the invasion!</p>
+                    <div class="game-container">
+                        <div class="game-info">
+                            <span id="score">Score: 0</span>
+                            <span id="level">Level: 1</span>
+                            <span id="lives">Lives: 3</span>
+                        </div>
+                        <canvas id="gameCanvas" width="800" height="600"></canvas>
+                        <button class="restart-btn" id="restartBtn" onclick="restartGame()">Restart Game</button>
+                        <div class="game-controls">
+                            <p>← → to move | Space to shoot | Refresh to restart</p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div class="section">
-                <h2>Fun Time: Play Space Invaders!</h2>
-                <p>One of my hobbies? Classic games! Built this simple Space Invaders right here. Use arrow keys to move, spacebar to shoot. Survive the invasion!</p>
-                <div class="game-container">
-                    <div class="game-info">
-                        <span id="score">Score: 0</span>
-                        <span id="level">Level: 1</span>
-                        <span id="lives">Lives: 3</span>
+            <div id="portfolio-tab" class="tab-content">
+                <div class="section">
+                    <h2>Portfolio</h2>
+                    <p>Showcasing my professional projects and contributions in manufacturing and OT solutions.</p>
+                    <div class="portfolio-grid">
+                        <div class="portfolio-item">
+                            <img src="https://via.placeholder.com/250x200?text=MTConnect+Integration" alt="MTConnect on Haas">
+                            <h3>MTConnect Configuration</h3>
+                            <p>Custom integration for Haas NGC controllers to enable real-time data monitoring.</p>
+                        </div>
+                        <div class="portfolio-item">
+                            <img src="https://via.placeholder.com/250x200?text=NAT+OT+Network" alt="NAT Device Setup">
+                            <h3>OT Network NAT Deployment</h3>
+                            <p>Secure NAT configurations for industrial networks using Allen Bradley hardware.</p>
+                        </div>
+                        <div class="portfolio-item">
+                            <img src="https://via.placeholder.com/250x200?text=Kaizen+Workshop" alt="Kaizen Implementation">
+                            <h3>Kaizen Workshop Design</h3>
+                            <p>Tools and training materials for implementing continuous improvement in factories.</p>
+                        </div>
                     </div>
-                    <canvas id="gameCanvas" width="800" height="600"></canvas>
-                    <button class="restart-btn" id="restartBtn" onclick="restartGame()">Restart Game</button>
-                    <div class="game-controls">
-                        <p>← → to move | Space to shoot | Refresh to restart</p>
+                </div>
+            </div>
+
+            <div id="hobbies-tab" class="tab-content">
+                <div class="section">
+                    <h2>Hobby Photos</h2>
+                    <p>Snapshots from my downtime adventures—pickleball courts, kombucha brews, and trail hikes!</p>
+                    <div class="portfolio-grid">
+                        <div class="hobby-item">
+                            <img src="https://via.placeholder.com/250x200?text=Pickleball+Game" alt="Pickleball">
+                            <h3>Pickleball Match</h3>
+                            <p>Intense rally on the court—nothing beats a good game with friends.</p>
+                        </div>
+                        <div class="hobby-item">
+                            <img src="https://via.placeholder.com/250x200?text=Kombucha+Brew" alt="Kombucha">
+                            <h3>Kombucha Brewing</h3>
+                            <p>Second fermentation in progress—flavors: ginger and berry this batch.</p>
+                        </div>
+                        <div class="hobby-item">
+                            <img src="https://via.placeholder.com/250x200?text=Hiking+Trail" alt="Hiking">
+                            <h3>Trail Hike</h3>
+                            <p>Sunset views from the Appalachian foothills—recharge mode activated.</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -301,6 +469,24 @@
                 toggle.textContent = e.matches ? '☀️' : '🌙';
             }
         });
+
+        // Tab navigation
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tabId = btn.dataset.tab;
+
+                // Update active tab button
+                tabBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                // Update active tab content
+                tabContents.forEach(content => content.classList.remove('active'));
+                document.getElementById(`${tabId}-tab`).classList.add('active');
+            });
+        });
     </script>
 
     <script>
@@ -319,7 +505,9 @@
         let gameRunning = true;
         let lastShotTime = 0; // For shoot cooldown
         let tiltEnabled = false;
+        let mobileDetected = false;
         let tiltSensitivity = 3; // Adjust for tilt responsiveness
+        let autoFireInterval = 300; // ms between auto-fires on mobile
 
         // Player
         const player = {
@@ -353,12 +541,13 @@
         let isTouching = false;
         let touchX = 0;
 
-        // Tilt support
+        // Tilt support (mobile only)
         function initTilt() {
             if (!('DeviceOrientationEvent' in window)) return;
+            mobileDetected = true; // Assume tilt support means mobile
             if (/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream) {
                 // iOS requires permission
-                canvas.addEventListener('touchstart', async () => {
+                canvas.addEventListener('touchstart', async (e) => {
                     try {
                         const permission = await DeviceOrientationEvent.requestPermission();
                         if (permission === 'granted') {
@@ -370,7 +559,7 @@
                     }
                 }, { once: true });
             } else {
-                // Android/other
+                // Android/other mobile
                 tiltEnabled = true;
                 window.addEventListener('deviceorientation', handleTilt);
             }
@@ -404,7 +593,7 @@
         const keys = {};
         document.addEventListener('keydown', (e) => {
             keys[e.code] = true;
-            if (e.code === 'Space' && gameRunning) {
+            if (e.code === 'Space' && gameRunning && !mobileDetected) {
                 e.preventDefault();
                 shootPlayer();
             }
@@ -413,14 +602,14 @@
             keys[e.code] = false;
         });
 
-        // Touch events
+        // Touch events (movement on all, shoot only on non-mobile)
         canvas.addEventListener('touchstart', (e) => {
             e.preventDefault();
             isTouching = true;
             const touch = e.touches[0];
             touchX = touch.clientX - canvas.getBoundingClientRect().left;
-            shootPlayer();
-            // Init tilt on first touch if mobile
+            if (!mobileDetected) shootPlayer(); // Manual shoot on non-mobile
+            // Init tilt on first touch if not yet
             if (!tiltEnabled) initTilt();
         });
         canvas.addEventListener('touchmove', (e) => {
@@ -435,7 +624,7 @@
             isTouching = false;
         });
 
-        // Mouse for desktop fallback (optional)
+        // Mouse for desktop fallback (optional, movement only)
         canvas.addEventListener('mousemove', (e) => {
             if (isTouching || tiltEnabled) return; // Prioritize touch/tilt
             touchX = e.clientX - canvas.getBoundingClientRect().left;
@@ -443,7 +632,7 @@
 
         function shootPlayer() {
             const now = Date.now();
-            if (now - lastShotTime > 200 && gameRunning) { // Cooldown
+            if (now - lastShotTime > (mobileDetected ? autoFireInterval : 200) && gameRunning) { // Different cooldowns
                 bullets.push({
                     x: player.x + player.width / 2 - 2.5,
                     y: player.y,
@@ -588,6 +777,11 @@
         // Update game
         function update() {
             if (!gameRunning) return;
+
+            // Auto-fire on mobile
+            if (mobileDetected) {
+                shootPlayer();
+            }
 
             // Player movement (keyboard + touch + tilt)
             if (keys['ArrowLeft'] && player.x > 0) {
@@ -743,12 +937,19 @@
             enemyDirection = 1;
             restartBtn.disabled = true;
             restartBtn.textContent = 'Playing...';
+            // Reset mobile/tilt on restart
+            tiltEnabled = false;
+            if (mobileDetected) initTilt();
         }
 
         // Initial setup
         restartBtn.disabled = true;
         restartBtn.textContent = 'Playing...';
         initEnemies();
+        // Auto-detect and init tilt if mobile
+        if (/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+            initTilt();
+        }
         gameLoop();
     </script>
 </body>
