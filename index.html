@@ -638,45 +638,30 @@
         });
     </script>
     <script>
-// Portfolio slideshow vars
+// Portfolio Slideshow - Sliding
 let slideIndexPortfolio = 1;
 showSlidesPortfolio(slideIndexPortfolio);
 
-// Controls
 function plusSlidesPortfolio(n) {
     showSlidesPortfolio(slideIndexPortfolio += n);
 }
 
 function showSlidesPortfolio(n) {
-    let i;
-    let slides = document.getElementsByClassName("mySlides");
+    let i, slides = document.getElementsByClassName("mySlides");
     let captionText = document.getElementById("caption-portfolio");
     
     if (n > slides.length) { slideIndexPortfolio = 1; }
     if (n < 1) { slideIndexPortfolio = slides.length; }
     
-    // Hide all slides
+    // Slide effect: Position slides horizontally
     for (i = 0; i < slides.length; i++) {
-        slides[i].style.display = "none";
+        slides[i].style.left = (i - (slideIndexPortfolio - 1)) * 100 + '%';
     }
     
-    // Show current slide
-    slides[slideIndexPortfolio - 1].style.display = "block";
-    
     // Update caption
-    const captions = [
-        "ML1 Dashboard",
-        "Main Line Dashboard",
-        "PLC Code",
-        "Downtime Entry ML1",
-        "iPad ML1 Interface"
-    ];
+    const captions = ["ML1 Dashboard", "Main Line Dashboard", "PLC Code", "Downtime Entry ML1", "iPad ML1 Interface"];
     captionText.innerHTML = captions[slideIndexPortfolio - 1];
 }
-
-// Optional: Auto-advance every 4 seconds (uncomment below)
-// let autoSlide = setInterval(() => { plusSlidesPortfolio(1); }, 4000);
-// To pause on hover: Add event listeners to .slideshow-container for mouseenter/mouseleave to clear/setInterval.
     </script>
     <script>
         // Enhanced Space Invaders Game with Levels, Tilt Controls & Mobile Support
