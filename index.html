@@ -172,6 +172,84 @@
             color: var(--text-secondary);
             font-size: 0.9rem;
         }
+        .slideshow-container {
+            position: relative;
+            max-width: 100%;
+            margin: 1rem 0;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+        .slide {
+            display: none;
+            width: 100%;
+            height: 400px;
+            position: relative;
+        }
+        .slide.active {
+            display: block;
+        }
+        .slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .slide-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.7));
+            color: white;
+            padding: 2rem 1.5rem 1rem;
+        }
+        .slide h3 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.5rem;
+        }
+        .slide p {
+            margin: 0;
+            font-size: 1rem;
+        }
+        .slideshow-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0,0,0,0.5);
+            color: white;
+            border: none;
+            padding: 1rem;
+            cursor: pointer;
+            font-size: 1.5rem;
+            border-radius: 50%;
+            transition: background 0.2s;
+        }
+        .slideshow-nav:hover {
+            background: rgba(0,0,0,0.8);
+        }
+        .prev {
+            left: 1rem;
+        }
+        .next {
+            right: 1rem;
+        }
+        .slideshow-dots {
+            text-align: center;
+            padding: 1rem 0;
+        }
+        .dot {
+            height: 12px;
+            width: 12px;
+            margin: 0 5px;
+            background-color: var(--text-secondary);
+            border-radius: 50%;
+            display: inline-block;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .dot.active {
+            background: var(--accent);
+        }
         .portfolio-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -297,6 +375,9 @@
             .tabs button {
                 border-bottom: 1px solid var(--border);
             }
+            .slideshow-container {
+                height: 300px;
+            }
             .game-controls p::before {
                 content: "Tilt to move (auto-fire) | ";
             }
@@ -325,20 +406,17 @@
                 <p>Engineer / Account Manager | Atlanta, GA</p>
                 <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">🌙</button>
             </div>
-
             <nav class="tabs">
                 <button class="tab-btn active" data-tab="home">Home</button>
                 <button class="tab-btn" data-tab="portfolio">Portfolio</button>
                 <button class="tab-btn" data-tab="hobbies">Hobbies</button>
             </nav>
-
             <div id="home-tab" class="tab-content active">
                 <div class="section">
                     <h2>About Me</h2>
                     <p>I am currently a Solution Deployment Manager at <a href="https://glassdome.com" target="_blank">Glassdome</a>, where I help customers with their real-time reporting for OEE Metrics and KPIs.</p>
                     <p>I studied at the University of West Georgia in Carrollton with a focus in history, where I got an Associate's Degree (hardest degree to get, actually). I have a wide variety of passions and enjoy many activities in my free time. I enjoy pickleball, making kombucha, hiking with friends, long walks on the beach, and the discovery of new hobbies. I love working on my 1991 Honda Nighthawk 750 and old radios; I have a STA-78 Technics upstairs and a Sansui A2000 in the living area. Hell, I built this website with HTML coding so I am always tinkering in the analog and digital world!</p>
                 </div>
-
                 <div class="section">
                     <h2>Published Articles</h2>
                     <p>Check out some of my contributions to the Glassdome Sustainable Manufacturing Blog. These articles dive into practical tips for OT networks, continuous improvement, and more.</p>
@@ -357,7 +435,6 @@
                         </li>
                     </ul>
                 </div>
-
                 <div class="section">
                     <h2>Get in Touch</h2>
                     <p>I'm based in Atlanta, Georgia (I hate the traffic). Feel free to email me or connect on LinkedIn using the buttons below.</p>
@@ -379,7 +456,6 @@
                         </a>
                     </div>
                 </div>
-
                 <div class="section">
                     <h2>Fun Time: Play Space Invaders!</h2>
                     <p>One of my hobbies? Classic games! Built this simple Space Invaders right here. Use arrow keys to move, spacebar to shoot. Survive the invasion!</p>
@@ -397,31 +473,34 @@
                     </div>
                 </div>
             </div>
-
             <div id="portfolio-tab" class="tab-content">
                 <div class="section">
                     <h2>Portfolio</h2>
                     <p>Showcasing my professional projects and contributions in manufacturing and OT solutions.</p>
-                    <div class="portfolio-grid">
-                        <div class="portfolio-item">
-                            <img src="https://via.placeholder.com/250x200?text=MTConnect+Integration" alt="MTConnect on Haas">
-                            <h3>MTConnect Configuration</h3>
-                            <p>Custom integration for Haas NGC controllers to enable real-time data monitoring.</p>
+                    <div class="slideshow-container">
+                        <div class="slide active">
+                            <img src="https://via.placeholder.com/800x400?text=MTConnect+on+Haas+NGC" alt="MTConnect Integration Project">
+                            <div class="slide-content">
+                                <h3>MTConnect Configuration on Haas NGC</h3>
+                                <p>Step-by-step deployment of MTConnect for real-time machine data collection and OEE reporting.</p>
+                            </div>
                         </div>
-                        <div class="portfolio-item">
-                            <img src="https://via.placeholder.com/250x200?text=NAT+OT+Network" alt="NAT Device Setup">
-                            <h3>OT Network NAT Deployment</h3>
-                            <p>Secure NAT configurations for industrial networks using Allen Bradley hardware.</p>
+                        <div class="slide">
+                            <img src="https://via.placeholder.com/800x400?text=NAT+Device+OT+Network" alt="NAT Device Setup Project">
+                            <div class="slide-content">
+                                <h3>OT Network NAT Deployment</h3>
+                                <p>Secure NAT implementation using Allen Bradley 1783-NATR to isolate and protect industrial networks.</p>
+                            </div>
                         </div>
-                        <div class="portfolio-item">
-                            <img src="https://via.placeholder.com/250x200?text=Kaizen+Workshop" alt="Kaizen Implementation">
-                            <h3>Kaizen Workshop Design</h3>
-                            <p>Tools and training materials for implementing continuous improvement in factories.</p>
-                        </div>
+                        <button class="slideshow-nav prev" onclick="changeSlide(-1)">&#10094;</button>
+                        <button class="slideshow-nav next" onclick="changeSlide(1)">&#10095;</button>
+                    </div>
+                    <div class="slideshow-dots">
+                        <span class="dot active" onclick="currentSlide(1)"></span>
+                        <span class="dot" onclick="currentSlide(2)"></span>
                     </div>
                 </div>
             </div>
-
             <div id="hobbies-tab" class="tab-content">
                 <div class="section">
                     <h2>Hobby Photos</h2>
@@ -469,26 +548,50 @@
                 toggle.textContent = e.matches ? '☀️' : '🌙';
             }
         });
-
         // Tab navigation
         const tabBtns = document.querySelectorAll('.tab-btn');
         const tabContents = document.querySelectorAll('.tab-content');
-
         tabBtns.forEach(btn => {
             btn.addEventListener('click', () => {
                 const tabId = btn.dataset.tab;
-
                 // Update active tab button
                 tabBtns.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
-
                 // Update active tab content
                 tabContents.forEach(content => content.classList.remove('active'));
                 document.getElementById(`${tabId}-tab`).classList.add('active');
             });
         });
     </script>
+    <script>
+        // Portfolio Slideshow
+        let slideIndex = 1;
+        showSlide(slideIndex);
 
+        function changeSlide(n) {
+            showSlide(slideIndex += n);
+        }
+
+        function currentSlide(n) {
+            showSlide(slideIndex = n);
+        }
+
+        function showSlide(n) {
+            const slides = document.querySelectorAll('.slideshow-container .slide');
+            const dots = document.querySelectorAll('.slideshow-dots .dot');
+            if (n > slides.length) { slideIndex = 1; }
+            if (n < 1) { slideIndex = slides.length; }
+            slides.forEach(slide => slide.classList.remove('active'));
+            dots.forEach(dot => dot.classList.remove('active'));
+            slides[slideIndex - 1].classList.add('active');
+            dots[slideIndex - 1].classList.add('active');
+        }
+
+        // Auto-advance slideshow every 5 seconds (optional - can be removed)
+        setInterval(() => {
+            changeSlide(1);
+        }, 5000);
+    </script>
     <script>
         // Enhanced Space Invaders Game with Levels, Tilt Controls & Mobile Support
         const canvas = document.getElementById('gameCanvas');
@@ -497,7 +600,6 @@
         const levelElement = document.getElementById('level');
         const livesElement = document.getElementById('lives');
         const restartBtn = document.getElementById('restartBtn');
-
         // Game variables
         let score = 0;
         let lives = 3;
@@ -508,7 +610,6 @@
         let mobileDetected = false;
         let tiltSensitivity = 3; // Adjust for tilt responsiveness
         let autoFireInterval = 300; // ms between auto-fires on mobile
-
         // Player
         const player = {
             x: canvas.width / 2 - 15,
@@ -517,15 +618,12 @@
             height: 20,
             speed: 5
         };
-
         // Bullets
         const bullets = [];
         const bulletSpeed = 7;
-
         // Enemy bullets
         const enemyBullets = [];
         let enemyBulletSpeed = 3;
-
         // Enemies
         const enemies = [];
         let enemyRows = 5;
@@ -536,11 +634,9 @@
         let enemyDirection = 1;
         let enemySpeed = 0.5;
         let lastEnemyShot = 0;
-
         // Touch support
         let isTouching = false;
         let touchX = 0;
-
         // Tilt support (mobile only)
         function initTilt() {
             if (!('DeviceOrientationEvent' in window)) return;
@@ -564,14 +660,12 @@
                 window.addEventListener('deviceorientation', handleTilt);
             }
         }
-
         function handleTilt(e) {
             const gamma = e.gamma || 0; // Left-right tilt (-90 to 90)
             const tiltDelta = gamma * tiltSensitivity;
             player.x += tiltDelta;
             player.x = Math.max(0, Math.min(canvas.width - player.width, player.x));
         }
-
         // Initialize enemies
         function initEnemies() {
             enemies.length = 0;
@@ -588,7 +682,6 @@
                 }
             }
         }
-
         // Input handling (Keyboard + Touch + Tilt)
         const keys = {};
         document.addEventListener('keydown', (e) => {
@@ -601,7 +694,6 @@
         document.addEventListener('keyup', (e) => {
             keys[e.code] = false;
         });
-
         // Touch events (movement on all, shoot only on non-mobile)
         canvas.addEventListener('touchstart', (e) => {
             e.preventDefault();
@@ -623,13 +715,11 @@
             e.preventDefault();
             isTouching = false;
         });
-
         // Mouse for desktop fallback (optional, movement only)
         canvas.addEventListener('mousemove', (e) => {
             if (isTouching || tiltEnabled) return; // Prioritize touch/tilt
             touchX = e.clientX - canvas.getBoundingClientRect().left;
         });
-
         function shootPlayer() {
             const now = Date.now();
             if (now - lastShotTime > (mobileDetected ? autoFireInterval : 200) && gameRunning) { // Different cooldowns
@@ -642,7 +732,6 @@
                 lastShotTime = now;
             }
         }
-
         // Collision detection
         function collision(rect1, rect2) {
             return rect1.x < rect2.x + rect2.width &&
@@ -650,7 +739,6 @@
                    rect1.y < rect2.y + rect2.height &&
                    rect1.y + rect1.height > rect2.y;
         }
-
         // Draw player ship (V-shaped with thrusters, inspired by classic)
         function drawPlayer() {
             ctx.fillStyle = 'white';
@@ -682,7 +770,6 @@
             ctx.closePath();
             ctx.fill();
         }
-
         // Draw enemy ship (Row-based variations, inspired by squid/crab/octopus styles)
         function drawEnemy(enemy) {
             const colors = ['#00ff41', '#00cc33', '#009922', '#006611', '#003300']; // Retro greens
@@ -758,7 +845,6 @@
                 ctx.fill();
             }
         }
-
         // Level up function
         function levelUp() {
             level++;
@@ -773,16 +859,13 @@
             levelElement.textContent = `Level: ${level}`;
             initEnemies();
         }
-
         // Update game
         function update() {
             if (!gameRunning) return;
-
             // Auto-fire on mobile
             if (mobileDetected) {
                 shootPlayer();
             }
-
             // Player movement (keyboard + touch + tilt)
             if (keys['ArrowLeft'] && player.x > 0) {
                 player.x -= player.speed;
@@ -795,7 +878,6 @@
                 player.x = Math.max(0, Math.min(canvas.width - player.width, touchX - player.width / 2));
             }
             // Tilt is handled in event listener for smoother real-time update
-
             // Update player bullets
             for (let i = bullets.length - 1; i >= 0; i--) {
                 const bullet = bullets[i];
@@ -804,7 +886,6 @@
                     bullets.splice(i, 1);
                 }
             }
-
             // Update enemy bullets
             for (let i = enemyBullets.length - 1; i >= 0; i--) {
                 const bullet = enemyBullets[i];
@@ -820,17 +901,14 @@
                     }
                 }
             }
-
             // Update enemies
             let edgeHit = false;
             enemies.forEach(enemy => {
                 if (!enemy.alive) return;
-
                 enemy.x += enemyDirection * enemySpeed;
                 if (enemy.x <= 0 || enemy.x + enemy.width >= canvas.width) {
                     edgeHit = true;
                 }
-
                 // Enemy shooting (rarer at higher levels)
                 const shootInterval = Math.max(300, 800 - (level * 50));
                 if (Date.now() - lastEnemyShot > shootInterval && Math.random() < 0.003 + (level * 0.001) && enemy.alive) {
@@ -842,7 +920,6 @@
                     });
                     lastEnemyShot = Date.now();
                 }
-
                 // Check collisions with player bullets
                 for (let i = bullets.length - 1; i >= 0; i--) {
                     if (collision(bullets[i], enemy)) {
@@ -853,7 +930,6 @@
                         break;
                     }
                 }
-
                 // Enemy hits player or bottom
                 if (enemy.y + enemy.height >= player.y || collision(enemy, player)) {
                     lives--;
@@ -864,57 +940,47 @@
                     }
                 }
             });
-
             if (edgeHit) {
                 enemyDirection *= -1;
                 enemies.forEach(enemy => {
                     if (enemy.alive) enemy.y += 20;
                 });
             }
-
             // Level complete
             const aliveEnemies = enemies.filter(e => e.alive).length;
             if (aliveEnemies === 0) {
                 levelUp();
             }
         }
-
         function gameOver() {
             gameRunning = false;
             alert(`Game Over! Final Score: ${score} | Reached Level ${level}`);
             restartBtn.disabled = false;
             restartBtn.textContent = 'Restart Game';
         }
-
         // Render game
         function render() {
             // Clear canvas
             ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--bg-primary');
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-
             // Draw player
             drawPlayer();
-
             // Draw bullets
             ctx.fillStyle = 'yellow';
             bullets.forEach(bullet => ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height));
-
             ctx.fillStyle = 'red';
             enemyBullets.forEach(bullet => ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height));
-
             // Draw enemies
             enemies.forEach(enemy => {
                 if (enemy.alive) drawEnemy(enemy);
             });
         }
-
         // Game loop
         function gameLoop() {
             update();
             render();
             requestAnimationFrame(gameLoop);
         }
-
         // Restart function
         function restartGame() {
             score = 0;
@@ -941,7 +1007,6 @@
             tiltEnabled = false;
             if (mobileDetected) initTilt();
         }
-
         // Initial setup
         restartBtn.disabled = true;
         restartBtn.textContent = 'Playing...';
