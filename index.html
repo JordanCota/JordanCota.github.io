@@ -5,13 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jordan Cota | Personal Site</title>
     <style>
+        :root {
+            --bg-primary: #f8f9fa;
+            --bg-secondary: white;
+            --text-primary: #333;
+            --text-secondary: #666;
+            --accent: #007BFF;
+            --accent-hover: #0056b3;
+            --shadow: rgba(0,0,0,0.1);
+            --border: #e9ecef;
+        }
+        [data-theme="dark"] {
+            --bg-primary: #121212;
+            --bg-secondary: #1e1e1e;
+            --text-primary: #e0e0e0;
+            --text-secondary: #b0b0b0;
+            --accent: #007BFF;
+            --accent-hover: #0056b3;
+            --shadow: rgba(0,0,0,0.3);
+            --border: #333;
+        }
         body {
             margin: 0;
             padding: 0;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: #f8f9fa;
-            color: #333;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
             line-height: 1.6;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
         .container {
             max-width: 1200px;
@@ -28,17 +49,18 @@
             width: 100%;
             height: auto;
             border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 12px var(--shadow);
         }
         .content {
             flex: 1;
         }
         .header {
-            background: linear-gradient(135deg, #0d6efd, #0b5ed7);
+            background: linear-gradient(135deg, var(--accent), var(--accent-hover));
             color: white;
             padding: 1.5rem;
             border-radius: 12px 12px 0 0;
             margin-bottom: 1rem;
+            position: relative;
         }
         .header h1 {
             margin: 0 0 0.5rem 0;
@@ -50,28 +72,54 @@
             opacity: 0.9;
             font-size: 1.1rem;
         }
+        .theme-toggle {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 0.5rem;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: border-color 0.3s ease;
+        }
+        .theme-toggle:hover {
+            border-color: rgba(255,255,255,0.6);
+        }
         .section {
-            background: white;
+            background: var(--bg-secondary);
             padding: 1.5rem;
             border-radius: 0 12px 12px 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 12px var(--shadow);
             margin-bottom: 1rem;
+            border: 1px solid var(--border);
         }
         .section h2 {
             margin: 0 0 1rem 0;
-            color: #0d6efd;
+            color: var(--accent);
             font-size: 1.5rem;
-            border-bottom: 2px solid #e9ecef;
+            border-bottom: 2px solid var(--border);
             padding-bottom: 0.5rem;
         }
         .section p {
             margin: 0 0 1rem 0;
             text-align: justify;
+            color: var(--text-primary);
+        }
+        .section a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+        .section a:hover {
+            text-decoration: underline;
         }
         .contact-buttons {
             display: flex;
             gap: 1rem;
             margin-top: 1rem;
+            justify-content: center; /* Centers the buttons */
         }
         .contact-buttons a {
             display: inline-flex;
@@ -79,15 +127,20 @@
             justify-content: center;
             width: 50px;
             height: 50px;
-            background: #0d6efd;
+            background: var(--accent);
             color: white;
             text-decoration: none;
             border-radius: 8px;
-            font-size: 1.2rem;
             transition: background 0.2s;
+            flex-shrink: 0;
         }
         .contact-buttons a:hover {
-            background: #0b5ed7;
+            background: var(--accent-hover);
+        }
+        .icon-svg {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
         }
         @media (max-width: 768px) {
             .container {
@@ -97,6 +150,24 @@
             .photo {
                 flex: none;
                 text-align: center;
+            }
+            .theme-toggle {
+                top: 0.5rem;
+                right: 0.5rem;
+            }
+            .contact-buttons {
+                justify-content: center; /* Ensures centering on mobile */
+            }
+        }
+        /* Auto-detect system preference */
+        @media (prefers-color-scheme: dark) {
+            body:not([data-theme="light"]) {
+                --bg-primary: #121212;
+                --bg-secondary: #1e1e1e;
+                --text-primary: #e0e0e0;
+                --text-secondary: #b0b0b0;
+                --shadow: rgba(0,0,0,0.3);
+                --border: #333;
             }
         }
     </style>
@@ -109,26 +180,67 @@
         <div class="content">
             <div class="header">
                 <h1>Jordan Cota</h1>
-                <p>Enginner / Account Manager | Atlanta, GA </p>
+                <p>Engineer / Account Manager | Atlanta, GA</p>
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">🌙</button>
             </div>
-            
+           
             <div class="section">
                 <h2>About Me</h2>
-                <p> I am currently a Solution Deployment Manager at <a href="https://glassdome.com target="_blank"> Glassdome</a>, where I help customers with their real-time reporting for OEE Metrics and KPIs </p>
+                <p>I am currently a Solution Deployment Manager at <a href="https://glassdome.com" target="_blank">Glassdome</a>, where I help customers with their real-time reporting for OEE Metrics and KPIs.</p>
                 <p>I studied at the University of West Georgia in Carrollton with a focus in history, where I got an Associate's Degree (hardest degree to get, actually). I have a wide variety of passions and enjoy many activities in my free time. I enjoy pickleball, making kombucha, hiking with friends, long walks on the beach, and the discovery of new hobbies.</p>
             </div>
-            
+           
             <div class="section">
                 <h2>Get in Touch</h2>
-                <p>I'm based in Atlanta, Georgia (I hate the traffic).  Feel free to email me or connect on LinkedIn using the buttons below. To the right I will have a section clickable for hobbies and Portfolio(ew)</p>
+                <p>I'm based in Atlanta, Georgia (I hate the traffic). Feel free to email me or connect on LinkedIn using the buttons below. To the right I will have a section clickable for hobbies and Portfolio(ew)</p>
                 <div class="contact-buttons">
-                    <a href="mailto:cotafam10@gmail.com">📧</a>
-                    <a href="https://linkedin.com/in/jordan-cota-19269117a" target="_blank">💼</a>
-                    <a href="https://glassdome.com" target="_blank">🐦</a>
-                    <!-- Add more icons/links as needed, e.g., GitHub: <a href="https://github.com/JordanCota">🐙</a> -->
+                    <a href="mailto:cotafam10@gmail.com" aria-label="Email Jordan" title="Send Email">
+                        <svg class="icon-svg" viewBox="0 0 24 24">
+                            <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                        </svg>
+                    </a>
+                    <a href="https://linkedin.com/in/jordan-cota-19269117a" target="_blank" aria-label="Connect on LinkedIn" title="LinkedIn Profile">
+                        <svg class="icon-svg" viewBox="0 0 24 24">
+                            <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.02-1.57.27-2.38a2.6 2.6 0 0 1 2.72-1.41c1.91 0 2.13 1.25 2.13 2.88v4.84h2.79V18.5h-2.79z"/>
+                        </svg>
+                    </a>
+                    <a href="https://glassdome.com" target="_blank" aria-label="Glassdome" title="Glassdome Website">
+                        <svg class="icon-svg" viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                            <!-- Simple arch: Customize if you have official SVG -->
+                            <path d="M4 20h16v2H4zM4 18h2v-2H4v2zM2 16h2v-2H2v2zM20 16h2v-2h-2v2zM22 18h-2v2h2v-2z" fill="none" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                    </a>
                 </div>
             </div>
         </div>
     </div>
+
+    <script>
+        const toggle = document.getElementById('themeToggle');
+        const body = document.body;
+
+        // Load saved theme or default to system
+        const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        body.setAttribute('data-theme', savedTheme);
+        toggle.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+
+        // Toggle function
+        toggle.addEventListener('click', () => {
+            const current = body.getAttribute('data-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            body.setAttribute('data-theme', next);
+            localStorage.setItem('theme', next);
+            toggle.textContent = next === 'dark' ? '☀️' : '🌙';
+        });
+
+        // Listen for system changes (if no manual toggle)
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+            if (!localStorage.getItem('theme')) {
+                body.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+                toggle.textContent = e.matches ? '☀️' : '🌙';
+            }
+        });
+    </script>
 </body>
 </html>
