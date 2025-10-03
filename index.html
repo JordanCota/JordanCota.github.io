@@ -473,18 +473,49 @@
                     </div>
                 </div>
             </div>
-            <div id="portfolio-tab" class="tab-content">
-                <div class="section">
-                    <h2>Portfolio</h2>
-                    <p>Showcasing my professional projects and contributions in manufacturing and OT solutions.</p>
-                   <div class="project">
-    <div class="project-images">
-        <img src="ML1 Dash.png" alt="ML1 Dashboard">
-        <img src="Main Line Dash.png" alt="Main Line Dashboard">
-        <img src="PLC Code.png" alt="PLC Code">
-        <img src="Downtime Entry ML1.png" alt="Downtime Entry ML1">
-        <img src="ipad ML1.png" alt="iPad ML1 Interface"> <!-- Note: Converted .HEIC to .PNG for web compatibility; adjust path if needed -->
+<div id="portfolio-tab" class="tab-content">
+    <div class="section">
+        <h2>Portfolio</h2>
+        <p>Showcasing my professional projects and contributions in manufacturing and OT solutions.</p>
+        
+        <!-- Updated first project as slideshow -->
+        <div class="project">
+            <h3>Forklift Conveyor OEE System</h3>
+            <p>This was a project that involved a forklift conveyor system. The customer wanted to see full OEE metrics on this conveyor system, such as part count, downtime, etc. Luckily, there was an Allen-Bradley PLC available. I pulled the PLC code, built a tag list, and connected with the PLC using the EIP protocol. I built the dashboard and OEE reporting for visualization for the customer. I also built displays for downtime code entries and utilize iPads along the conveyance system for operators.</p>
+            
+            <!-- Slideshow Container -->
+            <div class="slideshow-container">
+                <!-- Full-width images; hide all but current slide -->
+                <div class="mySlides fade">
+                    <img src="ML1 Dash.png" alt="ML1 Dashboard" style="width:100%">
+                </div>
+                <div class="mySlides fade">
+                    <img src="Main Line Dash.png" alt="Main Line Dashboard" style="width:100%">
+                </div>
+                <div class="mySlides fade">
+                    <img src="PLC Code.png" alt="PLC Code" style="width:100%">
+                </div>
+                <div class="mySlides fade">
+                    <img src="Downtime Entry ML1.png" alt="Downtime Entry ML1" style="width:100%">
+                </div>
+                <div class="mySlides fade">
+                    <img src="ipad ML1.png" alt="iPad ML1 Interface" style="width:100%">
+                </div>
+                
+                <!-- Next/Previous buttons -->
+                <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+                <a class="next" onclick="plusSlides(1)">&#10095;</a>
+            </div>
+            
+            <!-- Image text/captions (optional; shows below each slide) -->
+            <div class="caption-container">
+                <p id="caption">ML1 Dashboard</p>
+            </div>
+        </div>
+        
+        <!-- Add your other projects here if needed -->
     </div>
+</div>
     <h3>Forklift Conveyor OEE System</h3>
             <p>This was a project that involved a forklift conveyor system. The customer wanted to see full OEE metrics on this conveyor system, such as part count, downtime, etc. Luckily, there was an Allen-Bradley PLC available. I pulled the PLC code, built a tag list, and connected with the PLC using the EIP protocol. I built the dashboard and OEE reporting for visualization for the customer. I also built displays for downtime code entries and utilize iPads along the conveyance system for operators.</p>
             </div>
