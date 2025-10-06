@@ -120,7 +120,7 @@
         .hobby-item h3 { margin: 0.5rem; color: var(--text-primary); font-size: 1rem; }
         .hobby-item p { margin: 0 0.5rem 1rem; color: var(--text-secondary); font-size: 0.9rem; }
         
-        /* NEW CONTACT BUTTON STYLES */
+        /* CONTACT BUTTON STYLES */
         .contact-buttons { display: flex; gap: 1rem; margin-top: 1rem; justify-content: center; flex-wrap: wrap; }
         .contact-buttons a { display: inline-flex; align-items: center; justify-content: center; padding: 0.75rem 1.5rem; background: var(--accent); color: white; text-decoration: none; border-radius: 50px; transition: background 0.2s, transform 0.2s; gap: 0.75rem; }
         .contact-buttons a:hover { background: var(--accent-hover); transform: translateY(-2px); }
@@ -137,7 +137,7 @@
         .restart-btn:disabled { background: var(--text-secondary); cursor: not-allowed; }
         .game-controls { text-align: center; margin-top: 0.5rem; font-size: 0.9rem; color: var(--text-secondary); }
 
-        #leaderboard-list { padding-left: 20px; }
+        #leaderboard-list { padding-left: 20px; color: var(--text-secondary); }
         #leaderboard-list li { margin-bottom: 0.5rem; }
         
         @media (max-width: 768px) { .container { flex-direction: column; padding: 1rem; } .photo { flex: none; text-align: center; } .contact-buttons { justify-content: center; } .tabs { flex-direction: column; } .tabs button { border-bottom: 1px solid var(--border); } .game-controls p::before { content: "Tilt to move (auto-fire) | "; } }
@@ -221,11 +221,6 @@
                 </div>
                 
                 <div class="section">
-                    <h2>High Scores</h2>
-                    <ol id="leaderboard-list"></ol>
-                </div>
-
-                <div class="section">
                     <h2>Fun Time: Play Space Invaders!</h2>
                     <p>One of my hobbies? Classic games! Built this simple Space Invaders right here. Use arrow keys to move, spacebar to shoot. Survive the invasion!</p>
                     <div class="game-container">
@@ -234,6 +229,11 @@
                         <button class="restart-btn" id="restartBtn" onclick="restartGame()">Start Game</button>
                         <div class="game-controls"><p>← → to move | Space to shoot | Refresh to restart</p></div>
                     </div>
+                </div>
+
+                <div class="section">
+                    <h2>High Scores</h2>
+                    <ol id="leaderboard-list"></ol>
                 </div>
             </div>
            
@@ -337,7 +337,6 @@
         // --- Space Invaders Game Script ---
         const canvas = document.getElementById('gameCanvas'); const ctx = canvas.getContext('2d'); const scoreElement = document.getElementById('score'); const levelElement = document.getElementById('level'); const livesElement = document.getElementById('lives'); const restartBtn = document.getElementById('restartBtn'); let score = 0; let lives = 3; let level = 1; let gameRunning = false; let lastShotTime = 0; let tiltEnabled = false; let mobileDetected = false; let tiltSensitivity = 3; let autoFireInterval = 300; const player = { x: canvas.width/2-15, y: canvas.height-50, width: 30, height: 20, speed: 5 }; const bullets = []; const bulletSpeed = 7; const enemyBullets = []; let enemyBulletSpeed = 3; const enemies = []; let enemyRows = 5; let enemyCols = 10; const enemyWidth = 30; const enemyHeight = 20; const enemyPadding = 10; let enemyDirection = 1; let enemySpeed = 0.5; let lastEnemyShot = 0; let isTouching = false; let touchX = 0; function initTilt() { if (!('DeviceOrientationEvent' in window)) return; mobileDetected = true; if (/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream) { canvas.addEventListener('touchstart', async (e) => { try { const permission = await DeviceOrientationEvent.requestPermission(); if (permission === 'granted') { tiltEnabled = true; window.addEventListener('deviceorientation', handleTilt); } } catch (err) { console.log('Tilt permission denied'); } }, { once: true }); } else { tiltEnabled = true; window.addEventListener('deviceorientation', handleTilt); } } function handleTilt(e) { const gamma = e.gamma || 0; const tiltDelta = gamma * tiltSensitivity; player.x += tiltDelta; player.x = Math.max(0, Math.min(canvas.width - player.width, player.x)); } function initEnemies() { enemies.length = 0; for (let row=0; row<enemyRows; row++) { for (let col=0; col<enemyCols; col++) { enemies.push({ x: col*(enemyWidth+enemyPadding)+50, y: row*(enemyHeight+enemyPadding)+50, width: enemyWidth, height: enemyHeight, alive: true, row: row }); } } } const keys = {}; document.addEventListener('keydown', (e) => { keys[e.code] = true; if (e.code === 'Space' && gameRunning && !mobileDetected) { e.preventDefault(); shootPlayer(); } }); document.addEventListener('keyup', (e) => { keys[e.code] = false; }); canvas.addEventListener('touchstart', (e) => { e.preventDefault(); isTouching = true; const touch = e.touches[0]; touchX = touch.clientX - canvas.getBoundingClientRect().left; if (!mobileDetected) shootPlayer(); if (!tiltEnabled) initTilt(); }); canvas.addEventListener('touchmove', (e) => { e.preventDefault(); if (isTouching) { const touch = e.touches[0]; touchX = touch.clientX - canvas.getBoundingClientRect().left; } }); canvas.addEventListener('touchend', (e) => { e.preventDefault(); isTouching = false; }); canvas.addEventListener('mousemove', (e) => { if (isTouching || tiltEnabled) return; touchX = e.clientX - canvas.getBoundingClientRect().left; }); function shootPlayer() { const now = Date.now(); if (now - lastShotTime > (mobileDetected ? autoFireInterval : 200) && gameRunning) { bullets.push({ x: player.x + player.width/2 - 2.5, y: player.y, width: 5, height: 10 }); lastShotTime = now; } } function collision(rect1, rect2) { return rect1.x < rect2.x + rect2.width && rect1.x + rect1.width > rect2.x && rect1.y < rect2.y + rect2.height && rect1.y + rect1.height > rect2.y; } function drawPlayer() { ctx.fillStyle = 'white'; ctx.strokeStyle = 'white'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(player.x+player.width/2, player.y); ctx.lineTo(player.x, player.y+player.height); ctx.lineTo(player.x+player.width, player.y+player.height); ctx.closePath(); ctx.fill(); ctx.stroke(); ctx.beginPath(); ctx.moveTo(player.x+5, player.y+10); ctx.lineTo(player.x, player.y+15); ctx.lineTo(player.x+10, player.y+10); ctx.moveTo(player.x+player.width-5, player.y+10); ctx.lineTo(player.x+player.width, player.y+15); ctx.lineTo(player.x+player.width-10, player.y+10); ctx.stroke(); ctx.fillStyle = 'orange'; ctx.beginPath(); ctx.moveTo(player.x+8, player.y+player.height); ctx.lineTo(player.x+player.width/2, player.y+player.height+5); ctx.lineTo(player.x+player.width-8, player.y+player.height); ctx.closePath(); ctx.fill(); } function drawEnemy(enemy) { const colors = ['#00ff41', '#00cc33', '#009922', '#006611', '#003300']; ctx.fillStyle = colors[enemy.row]; ctx.strokeStyle = '#00ff41'; ctx.lineWidth = 1; if (enemy.row === 0) { ctx.beginPath(); ctx.ellipse(enemy.x+enemy.width/2, enemy.y+enemy.height/2, 12, 8, 0, 0, 2 * Math.PI); ctx.fill(); ctx.stroke(); ctx.strokeStyle=colors[enemy.row]; ctx.lineWidth=2; for (let i=0; i<4; i++) { const angle=(Math.PI*2/4)*i; const tx=enemy.x+enemy.width/2+Math.cos(angle)*15; const ty=enemy.y+enemy.height/2+Math.sin(angle)*10; ctx.beginPath(); ctx.moveTo(enemy.x+enemy.width/2, enemy.y+enemy.height/2); ctx.lineTo(tx, ty); ctx.stroke(); } ctx.fillStyle='red'; ctx.beginPath(); ctx.arc(enemy.x+8, enemy.y+6, 2, 0, 2*Math.PI); ctx.arc(enemy.x+22, enemy.y+6, 2, 0, 2*Math.PI); ctx.fill(); } else if (enemy.row === 1 || enemy.row === 2) { ctx.beginPath(); ctx.roundRect(enemy.x+5, enemy.y, enemy.width-10, enemy.height, 5); ctx.fill(); ctx.stroke(); ctx.strokeStyle=colors[enemy.row]; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(enemy.x+5, enemy.y+15); ctx.lineTo(enemy.x, enemy.y+25); ctx.moveTo(enemy.x+25, enemy.y+15); ctx.lineTo(enemy.x+30, enemy.y+25); ctx.stroke(); ctx.fillStyle='red'; ctx.beginPath(); ctx.arc(enemy.x+12, enemy.y+8, 2, 0, 2*Math.PI); ctx.arc(enemy.x+18, enemy.y+8, 2, 0, 2*Math.PI); ctx.fill(); } else { ctx.beginPath(); ctx.rect(enemy.x+3, enemy.y+5, enemy.width-6, enemy.height-5); ctx.fill(); ctx.stroke(); ctx.strokeStyle=colors[enemy.row]; ctx.lineWidth=2; for (let i=0; i<6; i++) { const x=enemy.x+(i*(enemy.width/5)); ctx.beginPath(); ctx.moveTo(x, enemy.y+enemy.height); ctx.lineTo(x, enemy.y+enemy.height+8); ctx.stroke(); } ctx.fillStyle='red'; ctx.beginPath(); ctx.arc(enemy.x+10, enemy.y+8, 2, 0, 2*Math.PI); ctx.arc(enemy.x+20, enemy.y+8, 2, 0, 2*Math.PI); ctx.fill(); } } function levelUp() { level++; enemySpeed+=0.2; enemyBulletSpeed+=0.5; enemyRows=Math.min(7, enemyRows+1); enemyCols=Math.min(12, enemyCols+1); bullets.length=0; enemyBullets.length=0; player.x=canvas.width/2-15; alert(`Level Up! Level ${level} - Enemies are faster and more numerous!`); levelElement.textContent=`Level: ${level}`; initEnemies(); } function update() { if (!gameRunning) return; if (mobileDetected) { shootPlayer(); } if (keys['ArrowLeft'] && player.x > 0) { player.x -= player.speed; } if (keys['ArrowRight'] && player.x < canvas.width - player.width) { player.x += player.speed; } if (isTouching) { player.x = Math.max(0, Math.min(canvas.width - player.width, touchX - player.width/2)); } for (let i=bullets.length-1; i>=0; i--) { const bullet=bullets[i]; bullet.y-=bulletSpeed; if (bullet.y < 0) { bullets.splice(i, 1); } } for (let i=enemyBullets.length-1; i>=0; i--) { const bullet=enemyBullets[i]; bullet.y+=enemyBulletSpeed; if(bullet.y > canvas.height){ enemyBullets.splice(i,1); } else if (collision(bullet, player)) { lives--; livesElement.textContent=`Lives: ${lives}`; enemyBullets.splice(i,1); if (lives <= 0) { gameOver(); } } } let edgeHit = false; enemies.forEach(enemy => { if (!enemy.alive) return; enemy.x += enemyDirection * enemySpeed; if (enemy.x <= 0 || enemy.x + enemy.width >= canvas.width) { edgeHit = true; } const shootInterval = Math.max(300, 800 - (level * 50)); if (Date.now() - lastEnemyShot > shootInterval && Math.random() < 0.003 + (level * 0.001) && enemy.alive) { enemyBullets.push({ x: enemy.x+enemy.width/2-2.5, y: enemy.y+enemy.height, width: 5, height: 10 }); lastEnemyShot=Date.now(); } for (let i=bullets.length-1; i>=0; i--) { if (collision(bullets[i], enemy)) { enemy.alive=false; bullets.splice(i,1); score+=10*level; scoreElement.textContent=`Score: ${score}`; break; } } if (enemy.y + enemy.height >= player.y || collision(enemy, player)) { lives--; livesElement.textContent=`Lives: ${lives}`; enemy.alive=false; if (lives <= 0) { gameOver(); } } }); if (edgeHit) { enemyDirection*=-1; enemies.forEach(enemy => { if (enemy.alive) enemy.y += 20; }); } if (enemies.filter(e => e.alive).length === 0) { levelUp(); } }
         
-        // --- UPDATED gameOver function ---
         function gameOver() {
             gameRunning = false;
             restartBtn.disabled = false;
@@ -364,10 +363,9 @@
         
         function render() { ctx.fillStyle = 'black'; ctx.fillRect(0, 0, canvas.width, canvas.height); drawPlayer(); ctx.fillStyle = 'yellow'; bullets.forEach(bullet => ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height)); ctx.fillStyle = 'red'; enemyBullets.forEach(bullet => ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height)); enemies.forEach(enemy => { if (enemy.alive) drawEnemy(enemy); }); } function gameLoop() { update(); render(); requestAnimationFrame(gameLoop); } function restartGame() { score=0; lives=3; level=1; gameRunning=true; bullets.length=0; enemyBullets.length=0; player.x = canvas.width/2-15; enemySpeed=0.5; enemyBulletSpeed=3; enemyRows=5; enemyCols=10; scoreElement.textContent=`Score: ${score}`; levelElement.textContent=`Level: ${level}`; livesElement.textContent=`Lives: ${lives}`; initEnemies(); lastShotTime=0; lastEnemyShot=0; enemyDirection=1; restartBtn.disabled = true; restartBtn.textContent = 'Playing...'; tiltEnabled=false; if(mobileDetected) initTilt(); }
         
-        // --- NEW displayLeaderboard function ---
         function displayLeaderboard() {
             const leaderboardList = document.getElementById('leaderboard-list');
-            if (!leaderboardList) return; // Prevent errors if the element doesn't exist
+            if (!leaderboardList) return;
             leaderboardList.innerHTML = '<li>Loading scores...</li>';
 
             db.collection("scores").orderBy("score", "desc").limit(10).get()
@@ -376,7 +374,7 @@
                         leaderboardList.innerHTML = "<li>No scores yet. Be the first!</li>";
                         return;
                     }
-                    leaderboardList.innerHTML = ''; // Clear loading message
+                    leaderboardList.innerHTML = '';
                     querySnapshot.forEach((doc) => {
                         const data = doc.data();
                         const listItem = document.createElement('li');
@@ -389,7 +387,6 @@
         // Initial setup
         restartBtn.disabled = false; initEnemies(); if (/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) { initTilt(); } gameLoop();
         
-        // Display the leaderboard when the page loads
         displayLeaderboard();
     </script>
 </body>
