@@ -99,7 +99,7 @@
             overflow: hidden;
             box-shadow: 0 4px 12px var(--shadow);
         }
-        .mySlides, .mySlides2 {
+        .mySlides, .mySlides2, .mySlides3 {
             display: none;
             width: 100%;
             animation-name: fade;
@@ -109,7 +109,7 @@
           from {opacity: .4}
           to {opacity: 1}
         }
-        .mySlides img, .mySlides2 img {
+        .mySlides img, .mySlides2 img, .mySlides3 img {
             width: 100%;
             vertical-align: middle;
         }
@@ -145,7 +145,7 @@
             background-color: rgba(0,0,0,0.6);
             padding: 8px;
         }
-        #caption, #caption2 {
+        #caption, #caption2, #caption3 {
             margin: 0;
             font-size: 15px;
             color: white;
@@ -499,10 +499,10 @@
                         
                         <div class="slideshow-container">
                             <div class="mySlides2">
-                                <img src="Final DWSD.png" alt="Water Quality System Overview" style="width:100%">
+                                <img src="DWSD.HEIC" alt="Water Quality System Overview" style="width:100%">
                             </div>
                             <div class="mySlides2">
-                                <img src="DWSD Before (1).png" alt="System Before Installation" style="width:100%">
+                                <img src="DWSD Before.jpg" alt="System Before Installation" style="width:100%">
                             </div>
                             <div class="mySlides2">
                                 <img src="Dash DWSD.png" alt="Final Dashboard" style="width:100%">
@@ -516,6 +516,36 @@
                             </div>
                         </div>
                     </div>
+
+                    <hr style="border-top: 1px solid var(--border); margin: 2rem 0;">
+
+                    <div class="project">
+                        <h3>General Dashboard Examples</h3>
+                        <p>Here are a few more examples of dashboards I've built. These visualizations pull data from various sources, including custom tag lists I developed for the FANUC FOCAS protocol, as well as Allen-Bradley EtherNet/IP and Modbus TCP connections.</p>
+                        
+                        <div class="slideshow-container">
+                            <div class="mySlides3">
+                                <img src="Assy Line 1 .png" alt="Assembly Line 1 Dashboard" style="width:100%">
+                            </div>
+                            <div class="mySlides3">
+                                <img src="OEE Overview.png" alt="OEE Overview Dashboard" style="width:100%">
+                            </div>
+                            <div class="mySlides3">
+                                <img src="Modbus TCP Connection for Robots.png" alt="Modbus TCP Robot Connection" style="width:100%">
+                            </div>
+                            <div class="mySlides3">
+                                <img src="Fanuc Work Cell.png" alt="Fanuc Work Cell Dashboard" style="width:100%">
+                            </div>
+                            
+                            <a class="prev" onclick="plusSlides3(-1)">&#10094;</a>
+                            <a class="next" onclick="plusSlides3(1)">&#10095;</a>
+
+                            <div class="caption-container">
+                                <p id="caption3"></p>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
            
@@ -637,6 +667,37 @@
           if (slides.length > 0) {
             slides[slideIndex2 - 1].style.display = "block";
             captionText.innerHTML = captions2[slideIndex2 - 1];
+          }
+        }
+    </script>
+
+    <script>
+        // --- Slideshow Script for Project 3 (General Dashboards) ---
+        let slideIndex3 = 1;
+        const captions3 = [
+            "Assembly Line 1 Dashboard", 
+            "OEE Overview Dashboard", 
+            "Modbus TCP Robot Connection", 
+            "FANUC Work Cell Dashboard"
+        ];
+        showSlides3(slideIndex3);
+
+        function plusSlides3(n) {
+          showSlides3(slideIndex3 += n);
+        }
+
+        function showSlides3(n) {
+          let i;
+          let slides = document.getElementsByClassName("mySlides3");
+          let captionText = document.getElementById("caption3");
+          if (n > slides.length) {slideIndex3 = 1}
+          if (n < 1) {slideIndex3 = slides.length}
+          for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = "none";
+          }
+          if (slides.length > 0) {
+            slides[slideIndex3 - 1].style.display = "block";
+            captionText.innerHTML = captions3[slideIndex3 - 1];
           }
         }
     </script>
