@@ -8,11 +8,11 @@
     <style>
         /* --- DARK MODE & SPACE THEME --- */
         :root {
-            --bg-primary: #00000a; /* Deep space blue/black */
-            --bg-secondary: #1a1a2e; /* Darker card background */
+            --bg-primary: #00000a;
+            --bg-secondary: #1a1a2e;
             --text-primary: #e0e0e0;
             --text-secondary: #b0b0b0;
-            --accent: #3a7bd5; /* Brighter blue accent */
+            --accent: #3a7bd5;
             --accent-hover: #00a8e8;
             --shadow: rgba(0, 168, 232, 0.1);
             --border: #333;
@@ -28,21 +28,20 @@
             overflow-x: hidden;
         }
         
-        /* --- NEW PARALLAX STARFIELD BACKGROUND --- */
+        /* --- PARALLAX STARFIELD BACKGROUND --- */
         @keyframes move-stars-bg {
             from { transform: translateY(0); }
             to { transform: translateY(-2000px); }
         }
-
         .stars {
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             z-index: -2;
+            pointer-events: none;
         }
-
         .stars-layer {
             position: absolute;
             left: 50%;
@@ -52,71 +51,20 @@
             background: transparent;
             animation: move-stars-bg linear infinite;
         }
-
-        #stars1 {
-            box-shadow: -130px -311px #FFF, -45px -237px #FFF, 122px 147px #FFF, 243px -383px #FFF, -13px -381px #FFF, -323px 21px #FFF, 38px 235px #FFF, 345px 127px #FFF, -370px 101px #FFF, -22px 355px #FFF, -28px -303px #FFF, -200px -15px #FFF, -212px -37px #FFF, 49px 23px #FFF, 15px -171px #FFF, -24px -185px #FFF, -358px -21px #FFF, 10px 175px #FFF, 28px -355px #FFF, 281px 113px #FFF, -325px -387px #FFF, -34px 219px #FFF, -387px -385px #FFF, 106px -179px #FFF, -297px 209px #FFF, 255px -243px #FFF, 287px 299px #FFF, 219px 251px #FFF, -172px -197px #FFF, -125px 233px #FFF;
-            animation-duration: 150s;
-        }
-
-        #stars2 {
-            box-shadow: -15px 170px #FFF, 225px 108px #FFF, -127px 10px #FFF, -382px -289px #FFF, -199px 255px #FFF, -366px 207px #FFF, 13px -26px #FFF, 142px 348px #FFF, -203px 311px #FFF, 213px 253px #FFF, 215px 135px #FFF, -130px -285px #FFF, -277px 279px #FFF, -181px 197px #FFF, -137px 119px #FFF, 253px -373px #FFF, 215px 335px #FFF, -308px 37px #FFF, -112px 11px #FFF, -259px -319px #FFF, 198px -100px #FFF, 158px 15px #FFF, -354px -146px #FFF, -310px -388px #FFF, -242px 251px #FFF, 110px 15px #FFF, 269px -117px #FFF, -332px 321px #FFF, -314px -344px #FFF, -352px -308px #FFF;
-            animation-duration: 100s;
-        }
-
-        #stars3 {
-            box-shadow: 20px -386px #FFF, -192px 36px #FFF, -119px -313px #FFF, -231px -135px #FFF, -345px -325px #FFF, 275px -211px #FFF, 185px -193px #FFF, 15px 21px #FFF, -381px 307px #FFF, -11px -259px #FFF, -225px 21px #FFF, 25px -331px #FFF, -171px 255px #FFF, 191px -329px #FFF, -159px -259px #FFF, -117px -19px #FFF, 271px -175px #FFF, -315px -171px #FFF, -15px -31px #FFF, 151px 11px #FFF;
-            animation-duration: 50s;
-        }
-
+        #stars1 { box-shadow: -130px -311px #FFF, -45px -237px #FFF, 122px 147px #FFF, 243px -383px #FFF, -13px -381px #FFF, -323px 21px #FFF, 38px 235px #FFF, 345px 127px #FFF, -370px 101px #FFF, -22px 355px #FFF, -28px -303px #FFF, -200px -15px #FFF, -212px -37px #FFF, 49px 23px #FFF, 15px -171px #FFF, -24px -185px #FFF, -358px -21px #FFF, 10px 175px #FFF, 28px -355px #FFF, 281px 113px #FFF, -325px -387px #FFF, -34px 219px #FFF, -387px -385px #FFF, 106px -179px #FFF, -297px 209px #FFF, 255px -243px #FFF, 287px 299px #FFF, 219px 251px #FFF, -172px -197px #FFF, -125px 233px #FFF; animation-duration: 150s; }
+        #stars2 { box-shadow: -15px 170px #FFF, 225px 108px #FFF, -127px 10px #FFF, -382px -289px #FFF, -199px 255px #FFF, -366px 207px #FFF, 13px -26px #FFF, 142px 348px #FFF, -203px 311px #FFF, 213px 253px #FFF, 215px 135px #FFF, -130px -285px #FFF, -277px 279px #FFF, -181px 197px #FFF, -137px 119px #FFF, 253px -373px #FFF, 215px 335px #FFF, -308px 37px #FFF, -112px 11px #FFF, -259px -319px #FFF, 198px -100px #FFF, 158px 15px #FFF, -354px -146px #FFF, -310px -388px #FFF, -242px 251px #FFF, 110px 15px #FFF, 269px -117px #FFF, -332px 321px #FFF, -314px -344px #FFF, -352px -308px #FFF; animation-duration: 100s; }
+        #stars3 { box-shadow: 20px -386px #FFF, -192px 36px #FFF, -119px -313px #FFF, -231px -135px #FFF, -345px -325px #FFF, 275px -211px #FFF, 185px -193px #FFF, 15px 21px #FFF, -381px 307px #FFF, -11px -259px #FFF, -225px 21px #FFF, 25px -331px #FFF, -171px 255px #FFF, 191px -329px #FFF, -159px -259px #FFF, -117px -19px #FFF, 271px -175px #FFF, -315px -171px #FFF, -15px -31px #FFF, 151px 11px #FFF; animation-duration: 50s; }
 
         /* --- STAR TREK BACKGROUND ANIMATIONS --- */
-        .background-animations {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100vh;
-            z-index: -1;
-            pointer-events: none;
-            overflow: hidden;
-        }
-        .ship {
-            position: absolute;
-            opacity: 0.6; /* Increased opacity */
-            will-change: transform;
-        }
-        .enterprise {
-            width: 250px;
-            height: auto;
-            top: 20vh;
-            animation: fly-by 90s linear infinite;
-            animation-delay: -10s;
-        }
-        .ds9 {
-            width: 180px;
-            height: auto;
-            top: 10vh;
-            right: 5vw;
-            animation: slow-rotation 150s linear infinite;
-        }
-        @keyframes fly-by {
-            0% { transform: translateX(-300px) rotate(-10deg); }
-            100% { transform: translateX(100vw) rotate(10deg); }
-        }
-        @keyframes slow-rotation {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
+        .background-animations { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; z-index: -1; pointer-events: none; overflow: hidden; }
+        .ship { position: absolute; opacity: 0.6; will-change: transform; }
+        .enterprise { width: 250px; height: auto; top: 20vh; animation: fly-by 90s linear infinite; animation-delay: -10s; }
+        .ds9 { width: 180px; height: auto; top: 10vh; right: 5vw; animation: slow-rotation 150s linear infinite; }
+        @keyframes fly-by { 0% { transform: translateX(-300px) rotate(-10deg); } 100% { transform: translateX(100vw) rotate(10deg); } }
+        @keyframes slow-rotation { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
         /* General layout and component styles */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
-            display: flex;
-            gap: 2rem;
-            align-items: flex-start;
-        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; display: flex; gap: 2rem; align-items: flex-start; }
         .photo { flex: 0 0 250px; }
         .photo img { width: 100%; height: auto; border-radius: 12px; box-shadow: 0 4px 12px var(--shadow); }
         .content { flex: 1; }
@@ -146,20 +94,53 @@
         .project h3 { margin: 0 0 1rem 0; }
         .section a { color: var(--accent); text-decoration: none; }
         .section a:hover { text-decoration: underline; }
+        
+        /* ARTICLE LIST STYLING */
         .articles-list { list-style: none; padding: 0; }
         .articles-list li { margin-bottom: 1rem; padding: 1rem; background: var(--bg-primary); border-radius: 8px; border-left: 4px solid var(--accent); }
-        .articles-list h3 { margin: 0 0 0.5rem 0; color: var(--text-primary); font-size: 1.1rem; }
+        .article-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+        .article-header h3 { margin: 0; flex-grow: 1; color: var(--text-primary); font-size: 1.1rem; }
+        .articles-list .article-logo { width: 80px; height: auto; margin-left: 1rem; opacity: 0.8; filter: grayscale(100%) brightness(1.5); transition: opacity 0.3s ease, filter 0.3s ease; }
+        .articles-list li:hover .article-logo { opacity: 1; filter: grayscale(0%) brightness(1); }
         .articles-list p { margin: 0; color: var(--text-secondary); font-size: 0.9rem; }
+        
         .portfolio-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; }
-        .portfolio-item, .hobby-item { background: var(--bg-primary); border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px var(--shadow); transition: transform 0.2s; }
-        .portfolio-item:hover, .hobby-item:hover { transform: translateY(-2px); }
-        .portfolio-item img, .hobby-item img, .hobby-item video { width: 100%; height: 200px; object-fit: cover; }
-        .portfolio-item h3, .hobby-item h3 { margin: 0.5rem; color: var(--text-primary); font-size: 1rem; }
-        .portfolio-item p, .hobby-item p { margin: 0 0.5rem 1rem; color: var(--text-secondary); font-size: 0.9rem; }
-        .contact-buttons { display: flex; gap: 1rem; margin-top: 1rem; justify-content: center; }
-        .contact-buttons a { display: inline-flex; align-items: center; justify-content: center; width: 50px; height: 50px; background: var(--accent); color: white; text-decoration: none; border-radius: 8px; transition: background 0.2s; flex-shrink: 0; }
-        .contact-buttons a:hover { background: var(--accent-hover); }
-        .icon-svg { width: 24px; height: 24px; fill: currentColor; }
+        .hobby-item { background: var(--bg-primary); border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px var(--shadow); transition: transform 0.2s; }
+        .hobby-item:hover { transform: translateY(-2px); }
+        .hobby-item img, .hobby-item video { width: 100%; height: 200px; object-fit: cover; }
+        .hobby-item h3 { margin: 0.5rem; color: var(--text-primary); font-size: 1rem; }
+        .hobby-item p { margin: 0 0.5rem 1rem; color: var(--text-secondary); font-size: 0.9rem; }
+        
+        /* --- NEW CONTACT BUTTON STYLES --- */
+        .contact-buttons { display: flex; gap: 1rem; margin-top: 1rem; justify-content: center; flex-wrap: wrap; }
+        .contact-buttons a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.5rem;
+            background: var(--accent);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px; /* Pill shape */
+            transition: background 0.2s, transform 0.2s;
+            gap: 0.75rem; /* Space between icon and text */
+        }
+        .contact-buttons a:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+        }
+        .contact-buttons a:first-child {
+             background: var(--accent-hover); /* Highlight first button */
+        }
+        .contact-buttons a:first-child:hover {
+             background: var(--accent);
+        }
+        .contact-buttons a span {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        .icon-svg { width: 24px; height: 24px; fill: currentColor; flex-shrink: 0; }
+        
         .game-container { display: flex; flex-direction: column; align-items: center; margin-top: 1rem; }
         #gameCanvas { border: 2px solid var(--border); border-radius: 8px; background-color: var(--bg-secondary); max-width: 100%; height: auto; touch-action: none; }
         .game-info { display: flex; justify-content: space-between; width: 100%; max-width: 800px; margin-bottom: 0.5rem; font-weight: bold; }
@@ -206,18 +187,45 @@
                     <h2>Published Articles</h2>
                     <p>Check out some of my contributions to the Glassdome Sustainable Manufacturing Blog. These articles dive into practical tips for OT networks, continuous improvement, and more.</p>
                     <ul class="articles-list">
-                        <li><h3><a href="https://glassdome.com/technical-guide-how-to-configure-mtconnect-on-a-haas-ngc-controller/" target="_blank">Technical Guide: How to Configure MTConnect on a Haas NGC Controller</a></h3><p>A step-by-step guide to integrating MTConnect for real-time data on Haas CNC machines.</p></li>
-                        <li><h3><a href="https://glassdome.com/why-you-need-a-nat-device-for-your-ot-network/" target="_blank">Why You Need a NAT Device for Your OT Network</a></h3><p>Explore the role of NAT in securing and optimizing operational technology networks.</p></li>
-                        <li><h3><a href="https://glassdome.com/what-is-kaizen-unlocking-continuous-improvement-on-the-shop-floor/" target="_blank">What is Kaizen? Unlocking Continuous Improvement on the Shop Floor</a></h3><p>An introduction to Kaizen principles and how they drive efficiency in manufacturing.</p></li>
+                        <li>
+                            <div class="article-header">
+                                <h3><a href="https://glassdome.com/technical-guide-how-to-configure-mtconnect-on-a-haas-ngc-controller/" target="_blank">Technical Guide: How to Configure MTConnect on a Haas NGC Controller</a></h3>
+                                <img src="glassdome_us_logo.jpg" alt="Glassdome Logo" class="article-logo">
+                            </div>
+                            <p>A step-by-step guide to integrating MTConnect for real-time data on Haas CNC machines.</p>
+                        </li>
+                        <li>
+                            <div class="article-header">
+                                <h3><a href="https://glassdome.com/why-you-need-a-nat-device-for-your-ot-network/" target="_blank">Why You Need a NAT Device for Your OT Network</a></h3>
+                                <img src="glassdome_us_logo.jpg" alt="Glassdome Logo" class="article-logo">
+                            </div>
+                            <p>Explore the role of NAT in securing and optimizing operational technology networks.</p>
+                        </li>
+                        <li>
+                            <div class="article-header">
+                                <h3><a href="https://glassdome.com/what-is-kaizen-unlocking-continuous-improvement-on-the-shop-floor/" target="_blank">What is Kaizen? Unlocking Continuous Improvement on the Shop Floor</a></h3>
+                                <img src="glassdome_us_logo.jpg" alt="Glassdome Logo" class="article-logo">
+                            </div>
+                            <p>An introduction to Kaizen principles and how they drive efficiency in manufacturing.</p>
+                        </li>
                     </ul>
                 </div>
                 <div class="section">
                     <h2>Get in Touch</h2>
                     <p>I'm based in Atlanta, Georgia (I hate the traffic). Feel free to email me or connect on LinkedIn using the buttons below.</p>
                     <div class="contact-buttons">
-                        <a href="mailto:cotafam10@gmail.com" aria-label="Email Jordan" title="Send Email"><svg class="icon-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></a>
-                        <a href="https://linkedin.com/in/jordan-cota-19269117a" target="_blank" aria-label="Connect on LinkedIn" title="LinkedIn Profile"><svg class="icon-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
-                        <a href="https://glassdome.com" target="_blank" aria-label="Glassdome" title="Glassdome Website"><img src="glassdome_us_logo.jpg" alt="Glassdome" class="icon-svg"></a>
+                        <a href="mailto:cotafam10@gmail.com">
+                            <svg class="icon-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                            <span>Email</span>
+                        </a>
+                        <a href="https://linkedin.com/in/jordan-cota-19269117a" target="_blank">
+                            <svg class="icon-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                            <span>LinkedIn</span>
+                        </a>
+                        <a href="https://glassdome.com" target="_blank">
+                            <img src="glassdome_us_logo.jpg" alt="Glassdome" class="icon-svg">
+                            <span>Glassdome</span>
+                        </a>
                     </div>
                 </div>
                 <div class="section">
