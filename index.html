@@ -30,10 +30,22 @@
             margin: 0;
             padding: 0;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: var(--bg-primary);
+            /* background-color is now handled by the ::before pseudo-element to allow z-indexing */
             color: var(--text-primary);
             line-height: 1.6;
             transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        /* New pseudo-element to hold the background color, allowing ships to fly between it and the content */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-primary);
+            z-index: -2;
+            transition: background-color 0.3s ease;
         }
         .container {
             max-width: 1200px;
@@ -90,6 +102,60 @@
             border-color: rgba(255,255,255,0.6);
         }
        
+        /* --- STAR TREK BACKGROUND ANIMATIONS --- */
+        .background-animations {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: -1; /* Sits on top of the background color but behind the main content */
+            pointer-events: none; /* Allows mouse clicks to pass through */
+            overflow: hidden;
+        }
+        .ship {
+            position: absolute;
+            opacity: 0.1;
+            will-change: transform; /* Performance optimization hint for the browser */
+        }
+        [data-theme="dark"] .ship {
+             opacity: 0.15; /* Slightly more visible on dark theme */
+        }
+        .enterprise {
+            width: 250px;
+            height: auto;
+            top: 20vh; /* Starts 20% down from the top */
+            animation: fly-by 90s linear infinite; /* 90-second animation loop */
+            animation-delay: -10s; /* Starts 10 seconds into the animation to stagger it */
+        }
+        .ds9 {
+            width: 180px;
+            height: auto;
+            top: 10vh;
+            right: 5vw; /* Stays on the right side of the screen */
+            animation: slow-drift 150s ease-in-out infinite; /* 150-second gentle drift */
+        }
+        @keyframes fly-by {
+            0% {
+                transform: translateX(-300px) rotate(-10deg);
+            }
+            100% {
+                transform: translateX(100vw) rotate(10deg);
+            }
+        }
+        @keyframes slow-drift {
+            0% {
+                transform: translateY(0) rotate(-4deg);
+            }
+            50% {
+                transform: translateY(30px) rotate(4deg);
+            }
+            100% {
+                transform: translateY(0) rotate(-4deg);
+            }
+        }
+        /* --- END OF BACKGROUND ANIMATIONS --- */
+
         /* --- MODIFIED SLIDESHOW STYLES --- */
         .slideshow-container {
             max-width: 100%;
@@ -98,14 +164,11 @@
             border-radius: 8px;
             overflow: hidden;
             box-shadow: 0 4px 12px var(--shadow);
-            
-            /* These new properties create a consistent frame */
             aspect-ratio: 16 / 9;
-            background-color: var(--bg-primary);
+            background-color: rgba(0,0,0,0.1); /* Give a slight background for letterboxing */
         }
         .mySlides, .mySlides2, .mySlides3 {
             display: none;
-            /* New properties to position the slide within the container */
             position: absolute;
             top: 0;
             left: 0;
@@ -119,10 +182,9 @@
           to {opacity: 1}
         }
         .mySlides img, .mySlides2 img, .mySlides3 img {
-            /* These new properties make the image fit inside the slide */
             width: 100%;
             height: 100%;
-            object-fit: contain; /* This is the key property! It fits the image without stretching or cropping */
+            object-fit: contain;
         }
         .prev, .next {
             cursor: pointer;
@@ -155,7 +217,7 @@
             right: 0;
             background-color: rgba(0,0,0,0.6);
             padding: 8px;
-            z-index: 5; /* Ensure caption is on top */
+            z-index: 5;
         }
         #caption, #caption2, #caption3 {
             margin: 0;
@@ -163,235 +225,52 @@
             color: white;
         }
 
-        .tabs {
-            display: flex;
-            background: var(--bg-secondary);
-            border-radius: 8px 8px 0 0;
-            margin-bottom: -1px;
-            overflow: hidden;
-            border: 1px solid var(--border);
-            border-bottom: none;
-        }
-        .tabs button {
-            flex: 1;
-            padding: 1rem;
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            cursor: pointer;
-            font-size: 1rem;
-            transition: all 0.2s;
-            border-bottom: 3px solid transparent;
-        }
-        .tabs button.active {
-            color: var(--accent);
-            border-bottom-color: var(--accent);
-            background: var(--bg-primary);
-        }
-        .tabs button:hover {
-            background: var(--bg-primary);
-            color: var(--accent);
-        }
-        .tab-content {
-            display: none;
-            background: var(--bg-secondary);
-            border-radius: 0 0 12px 12px;
-            box-shadow: 0 4px 12px var(--shadow);
-            border: 1px solid var(--border);
-            padding: 1.5rem;
-            margin-bottom: 1rem;
-        }
-        .tab-content.active {
-            display: block;
-        }
-        .section {
-            margin-bottom: 1rem;
-        }
-        .section h2 {
-            margin: 0 0 1rem 0;
-            color: var(--accent);
-            font-size: 1.5rem;
-            border-bottom: 2px solid var(--border);
-            padding-bottom: 0.5rem;
-        }
-        .section p, .project p {
-            margin: 0 0 1rem 0;
-            text-align: justify;
-            color: var(--text-primary);
-        }
-        .project h3 {
-             margin: 0 0 1rem 0;
-        }
-        .section a {
-            color: var(--accent);
-            text-decoration: none;
-        }
-        .section a:hover {
-            text-decoration: underline;
-        }
-        .articles-list {
-            list-style: none;
-            padding: 0;
-        }
-        .articles-list li {
-            margin-bottom: 1rem;
-            padding: 1rem;
-            background: var(--bg-primary);
-            border-radius: 8px;
-            border-left: 4px solid var(--accent);
-        }
-        .articles-list h3 {
-            margin: 0 0 0.5rem 0;
-            color: var(--text-primary);
-            font-size: 1.1rem;
-        }
-        .articles-list p {
-            margin: 0;
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-        }
-        .portfolio-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1rem;
-        }
-        .portfolio-item, .hobby-item {
-            background: var(--bg-primary);
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px var(--shadow);
-            transition: transform 0.2s;
-        }
-        .portfolio-item:hover, .hobby-item:hover {
-            transform: translateY(-2px);
-        }
-        .portfolio-item img, .hobby-item img, .hobby-item video {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
-        .portfolio-item h3, .hobby-item h3 {
-            margin: 0.5rem;
-            color: var(--text-primary);
-            font-size: 1rem;
-        }
-        .portfolio-item p, .hobby-item p {
-            margin: 0 0.5rem 1rem;
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-        }
-        .contact-buttons {
-            display: flex;
-            gap: 1rem;
-            margin-top: 1rem;
-            justify-content: center;
-        }
-        .contact-buttons a {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 50px;
-            height: 50px;
-            background: var(--accent);
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
-            transition: background 0.2s;
-            flex-shrink: 0;
-        }
-        .contact-buttons a:hover {
-            background: var(--accent-hover);
-        }
-        .icon-svg {
-            width: 24px;
-            height: 24px;
-            fill: currentColor;
-        }
-        .game-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 1rem;
-        }
-        #gameCanvas {
-            border: 2px solid var(--border);
-            border-radius: 8px;
-            background-color: var(--bg-primary);
-            max-width: 100%;
-            height: auto;
-            touch-action: none;
-        }
-        .game-info {
-            display: flex;
-            justify-content: space-between;
-            width: 100%;
-            max-width: 800px;
-            margin-bottom: 0.5rem;
-            font-weight: bold;
-        }
-        .restart-btn {
-            background: var(--accent);
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1rem;
-            margin-top: 0.5rem;
-            transition: background 0.2s;
-        }
-        .restart-btn:hover {
-            background: var(--accent-hover);
-        }
-        .restart-btn:disabled {
-            background: var(--text-secondary);
-            cursor: not-allowed;
-        }
-        .game-controls {
-            text-align: center;
-            margin-top: 0.5rem;
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-        }
-        @media (max-width: 768px) {
-            .container {
-                flex-direction: column;
-                padding: 1rem;
-            }
-            .photo {
-                flex: none;
-                text-align: center;
-            }
-            .theme-toggle {
-                top: 0.5rem;
-                right: 0.5rem;
-            }
-            .contact-buttons {
-                justify-content: center;
-            }
-            .tabs {
-                flex-direction: column;
-            }
-            .tabs button {
-                border-bottom: 1px solid var(--border);
-            }
-            .game-controls p::before {
-                content: "Tilt to move (auto-fire) | ";
-            }
-        }
-        @media (prefers-color-scheme: dark) {
-            body:not([data-theme="light"]) {
-                --bg-primary: #121212;
-                --bg-secondary: #1e1e1e;
-                --text-primary: #e0e0e0;
-                --text-secondary: #b0b0b0;
-                --shadow: rgba(0,0,0,0.3);
-                --border: #333;
-            }
-        }
+        /* Remainder of CSS is unchanged... */
+        .tabs { display: flex; background: var(--bg-secondary); border-radius: 8px 8px 0 0; margin-bottom: -1px; overflow: hidden; border: 1px solid var(--border); border-bottom: none; }
+        .tabs button { flex: 1; padding: 1rem; background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 1rem; transition: all 0.2s; border-bottom: 3px solid transparent; }
+        .tabs button.active { color: var(--accent); border-bottom-color: var(--accent); background: var(--bg-primary); }
+        .tabs button:hover { background: var(--bg-primary); color: var(--accent); }
+        .tab-content { display: none; background: var(--bg-secondary); border-radius: 0 0 12px 12px; box-shadow: 0 4px 12px var(--shadow); border: 1px solid var(--border); padding: 1.5rem; margin-bottom: 1rem; }
+        .tab-content.active { display: block; }
+        .section { margin-bottom: 1rem; }
+        .section h2 { margin: 0 0 1rem 0; color: var(--accent); font-size: 1.5rem; border-bottom: 2px solid var(--border); padding-bottom: 0.5rem; }
+        .section p, .project p { margin: 0 0 1rem 0; text-align: justify; color: var(--text-primary); }
+        .project h3 { margin: 0 0 1rem 0; }
+        .section a { color: var(--accent); text-decoration: none; }
+        .section a:hover { text-decoration: underline; }
+        .articles-list { list-style: none; padding: 0; }
+        .articles-list li { margin-bottom: 1rem; padding: 1rem; background: var(--bg-primary); border-radius: 8px; border-left: 4px solid var(--accent); }
+        .articles-list h3 { margin: 0 0 0.5rem 0; color: var(--text-primary); font-size: 1.1rem; }
+        .articles-list p { margin: 0; color: var(--text-secondary); font-size: 0.9rem; }
+        .portfolio-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; }
+        .portfolio-item, .hobby-item { background: var(--bg-primary); border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px var(--shadow); transition: transform 0.2s; }
+        .portfolio-item:hover, .hobby-item:hover { transform: translateY(-2px); }
+        .portfolio-item img, .hobby-item img, .hobby-item video { width: 100%; height: 200px; object-fit: cover; }
+        .portfolio-item h3, .hobby-item h3 { margin: 0.5rem; color: var(--text-primary); font-size: 1rem; }
+        .portfolio-item p, .hobby-item p { margin: 0 0.5rem 1rem; color: var(--text-secondary); font-size: 0.9rem; }
+        .contact-buttons { display: flex; gap: 1rem; margin-top: 1rem; justify-content: center; }
+        .contact-buttons a { display: inline-flex; align-items: center; justify-content: center; width: 50px; height: 50px; background: var(--accent); color: white; text-decoration: none; border-radius: 8px; transition: background 0.2s; flex-shrink: 0; }
+        .contact-buttons a:hover { background: var(--accent-hover); }
+        .icon-svg { width: 24px; height: 24px; fill: currentColor; }
+        .game-container { display: flex; flex-direction: column; align-items: center; margin-top: 1rem; }
+        #gameCanvas { border: 2px solid var(--border); border-radius: 8px; background-color: var(--bg-primary); max-width: 100%; height: auto; touch-action: none; }
+        .game-info { display: flex; justify-content: space-between; width: 100%; max-width: 800px; margin-bottom: 0.5rem; font-weight: bold; }
+        .restart-btn { background: var(--accent); color: white; border: none; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; font-size: 1rem; margin-top: 0.5rem; transition: background 0.2s; }
+        .restart-btn:hover { background: var(--accent-hover); }
+        .restart-btn:disabled { background: var(--text-secondary); cursor: not-allowed; }
+        .game-controls { text-align: center; margin-top: 0.5rem; font-size: 0.9rem; color: var(--text-secondary); }
+        .pi-section { margin-top: 2rem; }
+        .pi-section pre { background-color: var(--bg-primary); padding: 1rem; border-radius: 8px; white-space: pre-wrap; word-wrap: break-word; text-align: center; color: var(--accent); font-family: 'Courier New', Courier, monospace; line-height: 1.2; box-shadow: inset 0 0 10px var(--shadow); }
+        @media (max-width: 768px) { .container { flex-direction: column; padding: 1rem; } .photo { flex: none; text-align: center; } .theme-toggle { top: 0.5rem; right: 0.5rem; } .contact-buttons { justify-content: center; } .tabs { flex-direction: column; } .tabs button { border-bottom: 1px solid var(--border); } .game-controls p::before { content: "Tilt to move (auto-fire) | "; } }
+        @media (prefers-color-scheme: dark) { body:not([data-theme="light"]) { --bg-primary: #121212; --bg-secondary: #1e1e1e; --text-primary: #e0e0e0; --text-secondary: #b0b0b0; --shadow: rgba(0,0,0,0.3); --border: #333; } }
     </style>
 </head>
 <body>
+    <div class="background-animations">
+        <img src="enterprise-d.png" alt="" class="ship enterprise">
+        <img src="deep-space-nine.png" alt="" class="ship ds9">
+    </div>
+
     <div class="container">
        <div class="photo">
         <img src="Screenshot 2025-10-03 124247.png" alt="Jordan Cota">
@@ -478,28 +357,13 @@
                         <p>This was a project that involved a forklift conveyor system. The customer wanted to see full OEE metrics on this conveyor system, such as part count, downtime, etc. Luckily, there was an Allen-Bradley PLC available. I pulled the PLC code, built a tag list, and connected with the PLC using the EIP protocol. I built the dashboard and OEE reporting for visualization for the customer. I also built displays for downtime code entries and utilize iPads along the conveyance system for operators.</p>
                        
                         <div class="slideshow-container">
-                            <div class="mySlides">
-                                <img src="ML1 Dash.png" alt="ML1 Dashboard">
-                            </div>
-                            <div class="mySlides">
-                                <img src="Main Line Dash.png" alt="Main Line Dashboard">
-                            </div>
-                            <div class="mySlides">
-                                <img src="PLC Code.png" alt="PLC Code">
-                            </div>
-                            <div class="mySlides">
-                                <img src="Downtime Entry ML1.png" alt="Downtime Entry ML1">
-                            </div>
-                            <div class="mySlides">
-                                <img src="ipad ML1.png" alt="iPad ML1 Interface">
-                            </div>
-                           
-                            <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
-                            <a class="next" onclick="plusSlides(1)">&#10095;</a>
-
-                            <div class="caption-container">
-                                <p id="caption"></p>
-                            </div>
+                            <div class="mySlides"> <img src="ML1 Dash.png" alt="ML1 Dashboard"> </div>
+                            <div class="mySlides"> <img src="Main Line Dash.png" alt="Main Line Dashboard"> </div>
+                            <div class="mySlides"> <img src="PLC Code.png" alt="PLC Code"> </div>
+                            <div class="mySlides"> <img src="Downtime Entry ML1.png" alt="Downtime Entry ML1"> </div>
+                            <div class="mySlides"> <img src="ipad ML1.png" alt="iPad ML1 Interface"> </div>
+                            <a class="prev" onclick="plusSlides(-1)">&#10094;</a> <a class="next" onclick="plusSlides(1)">&#10095;</a>
+                            <div class="caption-container"> <p id="caption"></p> </div>
                         </div>
                     </div>
 
@@ -510,22 +374,11 @@
                         <p>For this project, I spearheaded the conversion of a legacy Arduino-based monitoring system to a modern, robust Modbus TCP application. This upgrade enabled real-time, reliable data acquisition for critical water quality parameters. The final installation included a clean, intuitive dashboard for at-a-glance monitoring and analysis.</p>
                         
                         <div class="slideshow-container">
-                            <div class="mySlides2">
-                                <img src="Final DWSD.png" alt="Water Quality System Overview">
-                            </div>
-                            <div class="mySlides2">
-                                <img src="DWSD Before (1).png" alt="System Before Installation">
-                            </div>
-                            <div class="mySlides2">
-                                <img src="Dash DWSD.png" alt="Final Dashboard">
-                            </div>
-                            
-                            <a class="prev" onclick="plusSlides2(-1)">&#10094;</a>
-                            <a class="next" onclick="plusSlides2(1)">&#10095;</a>
-
-                            <div class="caption-container">
-                                <p id="caption2"></p>
-                            </div>
+                            <div class="mySlides2"> <img src="Final DWSD.png" alt="Water Quality System Overview"> </div>
+                            <div class="mySlides2"> <img src="DWSD Before (1).png" alt="System Before Installation"> </div>
+                            <div class="mySlides2"> <img src="Dash DWSD.png" alt="Final Dashboard"> </div>
+                            <a class="prev" onclick="plusSlides2(-1)">&#10094;</a> <a class="next" onclick="plusSlides2(1)">&#10095;</a>
+                            <div class="caption-container"> <p id="caption2"></p> </div>
                         </div>
                     </div>
 
@@ -536,31 +389,15 @@
                         <p>Here are a few more examples of dashboards I've built. These visualizations pull data from various sources, including custom tag lists I developed for the FANUC FOCAS protocol, as well as Allen-Bradley EtherNet/IP and Modbus TCP connections.</p>
                         
                         <div class="slideshow-container">
-                            <div class="mySlides3">
-                                <img src="Assy Line 1 .png" alt="Assembly Line 1 Dashboard">
-                            </div>
-                            <div class="mySlides3">
-                                <img src="OEE Overview.png" alt="OEE Overview Dashboard">
-                            </div>
-                            <div class="mySlides3">
-                                <img src="Modbus TCP Connection for Robots.png" alt="Modbus TCP Robot Connection">
-                            </div>
-                            <div class="mySlides3">
-                                <img src="Fanuc Work Cell.png" alt="Fanuc Work Cell Dashboard">
-                            </div>
-                             <div class="mySlides3">
-                                <img src="paint room.png" alt="Paint Room Dashboard">
-                            </div>
-                            
-                            <a class="prev" onclick="plusSlides3(-1)">&#10094;</a>
-                            <a class="next" onclick="plusSlides3(1)">&#10095;</a>
-
-                            <div class="caption-container">
-                                <p id="caption3"></p>
-                            </div>
+                            <div class="mySlides3"> <img src="Assy Line 1 .png" alt="Assembly Line 1 Dashboard"> </div>
+                            <div class="mySlides3"> <img src="OEE Overview.png" alt="OEE Overview Dashboard"> </div>
+                            <div class="mySlides3"> <img src="Modbus TCP Connection for Robots.png" alt="Modbus TCP Robot Connection"> </div>
+                            <div class="mySlides3"> <img src="Fanuc Work Cell.png" alt="Fanuc Work Cell Dashboard"> </div>
+                            <div class="mySlides3"> <img src="Paint Room.png" alt="Paint Room Dashboard"> </div>
+                            <a class="prev" onclick="plusSlides3(-1)">&#10094;</a> <a class="next" onclick="plusSlides3(1)">&#10095;</a>
+                            <div class="caption-container"> <p id="caption3"></p> </div>
                         </div>
                     </div>
-
                 </div>
             </div>
            
@@ -569,35 +406,40 @@
                     <h2>Hobby Photos</h2>
                     <p>Snapshots from my downtime adventures—motorcycles, vintage audio, kombucha brews, and more!</p>
                     <div class="portfolio-grid">
+                        <div class="hobby-item"> <img src="Nighthawk by the lake.jpg" alt="Honda Nighthawk Motorcycle"> <h3>1991 Honda Nighthawk</h3> <p>Taking my classic 1991 Honda Nighthawk 750 for a ride by the lake.</p> </div>
+                        <div class="hobby-item"> <img src="Technics Radio.JPG" alt="Technics Radio"> <h3>Vintage Audio</h3> <p>Restoring and listening to old radios like this STA-78 Technics receiver.</p> </div>
+                        <div class="hobby-item"> <img src="Kombucha Jars.JPG" alt="Kombucha Jars"> <h3>Kombucha Brewing</h3> <p>My latest batch of home-brewed kombucha getting its flavor infusion.</p> </div>
+                        <div class="hobby-item"> <video src="Komcha bubbles.MOV" autoplay loop muted playsinline alt="Kombucha Bubbles"></video> <h3>Second Fermentation</h3> <p>The magic of carbonation happening during the second fermentation.</p> </div>
+                        <div class="hobby-item"> <img src="https://via.placeholder.com/250x200?text=Pickleball+Game" alt="Pickleball"> <h3>Pickleball Match</h3> <p>Intense rally on the court—nothing beats a good game with friends.</p> </div>
+                        <div class="hobby-item"> <img src="https://via.placeholder.com/250x200?text=Hiking+Trail" alt="Hiking"> <h3>Trail Hike</h3> <p>Sunset views from the Appalachian foothills—recharge mode activated.</p> </div>
+                    </div>
+                </div>
+
+                <div class="section pi-section">
+                    <h2>Raspberry Pi Projects</h2>
+                     <pre>
+   .~~.   .~~.
+  '. \ ' ' / .'
+   .~ .~~~..~.
+  : .~.'~'.~. :
+ ~ (   ) (   ) ~
+( : '~'.~.'~' : )
+ ~ .~ (   ) ~. ~
+  (  : '~' :  )
+   '~ .~~~. ~'
+       '~'
+                    </pre>
+                    <p>I also enjoy tinkering with Raspberry Pi single-board computers. I've used them for various home projects, from creating a 'Magic Mirror' that displays useful information to setting up a network-wide ad-blocker using Pi-hole. They're incredibly versatile little devices for learning about Linux, networking, and electronics.</p>
+                    <div class="portfolio-grid">
                         <div class="hobby-item">
-                            <img src="Nighthawk by the lake.jpg" alt="Honda Nighthawk Motorcycle">
-                            <h3>1991 Honda Nighthawk</h3>
-                            <p>Taking my classic 1991 Honda Nighthawk 750 for a ride by the lake.</p>
+                            <img src="magic mirror.png" alt="Magic Mirror Project">
+                            <h3>Magic Mirror</h3>
+                            <p>A custom smart mirror showing the time, date, weather, and daily commute info.</p>
                         </div>
                         <div class="hobby-item">
-                            <img src="Technics Radio.JPG" alt="Technics Radio">
-                            <h3>Vintage Audio</h3>
-                            <p>Restoring and listening to old radios like this STA-78 Technics receiver.</p>
-                        </div>
-                        <div class="hobby-item">
-                            <img src="Kombucha Jars.JPG" alt="Kombucha Jars">
-                            <h3>Kombucha Brewing</h3>
-                            <p>My latest batch of home-brewed kombucha getting its flavor infusion.</p>
-                        </div>
-                        <div class="hobby-item">
-                            <video src="Komcha bubbles.MOV" autoplay loop muted playsinline alt="Kombucha Bubbles"></video>
-                            <h3>Second Fermentation</h3>
-                            <p>The magic of carbonation happening during the second fermentation.</p>
-                        </div>
-                        <div class="hobby-item">
-                            <img src="https://via.placeholder.com/250x200?text=Pickleball+Game" alt="Pickleball">
-                            <h3>Pickleball Match</h3>
-                            <p>Intense rally on the court—nothing beats a good game with friends.</p>
-                        </div>
-                        <div class="hobby-item">
-                            <img src="https://via.placeholder.com/250x200?text=Hiking+Trail" alt="Hiking">
-                            <h3>Trail Hike</h3>
-                            <p>Sunset views from the Appalachian foothills—recharge mode activated.</p>
+                            <img src="Pi Hole.png" alt="Pi-hole Admin Interface">
+                            <h3>Network Ad-Blocker</h3>
+                            <p>Using Pi-hole to block ads on every device connected to my home network.</p>
                         </div>
                     </div>
                 </div>
@@ -607,295 +449,25 @@
 
     <script>
         // --- Theme and Tab Controls ---
-        const toggle = document.getElementById('themeToggle');
-        const body = document.body;
-        const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-        body.setAttribute('data-theme', savedTheme);
-        toggle.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
-        toggle.addEventListener('click', () => {
-            const current = body.getAttribute('data-theme');
-            const next = current === 'dark' ? 'light' : 'dark';
-            body.setAttribute('data-theme', next);
-            localStorage.setItem('theme', next);
-            toggle.textContent = next === 'dark' ? '☀️' : '🌙';
-        });
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-            if (!localStorage.getItem('theme')) {
-                body.setAttribute('data-theme', e.matches ? 'dark' : 'light');
-                toggle.textContent = e.matches ? '☀️' : '🌙';
-            }
-        });
-        const tabBtns = document.querySelectorAll('.tab-btn');
-        const tabContents = document.querySelectorAll('.tab-content');
-        tabBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                const tabId = btn.dataset.tab;
-                tabBtns.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                tabContents.forEach(content => content.classList.remove('active'));
-                document.getElementById(`${tabId}-tab`).classList.add('active');
-            });
-        });
+        const toggle = document.getElementById('themeToggle'); const body = document.body; const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'); body.setAttribute('data-theme', savedTheme); toggle.textContent = savedTheme === 'dark' ? '☀️' : '🌙'; toggle.addEventListener('click', () => { const current = body.getAttribute('data-theme'); const next = current === 'dark' ? 'light' : 'dark'; body.setAttribute('data-theme', next); localStorage.setItem('theme', next); toggle.textContent = next === 'dark' ? '☀️' : '🌙'; }); window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => { if (!localStorage.getItem('theme')) { body.setAttribute('data-theme', e.matches ? 'dark' : 'light'); toggle.textContent = e.matches ? '☀️' : '🌙'; } }); const tabBtns = document.querySelectorAll('.tab-btn'); const tabContents = document.querySelectorAll('.tab-content'); tabBtns.forEach(btn => { btn.addEventListener('click', () => { const tabId = btn.dataset.tab; tabBtns.forEach(b => b.classList.remove('active')); btn.classList.add('active'); tabContents.forEach(content => content.classList.remove('active')); document.getElementById(`${tabId}-tab`).classList.add('active'); }); });
     </script>
-   
     <script>
         // --- Slideshow Script for Project 1 ---
-        let slideIndex = 1;
-        const captions = ["ML1 Dashboard", "Main Line Dashboard", "PLC Code", "Downtime Entry ML1", "iPad ML1 Interface"];
-        showSlides(slideIndex);
-        function plusSlides(n) {
-          showSlides(slideIndex += n);
-        }
-        function showSlides(n) {
-          let i;
-          let slides = document.getElementsByClassName("mySlides");
-          let captionText = document.getElementById("caption");
-          if (n > slides.length) {slideIndex = 1}
-          if (n < 1) {slideIndex = slides.length}
-          for (i = 0; i < slides.length; i++) {
-            slides[i].style.display = "none";
-          }
-          if (slides.length > 0) {
-            slides[slideIndex - 1].style.display = "block";
-            captionText.innerHTML = captions[slideIndex - 1];
-          }
-        }
+        let slideIndex = 1; const captions = ["ML1 Dashboard", "Main Line Dashboard", "PLC Code", "Downtime Entry ML1", "iPad ML1 Interface"]; showSlides(slideIndex); function plusSlides(n) { showSlides(slideIndex += n); } function showSlides(n) { let i; let slides = document.getElementsByClassName("mySlides"); let captionText = document.getElementById("caption"); if (n > slides.length) {slideIndex = 1} if (n < 1) {slideIndex = slides.length} for (i = 0; i < slides.length; i++) { slides[i].style.display = "none"; } if (slides.length > 0) { slides[slideIndex - 1].style.display = "block"; captionText.innerHTML = captions[slideIndex - 1]; } }
     </script>
-
     <script>
         // --- Slideshow Script for Project 2 (Water Quality) ---
-        let slideIndex2 = 1;
-        const captions2 = ["Water Quality System Overview", "System Before Installation", "Final Dashboard"];
-        showSlides2(slideIndex2);
-        function plusSlides2(n) {
-          showSlides2(slideIndex2 += n);
-        }
-        function showSlides2(n) {
-          let i;
-          let slides = document.getElementsByClassName("mySlides2");
-          let captionText = document.getElementById("caption2");
-          if (n > slides.length) {slideIndex2 = 1}
-          if (n < 1) {slideIndex2 = slides.length}
-          for (i = 0; i < slides.length; i++) {
-            slides[i].style.display = "none";
-          }
-          if (slides.length > 0) {
-            slides[slideIndex2 - 1].style.display = "block";
-            captionText.innerHTML = captions2[slideIndex2 - 1];
-          }
-        }
+        let slideIndex2 = 1; const captions2 = ["Water Quality System Overview", "System Before Installation", "Final Dashboard"]; showSlides2(slideIndex2); function plusSlides2(n) { showSlides2(slideIndex2 += n); } function showSlides2(n) { let i; let slides = document.getElementsByClassName("mySlides2"); let captionText = document.getElementById("caption2"); if (n > slides.length) {slideIndex2 = 1} if (n < 1) {slideIndex2 = slides.length} for (i = 0; i < slides.length; i++) { slides[i].style.display = "none"; } if (slides.length > 0) { slides[slideIndex2 - 1].style.display = "block"; captionText.innerHTML = captions2[slideIndex2 - 1]; } }
     </script>
-
     <script>
         // --- Slideshow Script for Project 3 (General Dashboards) ---
-        let slideIndex3 = 1;
-        const captions3 = [
-            "Assembly Line 1 Dashboard", 
-            "OEE Overview Dashboard", 
-            "Modbus TCP Robot Connection", 
-            "FANUC Work Cell Dashboard",
-            "Paint Room Dashboard"
-        ];
-        showSlides3(slideIndex3);
-
-        function plusSlides3(n) {
-          showSlides3(slideIndex3 += n);
-        }
-
-        function showSlides3(n) {
-          let i;
-          let slides = document.getElementsByClassName("mySlides3");
-          let captionText = document.getElementById("caption3");
-          if (n > slides.length) {slideIndex3 = 1}
-          if (n < 1) {slideIndex3 = slides.length}
-          for (i = 0; i < slides.length; i++) {
-            slides[i].style.display = "none";
-          }
-          if (slides.length > 0) {
-            slides[slideIndex3 - 1].style.display = "block";
-            captionText.innerHTML = captions3[slideIndex3 - 1];
-          }
-        }
+        let slideIndex3 = 1; const captions3 = [ "Assembly Line 1 Dashboard", "OEE Overview Dashboard", "Modbus TCP Robot Connection", "FANUC Work Cell Dashboard", "Paint Room Dashboard" ]; showSlides3(slideIndex3); function plusSlides3(n) { showSlides3(slideIndex3 += n); } function showSlides3(n) { let i; let slides = document.getElementsByClassName("mySlides3"); let captionText = document.getElementById("caption3"); if (n > slides.length) {slideIndex3 = 1} if (n < 1) {slideIndex3 = slides.length} for (i = 0; i < slides.length; i++) { slides[i].style.display = "none"; } if (slides.length > 0) { slides[slideIndex3 - 1].style.display = "block"; captionText.innerHTML = captions3[slideIndex3 - 1]; } }
     </script>
-
     <script>
         // --- Space Invaders Game Script ---
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        const scoreElement = document.getElementById('score');
-        const levelElement = document.getElementById('level');
-        const livesElement = document.getElementById('lives');
-        const restartBtn = document.getElementById('restartBtn');
-        let score = 0;
-        let lives = 3;
-        let level = 1;
-        let gameRunning = false; // Set to false to wait for start
-        let lastShotTime = 0;
-        let tiltEnabled = false;
-        let mobileDetected = false;
-        let tiltSensitivity = 3;
-        let autoFireInterval = 300;
-        const player = { x: canvas.width/2-15, y: canvas.height-50, width: 30, height: 20, speed: 5 };
-        const bullets = [];
-        const bulletSpeed = 7;
-        const enemyBullets = [];
-        let enemyBulletSpeed = 3;
-        const enemies = [];
-        let enemyRows = 5;
-        let enemyCols = 10;
-        const enemyWidth = 30;
-        const enemyHeight = 20;
-        const enemyPadding = 10;
-        let enemyDirection = 1;
-        let enemySpeed = 0.5;
-        let lastEnemyShot = 0;
-        let isTouching = false;
-        let touchX = 0;
-
-        function initTilt() {
-            if (!('DeviceOrientationEvent' in window)) return;
-            mobileDetected = true;
-            if (/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream) {
-                canvas.addEventListener('touchstart', async (e) => {
-                    try {
-                        const permission = await DeviceOrientationEvent.requestPermission();
-                        if (permission === 'granted') {
-                            tiltEnabled = true;
-                            window.addEventListener('deviceorientation', handleTilt);
-                        }
-                    } catch (err) { console.log('Tilt permission denied'); }
-                }, { once: true });
-            } else {
-                tiltEnabled = true;
-                window.addEventListener('deviceorientation', handleTilt);
-            }
-        }
-        function handleTilt(e) {
-            const gamma = e.gamma || 0;
-            const tiltDelta = gamma * tiltSensitivity;
-            player.x += tiltDelta;
-            player.x = Math.max(0, Math.min(canvas.width - player.width, player.x));
-        }
-        function initEnemies() {
-            enemies.length = 0;
-            for (let row=0; row<enemyRows; row++) {
-                for (let col=0; col<enemyCols; col++) {
-                    enemies.push({ x: col*(enemyWidth+enemyPadding)+50, y: row*(enemyHeight+enemyPadding)+50, width: enemyWidth, height: enemyHeight, alive: true, row: row });
-                }
-            }
-        }
-        const keys = {};
-        document.addEventListener('keydown', (e) => {
-            keys[e.code] = true;
-            if (e.code === 'Space' && gameRunning && !mobileDetected) { e.preventDefault(); shootPlayer(); }
-        });
-        document.addEventListener('keyup', (e) => { keys[e.code] = false; });
-        canvas.addEventListener('touchstart', (e) => {
-            e.preventDefault(); isTouching = true; const touch = e.touches[0];
-            touchX = touch.clientX - canvas.getBoundingClientRect().left;
-            if (!mobileDetected) shootPlayer(); if (!tiltEnabled) initTilt();
-        });
-        canvas.addEventListener('touchmove', (e) => {
-            e.preventDefault(); if (isTouching) { const touch = e.touches[0]; touchX = touch.clientX - canvas.getBoundingClientRect().left; }
-        });
-        canvas.addEventListener('touchend', (e) => { e.preventDefault(); isTouching = false; });
-        canvas.addEventListener('mousemove', (e) => {
-            if (isTouching || tiltEnabled) return;
-            touchX = e.clientX - canvas.getBoundingClientRect().left;
-        });
-        function shootPlayer() {
-            const now = Date.now();
-            if (now - lastShotTime > (mobileDetected ? autoFireInterval : 200) && gameRunning) {
-                bullets.push({ x: player.x + player.width/2 - 2.5, y: player.y, width: 5, height: 10 });
-                lastShotTime = now;
-            }
-        }
-        function collision(rect1, rect2) {
-            return rect1.x < rect2.x + rect2.width && rect1.x + rect1.width > rect2.x && rect1.y < rect2.y + rect2.height && rect1.y + rect1.height > rect2.y;
-        }
-        function drawPlayer() {
-            ctx.fillStyle = 'white'; ctx.strokeStyle = 'white'; ctx.lineWidth = 2;
-            ctx.beginPath(); ctx.moveTo(player.x+player.width/2, player.y); ctx.lineTo(player.x, player.y+player.height); ctx.lineTo(player.x+player.width, player.y+player.height); ctx.closePath(); ctx.fill(); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(player.x+5, player.y+10); ctx.lineTo(player.x, player.y+15); ctx.lineTo(player.x+10, player.y+10); ctx.moveTo(player.x+player.width-5, player.y+10); ctx.lineTo(player.x+player.width, player.y+15); ctx.lineTo(player.x+player.width-10, player.y+10); ctx.stroke();
-            ctx.fillStyle = 'orange'; ctx.beginPath(); ctx.moveTo(player.x+8, player.y+player.height); ctx.lineTo(player.x+player.width/2, player.y+player.height+5); ctx.lineTo(player.x+player.width-8, player.y+player.height); ctx.closePath(); ctx.fill();
-        }
-        function drawEnemy(enemy) {
-            const colors = ['#00ff41', '#00cc33', '#009922', '#006611', '#003300'];
-            ctx.fillStyle = colors[enemy.row]; ctx.strokeStyle = '#00ff41'; ctx.lineWidth = 1;
-            if (enemy.row === 0) {
-                ctx.beginPath(); ctx.ellipse(enemy.x+enemy.width/2, enemy.y+enemy.height/2, 12, 8, 0, 0, 2 * Math.PI); ctx.fill(); ctx.stroke();
-                ctx.strokeStyle=colors[enemy.row]; ctx.lineWidth=2;
-                for (let i=0; i<4; i++) { const angle=(Math.PI*2/4)*i; const tx=enemy.x+enemy.width/2+Math.cos(angle)*15; const ty=enemy.y+enemy.height/2+Math.sin(angle)*10; ctx.beginPath(); ctx.moveTo(enemy.x+enemy.width/2, enemy.y+enemy.height/2); ctx.lineTo(tx, ty); ctx.stroke(); }
-                ctx.fillStyle='red'; ctx.beginPath(); ctx.arc(enemy.x+8, enemy.y+6, 2, 0, 2*Math.PI); ctx.arc(enemy.x+22, enemy.y+6, 2, 0, 2*Math.PI); ctx.fill();
-            } else if (enemy.row === 1 || enemy.row === 2) {
-                ctx.beginPath(); ctx.roundRect(enemy.x+5, enemy.y, enemy.width-10, enemy.height, 5); ctx.fill(); ctx.stroke();
-                ctx.strokeStyle=colors[enemy.row]; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(enemy.x+5, enemy.y+15); ctx.lineTo(enemy.x, enemy.y+25); ctx.moveTo(enemy.x+25, enemy.y+15); ctx.lineTo(enemy.x+30, enemy.y+25); ctx.stroke();
-                ctx.fillStyle='red'; ctx.beginPath(); ctx.arc(enemy.x+12, enemy.y+8, 2, 0, 2*Math.PI); ctx.arc(enemy.x+18, enemy.y+8, 2, 0, 2*Math.PI); ctx.fill();
-            } else {
-                ctx.beginPath(); ctx.rect(enemy.x+3, enemy.y+5, enemy.width-6, enemy.height-5); ctx.fill(); ctx.stroke();
-                ctx.strokeStyle=colors[enemy.row]; ctx.lineWidth=2;
-                for (let i=0; i<6; i++) { const x=enemy.x+(i*(enemy.width/5)); ctx.beginPath(); ctx.moveTo(x, enemy.y+enemy.height); ctx.lineTo(x, enemy.y+enemy.height+8); ctx.stroke(); }
-                ctx.fillStyle='red'; ctx.beginPath(); ctx.arc(enemy.x+10, enemy.y+8, 2, 0, 2*Math.PI); ctx.arc(enemy.x+20, enemy.y+8, 2, 0, 2*Math.PI); ctx.fill();
-            }
-        }
-        function levelUp() {
-            level++; enemySpeed+=0.2; enemyBulletSpeed+=0.5; enemyRows=Math.min(7, enemyRows+1); enemyCols=Math.min(12, enemyCols+1);
-            bullets.length=0; enemyBullets.length=0; player.x=canvas.width/2-15; alert(`Level Up! Level ${level} - Enemies are faster and more numerous!`); levelElement.textContent=`Level: ${level}`; initEnemies();
-        }
-        function update() {
-            if (!gameRunning) return;
-            if (mobileDetected) { shootPlayer(); }
-            if (keys['ArrowLeft'] && player.x > 0) { player.x -= player.speed; }
-            if (keys['ArrowRight'] && player.x < canvas.width - player.width) { player.x += player.speed; }
-            if (isTouching) { player.x = Math.max(0, Math.min(canvas.width - player.width, touchX - player.width/2)); }
-            for (let i=bullets.length-1; i>=0; i--) { const bullet=bullets[i]; bullet.y-=bulletSpeed; if (bullet.y < 0) { bullets.splice(i, 1); } }
-            for (let i=enemyBullets.length-1; i>=0; i--) { const bullet=enemyBullets[i]; bullet.y+=enemyBulletSpeed; if(bullet.y > canvas.height){ enemyBullets.splice(i,1); } else if (collision(bullet, player)) { lives--; livesElement.textContent=`Lives: ${lives}`; enemyBullets.splice(i,1); if (lives <= 0) { gameOver(); } } }
-            let edgeHit = false;
-            enemies.forEach(enemy => {
-                if (!enemy.alive) return;
-                enemy.x += enemyDirection * enemySpeed;
-                if (enemy.x <= 0 || enemy.x + enemy.width >= canvas.width) { edgeHit = true; }
-                const shootInterval = Math.max(300, 800 - (level * 50));
-                if (Date.now() - lastEnemyShot > shootInterval && Math.random() < 0.003 + (level * 0.001) && enemy.alive) { enemyBullets.push({ x: enemy.x+enemy.width/2-2.5, y: enemy.y+enemy.height, width: 5, height: 10 }); lastEnemyShot=Date.now(); }
-                for (let i=bullets.length-1; i>=0; i--) { if (collision(bullets[i], enemy)) { enemy.alive=false; bullets.splice(i,1); score+=10*level; scoreElement.textContent=`Score: ${score}`; break; } }
-                if (enemy.y + enemy.height >= player.y || collision(enemy, player)) { lives--; livesElement.textContent=`Lives: ${lives}`; enemy.alive=false; if (lives <= 0) { gameOver(); } }
-            });
-            if (edgeHit) { enemyDirection*=-1; enemies.forEach(enemy => { if (enemy.alive) enemy.y += 20; }); }
-            if (enemies.filter(e => e.alive).length === 0) { levelUp(); }
-        }
-        function gameOver() {
-            gameRunning = false;
-            alert(`Game Over! Final Score: ${score} | Reached Level ${level}`);
-            restartBtn.disabled = false;
-            restartBtn.textContent = 'Restart Game';
-        }
-        function render() {
-            ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--bg-primary');
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            drawPlayer();
-            ctx.fillStyle = 'yellow'; bullets.forEach(bullet => ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height));
-            ctx.fillStyle = 'red'; enemyBullets.forEach(bullet => ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height));
-            enemies.forEach(enemy => { if (enemy.alive) drawEnemy(enemy); });
-        }
-        function gameLoop() {
-            update(); render(); requestAnimationFrame(gameLoop);
-        }
-        function restartGame() {
-            score=0; lives=3; level=1; gameRunning=true; bullets.length=0; enemyBullets.length=0;
-            player.x = canvas.width/2-15; enemySpeed=0.5; enemyBulletSpeed=3; enemyRows=5; enemyCols=10;
-            scoreElement.textContent=`Score: ${score}`; levelElement.textContent=`Level: ${level}`; livesElement.textContent=`Lives: ${lives}`;
-            initEnemies(); lastShotTime=0; lastEnemyShot=0; enemyDirection=1;
-            restartBtn.disabled = true; restartBtn.textContent = 'Playing...';
-            tiltEnabled=false; if(mobileDetected) initTilt();
-        }
-       
+        const canvas = document.getElementById('gameCanvas'); const ctx = canvas.getContext('2d'); const scoreElement = document.getElementById('score'); const levelElement = document.getElementById('level'); const livesElement = document.getElementById('lives'); const restartBtn = document.getElementById('restartBtn'); let score = 0; let lives = 3; let level = 1; let gameRunning = false; let lastShotTime = 0; let tiltEnabled = false; let mobileDetected = false; let tiltSensitivity = 3; let autoFireInterval = 300; const player = { x: canvas.width/2-15, y: canvas.height-50, width: 30, height: 20, speed: 5 }; const bullets = []; const bulletSpeed = 7; const enemyBullets = []; let enemyBulletSpeed = 3; const enemies = []; let enemyRows = 5; let enemyCols = 10; const enemyWidth = 30; const enemyHeight = 20; const enemyPadding = 10; let enemyDirection = 1; let enemySpeed = 0.5; let lastEnemyShot = 0; let isTouching = false; let touchX = 0; function initTilt() { if (!('DeviceOrientationEvent' in window)) return; mobileDetected = true; if (/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream) { canvas.addEventListener('touchstart', async (e) => { try { const permission = await DeviceOrientationEvent.requestPermission(); if (permission === 'granted') { tiltEnabled = true; window.addEventListener('deviceorientation', handleTilt); } } catch (err) { console.log('Tilt permission denied'); } }, { once: true }); } else { tiltEnabled = true; window.addEventListener('deviceorientation', handleTilt); } } function handleTilt(e) { const gamma = e.gamma || 0; const tiltDelta = gamma * tiltSensitivity; player.x += tiltDelta; player.x = Math.max(0, Math.min(canvas.width - player.width, player.x)); } function initEnemies() { enemies.length = 0; for (let row=0; row<enemyRows; row++) { for (let col=0; col<enemyCols; col++) { enemies.push({ x: col*(enemyWidth+enemyPadding)+50, y: row*(enemyHeight+enemyPadding)+50, width: enemyWidth, height: enemyHeight, alive: true, row: row }); } } } const keys = {}; document.addEventListener('keydown', (e) => { keys[e.code] = true; if (e.code === 'Space' && gameRunning && !mobileDetected) { e.preventDefault(); shootPlayer(); } }); document.addEventListener('keyup', (e) => { keys[e.code] = false; }); canvas.addEventListener('touchstart', (e) => { e.preventDefault(); isTouching = true; const touch = e.touches[0]; touchX = touch.clientX - canvas.getBoundingClientRect().left; if (!mobileDetected) shootPlayer(); if (!tiltEnabled) initTilt(); }); canvas.addEventListener('touchmove', (e) => { e.preventDefault(); if (isTouching) { const touch = e.touches[0]; touchX = touch.clientX - canvas.getBoundingClientRect().left; } }); canvas.addEventListener('touchend', (e) => { e.preventDefault(); isTouching = false; }); canvas.addEventListener('mousemove', (e) => { if (isTouching || tiltEnabled) return; touchX = e.clientX - canvas.getBoundingClientRect().left; }); function shootPlayer() { const now = Date.now(); if (now - lastShotTime > (mobileDetected ? autoFireInterval : 200) && gameRunning) { bullets.push({ x: player.x + player.width/2 - 2.5, y: player.y, width: 5, height: 10 }); lastShotTime = now; } } function collision(rect1, rect2) { return rect1.x < rect2.x + rect2.width && rect1.x + rect1.width > rect2.x && rect1.y < rect2.y + rect2.height && rect1.y + rect1.height > rect2.y; } function drawPlayer() { ctx.fillStyle = 'white'; ctx.strokeStyle = 'white'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(player.x+player.width/2, player.y); ctx.lineTo(player.x, player.y+player.height); ctx.lineTo(player.x+player.width, player.y+player.height); ctx.closePath(); ctx.fill(); ctx.stroke(); ctx.beginPath(); ctx.moveTo(player.x+5, player.y+10); ctx.lineTo(player.x, player.y+15); ctx.lineTo(player.x+10, player.y+10); ctx.moveTo(player.x+player.width-5, player.y+10); ctx.lineTo(player.x+player.width, player.y+15); ctx.lineTo(player.x+player.width-10, player.y+10); ctx.stroke(); ctx.fillStyle = 'orange'; ctx.beginPath(); ctx.moveTo(player.x+8, player.y+player.height); ctx.lineTo(player.x+player.width/2, player.y+player.height+5); ctx.lineTo(player.x+player.width-8, player.y+player.height); ctx.closePath(); ctx.fill(); } function drawEnemy(enemy) { const colors = ['#00ff41', '#00cc33', '#009922', '#006611', '#003300']; ctx.fillStyle = colors[enemy.row]; ctx.strokeStyle = '#00ff41'; ctx.lineWidth = 1; if (enemy.row === 0) { ctx.beginPath(); ctx.ellipse(enemy.x+enemy.width/2, enemy.y+enemy.height/2, 12, 8, 0, 0, 2 * Math.PI); ctx.fill(); ctx.stroke(); ctx.strokeStyle=colors[enemy.row]; ctx.lineWidth=2; for (let i=0; i<4; i++) { const angle=(Math.PI*2/4)*i; const tx=enemy.x+enemy.width/2+Math.cos(angle)*15; const ty=enemy.y+enemy.height/2+Math.sin(angle)*10; ctx.beginPath(); ctx.moveTo(enemy.x+enemy.width/2, enemy.y+enemy.height/2); ctx.lineTo(tx, ty); ctx.stroke(); } ctx.fillStyle='red'; ctx.beginPath(); ctx.arc(enemy.x+8, enemy.y+6, 2, 0, 2*Math.PI); ctx.arc(enemy.x+22, enemy.y+6, 2, 0, 2*Math.PI); ctx.fill(); } else if (enemy.row === 1 || enemy.row === 2) { ctx.beginPath(); ctx.roundRect(enemy.x+5, enemy.y, enemy.width-10, enemy.height, 5); ctx.fill(); ctx.stroke(); ctx.strokeStyle=colors[enemy.row]; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(enemy.x+5, enemy.y+15); ctx.lineTo(enemy.x, enemy.y+25); ctx.moveTo(enemy.x+25, enemy.y+15); ctx.lineTo(enemy.x+30, enemy.y+25); ctx.stroke(); ctx.fillStyle='red'; ctx.beginPath(); ctx.arc(enemy.x+12, enemy.y+8, 2, 0, 2*Math.PI); ctx.arc(enemy.x+18, enemy.y+8, 2, 0, 2*Math.PI); ctx.fill(); } else { ctx.beginPath(); ctx.rect(enemy.x+3, enemy.y+5, enemy.width-6, enemy.height-5); ctx.fill(); ctx.stroke(); ctx.strokeStyle=colors[enemy.row]; ctx.lineWidth=2; for (let i=0; i<6; i++) { const x=enemy.x+(i*(enemy.width/5)); ctx.beginPath(); ctx.moveTo(x, enemy.y+enemy.height); ctx.lineTo(x, enemy.y+enemy.height+8); ctx.stroke(); } ctx.fillStyle='red'; ctx.beginPath(); ctx.arc(enemy.x+10, enemy.y+8, 2, 0, 2*Math.PI); ctx.arc(enemy.x+20, enemy.y+8, 2, 0, 2*Math.PI); ctx.fill(); } } function levelUp() { level++; enemySpeed+=0.2; enemyBulletSpeed+=0.5; enemyRows=Math.min(7, enemyRows+1); enemyCols=Math.min(12, enemyCols+1); bullets.length=0; enemyBullets.length=0; player.x=canvas.width/2-15; alert(`Level Up! Level ${level} - Enemies are faster and more numerous!`); levelElement.textContent=`Level: ${level}`; initEnemies(); } function update() { if (!gameRunning) return; if (mobileDetected) { shootPlayer(); } if (keys['ArrowLeft'] && player.x > 0) { player.x -= player.speed; } if (keys['ArrowRight'] && player.x < canvas.width - player.width) { player.x += player.speed; } if (isTouching) { player.x = Math.max(0, Math.min(canvas.width - player.width, touchX - player.width/2)); } for (let i=bullets.length-1; i>=0; i--) { const bullet=bullets[i]; bullet.y-=bulletSpeed; if (bullet.y < 0) { bullets.splice(i, 1); } } for (let i=enemyBullets.length-1; i>=0; i--) { const bullet=enemyBullets[i]; bullet.y+=enemyBulletSpeed; if(bullet.y > canvas.height){ enemyBullets.splice(i,1); } else if (collision(bullet, player)) { lives--; livesElement.textContent=`Lives: ${lives}`; enemyBullets.splice(i,1); if (lives <= 0) { gameOver(); } } } let edgeHit = false; enemies.forEach(enemy => { if (!enemy.alive) return; enemy.x += enemyDirection * enemySpeed; if (enemy.x <= 0 || enemy.x + enemy.width >= canvas.width) { edgeHit = true; } const shootInterval = Math.max(300, 800 - (level * 50)); if (Date.now() - lastEnemyShot > shootInterval && Math.random() < 0.003 + (level * 0.001) && enemy.alive) { enemyBullets.push({ x: enemy.x+enemy.width/2-2.5, y: enemy.y+enemy.height, width: 5, height: 10 }); lastEnemyShot=Date.now(); } for (let i=bullets.length-1; i>=0; i--) { if (collision(bullets[i], enemy)) { enemy.alive=false; bullets.splice(i,1); score+=10*level; scoreElement.textContent=`Score: ${score}`; break; } } if (enemy.y + enemy.height >= player.y || collision(enemy, player)) { lives--; livesElement.textContent=`Lives: ${lives}`; enemy.alive=false; if (lives <= 0) { gameOver(); } } }); if (edgeHit) { enemyDirection*=-1; enemies.forEach(enemy => { if (enemy.alive) enemy.y += 20; }); } if (enemies.filter(e => e.alive).length === 0) { levelUp(); } } function gameOver() { gameRunning = false; alert(`Game Over! Final Score: ${score} | Reached Level ${level}`); restartBtn.disabled = false; restartBtn.textContent = 'Restart Game'; } function render() { ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--bg-primary'); ctx.fillRect(0, 0, canvas.width, canvas.height); drawPlayer(); ctx.fillStyle = 'yellow'; bullets.forEach(bullet => ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height)); ctx.fillStyle = 'red'; enemyBullets.forEach(bullet => ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height)); enemies.forEach(enemy => { if (enemy.alive) drawEnemy(enemy); }); } function gameLoop() { update(); render(); requestAnimationFrame(gameLoop); } function restartGame() { score=0; lives=3; level=1; gameRunning=true; bullets.length=0; enemyBullets.length=0; player.x = canvas.width/2-15; enemySpeed=0.5; enemyBulletSpeed=3; enemyRows=5; enemyCols=10; scoreElement.textContent=`Score: ${score}`; levelElement.textContent=`Level: ${level}`; livesElement.textContent=`Lives: ${lives}`; initEnemies(); lastShotTime=0; lastEnemyShot=0; enemyDirection=1; restartBtn.disabled = true; restartBtn.textContent = 'Playing...'; tiltEnabled=false; if(mobileDetected) initTilt(); }
         // Initial setup
-        restartBtn.disabled = false;
-        initEnemies();
-        if (/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-            initTilt();
-        }
-        gameLoop();
+        restartBtn.disabled = false; initEnemies(); if (/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) { initTilt(); } gameLoop();
     </script>
 </body>
 </html>
