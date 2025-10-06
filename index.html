@@ -90,7 +90,7 @@
             border-color: rgba(255,255,255,0.6);
         }
        
-        /* --- Slideshow Styles --- */
+        /* --- MODIFIED SLIDESHOW STYLES --- */
         .slideshow-container {
             max-width: 100%;
             position: relative;
@@ -98,10 +98,19 @@
             border-radius: 8px;
             overflow: hidden;
             box-shadow: 0 4px 12px var(--shadow);
+            
+            /* These new properties create a consistent frame */
+            aspect-ratio: 16 / 9;
+            background-color: var(--bg-primary);
         }
         .mySlides, .mySlides2, .mySlides3 {
             display: none;
+            /* New properties to position the slide within the container */
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
+            height: 100%;
             animation-name: fade;
             animation-duration: 0.8s;
         }
@@ -110,8 +119,10 @@
           to {opacity: 1}
         }
         .mySlides img, .mySlides2 img, .mySlides3 img {
+            /* These new properties make the image fit inside the slide */
             width: 100%;
-            vertical-align: middle;
+            height: 100%;
+            object-fit: contain; /* This is the key property! It fits the image without stretching or cropping */
         }
         .prev, .next {
             cursor: pointer;
@@ -144,6 +155,7 @@
             right: 0;
             background-color: rgba(0,0,0,0.6);
             padding: 8px;
+            z-index: 5; /* Ensure caption is on top */
         }
         #caption, #caption2, #caption3 {
             margin: 0;
@@ -467,19 +479,19 @@
                        
                         <div class="slideshow-container">
                             <div class="mySlides">
-                                <img src="ML1 Dash.png" alt="ML1 Dashboard" style="width:100%">
+                                <img src="ML1 Dash.png" alt="ML1 Dashboard">
                             </div>
                             <div class="mySlides">
-                                <img src="Main Line Dash.png" alt="Main Line Dashboard" style="width:100%">
+                                <img src="Main Line Dash.png" alt="Main Line Dashboard">
                             </div>
                             <div class="mySlides">
-                                <img src="PLC Code.png" alt="PLC Code" style="width:100%">
+                                <img src="PLC Code.png" alt="PLC Code">
                             </div>
                             <div class="mySlides">
-                                <img src="Downtime Entry ML1.png" alt="Downtime Entry ML1" style="width:100%">
+                                <img src="Downtime Entry ML1.png" alt="Downtime Entry ML1">
                             </div>
                             <div class="mySlides">
-                                <img src="ipad ML1.png" alt="iPad ML1 Interface" style="width:100%">
+                                <img src="ipad ML1.png" alt="iPad ML1 Interface">
                             </div>
                            
                             <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
@@ -499,13 +511,13 @@
                         
                         <div class="slideshow-container">
                             <div class="mySlides2">
-                                <img src="Final DWSD.png" alt="Water Quality System Overview" style="width:100%">
+                                <img src="Final DWSD.png" alt="Water Quality System Overview">
                             </div>
                             <div class="mySlides2">
-                                <img src="DWSD Before (1).png" alt="System Before Installation" style="width:100%">
+                                <img src="DWSD Before (1).png" alt="System Before Installation">
                             </div>
                             <div class="mySlides2">
-                                <img src="Dash DWSD.png" alt="Final Dashboard" style="width:100%">
+                                <img src="Dash DWSD.png" alt="Final Dashboard">
                             </div>
                             
                             <a class="prev" onclick="plusSlides2(-1)">&#10094;</a>
@@ -525,19 +537,19 @@
                         
                         <div class="slideshow-container">
                             <div class="mySlides3">
-                                <img src="Assy Line 1 .png" alt="Assembly Line 1 Dashboard" style="width:100%">
+                                <img src="Assy Line 1 .png" alt="Assembly Line 1 Dashboard">
                             </div>
                             <div class="mySlides3">
-                                <img src="OEE Overview.png" alt="OEE Overview Dashboard" style="width:100%">
+                                <img src="OEE Overview.png" alt="OEE Overview Dashboard">
                             </div>
                             <div class="mySlides3">
-                                <img src="Modbus TCP Connection for Robots.png" alt="Modbus TCP Robot Connection" style="width:100%">
+                                <img src="Modbus TCP Connection for Robots.png" alt="Modbus TCP Robot Connection">
                             </div>
                             <div class="mySlides3">
-                                <img src="Fanuc Work Cell.png" alt="Fanuc Work Cell Dashboard" style="width:100%">
+                                <img src="Fanuc Work Cell.png" alt="Fanuc Work Cell Dashboard">
                             </div>
-                            <div class="mySlides3">
-                                <img src="paint room.png" alt="Paint Room Dashboard" style="width:100%">
+                             <div class="mySlides3">
+                                <img src="paint room.png" alt="Paint Room Dashboard">
                             </div>
                             
                             <a class="prev" onclick="plusSlides3(-1)">&#10094;</a>
@@ -681,7 +693,8 @@
             "Assembly Line 1 Dashboard", 
             "OEE Overview Dashboard", 
             "Modbus TCP Robot Connection", 
-            "FANUC Work Cell Dashboard"
+            "FANUC Work Cell Dashboard",
+            "Paint Room Dashboard"
         ];
         showSlides3(slideIndex3);
 
