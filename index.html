@@ -22,36 +22,51 @@
             margin: 0;
             padding: 0;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: var(--bg-primary); /* Set the base space color */
+            background-color: var(--bg-primary);
             color: var(--text-primary);
             line-height: 1.6;
-            overflow-x: hidden; /* Prevent horizontal scrollbars from animations */
+            overflow-x: hidden;
         }
         
-        /* --- STARFIELD BACKGROUND --- */
-        @keyframes move-stars {
-            from { transform: translateY(0px); }
+        /* --- NEW PARALLAX STARFIELD BACKGROUND --- */
+        @keyframes move-stars-bg {
+            from { transform: translateY(0); }
             to { transform: translateY(-2000px); }
         }
-        #stars-container {
-            position: fixed;
+
+        .stars {
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             z-index: -2;
-            pointer-events: none;
         }
-        .stars {
+
+        .stars-layer {
             position: absolute;
-            width: 1px;
+            left: 50%;
+            top: 50%;
             height: 1px;
+            width: 1px;
             background: transparent;
-            animation: move-stars 150s linear infinite;
+            animation: move-stars-bg linear infinite;
         }
-        #stars1 { box-shadow: 0 0 1000px 1px #fff; animation-duration: 50s; }
-        #stars2 { box-shadow: 0 0 2000px 1px #fff; animation-duration: 100s; }
-        #stars3 { box-shadow: 0 0 3000px 1px #fff; animation-duration: 150s; }
+
+        #stars1 {
+            box-shadow: -130px -311px #FFF, -45px -237px #FFF, 122px 147px #FFF, 243px -383px #FFF, -13px -381px #FFF, -323px 21px #FFF, 38px 235px #FFF, 345px 127px #FFF, -370px 101px #FFF, -22px 355px #FFF, -28px -303px #FFF, -200px -15px #FFF, -212px -37px #FFF, 49px 23px #FFF, 15px -171px #FFF, -24px -185px #FFF, -358px -21px #FFF, 10px 175px #FFF, 28px -355px #FFF, 281px 113px #FFF, -325px -387px #FFF, -34px 219px #FFF, -387px -385px #FFF, 106px -179px #FFF, -297px 209px #FFF, 255px -243px #FFF, 287px 299px #FFF, 219px 251px #FFF, -172px -197px #FFF, -125px 233px #FFF;
+            animation-duration: 150s;
+        }
+
+        #stars2 {
+            box-shadow: -15px 170px #FFF, 225px 108px #FFF, -127px 10px #FFF, -382px -289px #FFF, -199px 255px #FFF, -366px 207px #FFF, 13px -26px #FFF, 142px 348px #FFF, -203px 311px #FFF, 213px 253px #FFF, 215px 135px #FFF, -130px -285px #FFF, -277px 279px #FFF, -181px 197px #FFF, -137px 119px #FFF, 253px -373px #FFF, 215px 335px #FFF, -308px 37px #FFF, -112px 11px #FFF, -259px -319px #FFF, 198px -100px #FFF, 158px 15px #FFF, -354px -146px #FFF, -310px -388px #FFF, -242px 251px #FFF, 110px 15px #FFF, 269px -117px #FFF, -332px 321px #FFF, -314px -344px #FFF, -352px -308px #FFF;
+            animation-duration: 100s;
+        }
+
+        #stars3 {
+            box-shadow: 20px -386px #FFF, -192px 36px #FFF, -119px -313px #FFF, -231px -135px #FFF, -345px -325px #FFF, 275px -211px #FFF, 185px -193px #FFF, 15px 21px #FFF, -381px 307px #FFF, -11px -259px #FFF, -225px 21px #FFF, 25px -331px #FFF, -171px 255px #FFF, 191px -329px #FFF, -159px -259px #FFF, -117px -19px #FFF, 271px -175px #FFF, -315px -171px #FFF, -15px -31px #FFF, 151px 11px #FFF;
+            animation-duration: 50s;
+        }
 
 
         /* --- STAR TREK BACKGROUND ANIMATIONS --- */
@@ -67,7 +82,7 @@
         }
         .ship {
             position: absolute;
-            opacity: 0.4; /* Increased opacity for better visibility */
+            opacity: 0.6; /* Increased opacity */
             will-change: transform;
         }
         .enterprise {
@@ -82,7 +97,7 @@
             height: auto;
             top: 10vh;
             right: 5vw;
-            animation: slow-rotation 150s linear infinite; /* Changed animation name */
+            animation: slow-rotation 150s linear infinite;
         }
         @keyframes fly-by {
             0% { transform: translateX(-300px) rotate(-10deg); }
@@ -105,27 +120,11 @@
         .photo { flex: 0 0 250px; }
         .photo img { width: 100%; height: auto; border-radius: 12px; box-shadow: 0 4px 12px var(--shadow); }
         .content { flex: 1; }
-        .header {
-            background: linear-gradient(135deg, var(--accent), var(--accent-hover));
-            color: white;
-            padding: 1.5rem;
-            border-radius: 12px 12px 0 0;
-            margin-bottom: 1rem;
-            position: relative;
-        }
+        .header { background: linear-gradient(135deg, var(--accent), var(--accent-hover)); color: white; padding: 1.5rem; border-radius: 12px 12px 0 0; margin-bottom: 1rem; position: relative; }
         .header h1 { margin: 0 0 0.5rem 0; font-size: 2.5rem; font-weight: bold; }
         .header p { margin: 0; opacity: 0.9; font-size: 1.1rem; }
         
-        .slideshow-container {
-            max-width: 100%;
-            position: relative;
-            margin: 20px auto;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 4px 12px var(--shadow);
-            aspect-ratio: 16 / 9;
-            background-color: #00000a;
-        }
+        .slideshow-container { max-width: 100%; position: relative; margin: 20px auto; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px var(--shadow); aspect-ratio: 16 / 9; background-color: #00000a; }
         .mySlides, .mySlides2, .mySlides3 { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; animation: fade 0.8s; }
         @keyframes fade { from {opacity: .4} to {opacity: 1} }
         .mySlides img, .mySlides2 img, .mySlides3 img { width: 100%; height: 100%; object-fit: contain; }
@@ -162,7 +161,7 @@
         .contact-buttons a:hover { background: var(--accent-hover); }
         .icon-svg { width: 24px; height: 24px; fill: currentColor; }
         .game-container { display: flex; flex-direction: column; align-items: center; margin-top: 1rem; }
-        #gameCanvas { border: 2px solid var(--border); border-radius: 8px; background-color: var(--bg-primary); max-width: 100%; height: auto; touch-action: none; }
+        #gameCanvas { border: 2px solid var(--border); border-radius: 8px; background-color: var(--bg-secondary); max-width: 100%; height: auto; touch-action: none; }
         .game-info { display: flex; justify-content: space-between; width: 100%; max-width: 800px; margin-bottom: 0.5rem; font-weight: bold; }
         .restart-btn { background: var(--accent); color: white; border: none; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; font-size: 1rem; margin-top: 0.5rem; transition: background 0.2s; }
         .restart-btn:hover { background: var(--accent-hover); }
@@ -173,10 +172,10 @@
     </style>
 </head>
 <body>
-    <div id="stars-container">
-        <div id="stars1" class="stars"></div>
-        <div id="stars2" class="stars"></div>
-        <div id="stars3" class="stars"></div>
+    <div class="stars">
+        <div class="stars-layer" id="stars1"></div>
+        <div class="stars-layer" id="stars2"></div>
+        <div class="stars-layer" id="stars3"></div>
     </div>
     <div class="background-animations">
         <img src="enterprise-d.png" alt="" class="ship enterprise">
@@ -191,7 +190,7 @@
             <div class="header">
                 <h1>Jordan Cota</h1>
                 <p>Engineer / Account Manager | Atlanta, GA</p>
-                </div>
+            </div>
             <nav class="tabs">
                 <button class="tab-btn active" data-tab="home">Home</button>
                 <button class="tab-btn" data-tab="portfolio">Portfolio</button>
@@ -239,7 +238,7 @@
                     <p>Showcasing my professional projects and contributions in manufacturing and OT solutions.</p>
                     <div class="project">
                         <h3>Forklift Conveyor OEE System</h3>
-                        <p>This was a project that involved a forklift conveyor system. The customer wanted to see full OEE metrics on this conveyor system... [content truncated for brevity]</p>
+                        <p>This was a project that involved a forklift conveyor system...[content truncated]</p>
                         <div class="slideshow-container">
                             <div class="mySlides"><img src="ML1 Dash.png" alt="ML1 Dashboard"></div>
                             <div class="mySlides"><img src="Main Line Dash.png" alt="Main Line Dashboard"></div>
@@ -253,7 +252,7 @@
                     <hr style="border-top: 1px solid var(--border); margin: 2rem 0;">
                     <div class="project">
                         <h3>Water Quality Project - Modbus TCP Conversion</h3>
-                        <p>For this project, I spearheaded the conversion of a legacy Arduino-based monitoring system to a modern, robust Modbus TCP application... [content truncated for brevity]</p>
+                        <p>For this project, I spearheaded the conversion of a legacy Arduino-based monitoring system...[content truncated]</p>
                         <div class="slideshow-container">
                             <div class="mySlides2"><img src="Final DWSD.png" alt="Water Quality System Overview"></div>
                             <div class="mySlides2"><img src="DWSD Before (1).png" alt="System Before Installation"></div>
@@ -265,7 +264,7 @@
                     <hr style="border-top: 1px solid var(--border); margin: 2rem 0;">
                     <div class="project">
                         <h3>General Dashboard Examples</h3>
-                        <p>Here are a few more examples of dashboards I've built. These visualizations pull data from various sources... [content truncated for brevity]</p>
+                        <p>Here are a few more examples of dashboards I've built...[content truncated]</p>
                         <div class="slideshow-container">
                             <div class="mySlides3"><img src="Assy Line 1 .png" alt="Assembly Line 1 Dashboard"></div>
                             <div class="mySlides3"><img src="OEE Overview.png" alt="OEE Overview Dashboard"></div>
@@ -292,7 +291,7 @@
                         <div class="hobby-item"><img src="https://via.placeholder.com/250x200?text=Hiking+Trail" alt="Hiking"><h3>Trail Hike</h3><p>Sunset views from the Appalachian foothills—recharge mode activated.</p></div>
                     </div>
                 </div>
-                </div>
+            </div>
         </div>
     </div>
 
@@ -309,19 +308,6 @@
                 document.getElementById(`${tabId}-tab`).classList.add('active');
             });
         });
-
-        // --- Starfield Generation Script ---
-        function createStars() {
-            const container = document.getElementById('stars-container');
-            for(let i = 0; i < 1000; i++) {
-                let star = document.createElement('div');
-                star.className = 'stars';
-                star.style.left = Math.random() * 100 + 'vw';
-                star.style.top = Math.random() * 2000 + 'px';
-                container.appendChild(star);
-            }
-        }
-        createStars();
     </script>
     <script>
         // --- Slideshow Script for Project 1 ---
@@ -337,7 +323,7 @@
     </script>
     <script>
         // --- Space Invaders Game Script ---
-        const canvas = document.getElementById('gameCanvas'); const ctx = canvas.getContext('2d'); const scoreElement = document.getElementById('score'); const levelElement = document.getElementById('level'); const livesElement = document.getElementById('lives'); const restartBtn = document.getElementById('restartBtn'); let score = 0; let lives = 3; let level = 1; let gameRunning = false; let lastShotTime = 0; let tiltEnabled = false; let mobileDetected = false; let tiltSensitivity = 3; let autoFireInterval = 300; const player = { x: canvas.width/2-15, y: canvas.height-50, width: 30, height: 20, speed: 5 }; const bullets = []; const bulletSpeed = 7; const enemyBullets = []; let enemyBulletSpeed = 3; const enemies = []; let enemyRows = 5; let enemyCols = 10; const enemyWidth = 30; const enemyHeight = 20; const enemyPadding = 10; let enemyDirection = 1; let enemySpeed = 0.5; let lastEnemyShot = 0; let isTouching = false; let touchX = 0; function initTilt() { if (!('DeviceOrientationEvent' in window)) return; mobileDetected = true; if (/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream) { canvas.addEventListener('touchstart', async (e) => { try { const permission = await DeviceOrientationEvent.requestPermission(); if (permission === 'granted') { tiltEnabled = true; window.addEventListener('deviceorientation', handleTilt); } } catch (err) { console.log('Tilt permission denied'); } }, { once: true }); } else { tiltEnabled = true; window.addEventListener('deviceorientation', handleTilt); } } function handleTilt(e) { const gamma = e.gamma || 0; const tiltDelta = gamma * tiltSensitivity; player.x += tiltDelta; player.x = Math.max(0, Math.min(canvas.width - player.width, player.x)); } function initEnemies() { enemies.length = 0; for (let row=0; row<enemyRows; row++) { for (let col=0; col<enemyCols; col++) { enemies.push({ x: col*(enemyWidth+enemyPadding)+50, y: row*(enemyHeight+enemyPadding)+50, width: enemyWidth, height: enemyHeight, alive: true, row: row }); } } } const keys = {}; document.addEventListener('keydown', (e) => { keys[e.code] = true; if (e.code === 'Space' && gameRunning && !mobileDetected) { e.preventDefault(); shootPlayer(); } }); document.addEventListener('keyup', (e) => { keys[e.code] = false; }); canvas.addEventListener('touchstart', (e) => { e.preventDefault(); isTouching = true; const touch = e.touches[0]; touchX = touch.clientX - canvas.getBoundingClientRect().left; if (!mobileDetected) shootPlayer(); if (!tiltEnabled) initTilt(); }); canvas.addEventListener('touchmove', (e) => { e.preventDefault(); if (isTouching) { const touch = e.touches[0]; touchX = touch.clientX - canvas.getBoundingClientRect().left; } }); canvas.addEventListener('touchend', (e) => { e.preventDefault(); isTouching = false; }); canvas.addEventListener('mousemove', (e) => { if (isTouching || tiltEnabled) return; touchX = e.clientX - canvas.getBoundingClientRect().left; }); function shootPlayer() { const now = Date.now(); if (now - lastShotTime > (mobileDetected ? autoFireInterval : 200) && gameRunning) { bullets.push({ x: player.x + player.width/2 - 2.5, y: player.y, width: 5, height: 10 }); lastShotTime = now; } } function collision(rect1, rect2) { return rect1.x < rect2.x + rect2.width && rect1.x + rect1.width > rect2.x && rect1.y < rect2.y + rect2.height && rect1.y + rect1.height > rect2.y; } function drawPlayer() { ctx.fillStyle = 'white'; ctx.strokeStyle = 'white'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(player.x+player.width/2, player.y); ctx.lineTo(player.x, player.y+player.height); ctx.lineTo(player.x+player.width, player.y+player.height); ctx.closePath(); ctx.fill(); ctx.stroke(); ctx.beginPath(); ctx.moveTo(player.x+5, player.y+10); ctx.lineTo(player.x, player.y+15); ctx.lineTo(player.x+10, player.y+10); ctx.moveTo(player.x+player.width-5, player.y+10); ctx.lineTo(player.x+player.width, player.y+15); ctx.lineTo(player.x+player.width-10, player.y+10); ctx.stroke(); ctx.fillStyle = 'orange'; ctx.beginPath(); ctx.moveTo(player.x+8, player.y+player.height); ctx.lineTo(player.x+player.width/2, player.y+player.height+5); ctx.lineTo(player.x+player.width-8, player.y+player.height); ctx.closePath(); ctx.fill(); } function drawEnemy(enemy) { const colors = ['#00ff41', '#00cc33', '#009922', '#006611', '#003300']; ctx.fillStyle = colors[enemy.row]; ctx.strokeStyle = '#00ff41'; ctx.lineWidth = 1; if (enemy.row === 0) { ctx.beginPath(); ctx.ellipse(enemy.x+enemy.width/2, enemy.y+enemy.height/2, 12, 8, 0, 0, 2 * Math.PI); ctx.fill(); ctx.stroke(); ctx.strokeStyle=colors[enemy.row]; ctx.lineWidth=2; for (let i=0; i<4; i++) { const angle=(Math.PI*2/4)*i; const tx=enemy.x+enemy.width/2+Math.cos(angle)*15; const ty=enemy.y+enemy.height/2+Math.sin(angle)*10; ctx.beginPath(); ctx.moveTo(enemy.x+enemy.width/2, enemy.y+enemy.height/2); ctx.lineTo(tx, ty); ctx.stroke(); } ctx.fillStyle='red'; ctx.beginPath(); ctx.arc(enemy.x+8, enemy.y+6, 2, 0, 2*Math.PI); ctx.arc(enemy.x+22, enemy.y+6, 2, 0, 2*Math.PI); ctx.fill(); } else if (enemy.row === 1 || enemy.row === 2) { ctx.beginPath(); ctx.roundRect(enemy.x+5, enemy.y, enemy.width-10, enemy.height, 5); ctx.fill(); ctx.stroke(); ctx.strokeStyle=colors[enemy.row]; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(enemy.x+5, enemy.y+15); ctx.lineTo(enemy.x, enemy.y+25); ctx.moveTo(enemy.x+25, enemy.y+15); ctx.lineTo(enemy.x+30, enemy.y+25); ctx.stroke(); ctx.fillStyle='red'; ctx.beginPath(); ctx.arc(enemy.x+12, enemy.y+8, 2, 0, 2*Math.PI); ctx.arc(enemy.x+18, enemy.y+8, 2, 0, 2*Math.PI); ctx.fill(); } else { ctx.beginPath(); ctx.rect(enemy.x+3, enemy.y+5, enemy.width-6, enemy.height-5); ctx.fill(); ctx.stroke(); ctx.strokeStyle=colors[enemy.row]; ctx.lineWidth=2; for (let i=0; i<6; i++) { const x=enemy.x+(i*(enemy.width/5)); ctx.beginPath(); ctx.moveTo(x, enemy.y+enemy.height); ctx.lineTo(x, enemy.y+enemy.height+8); ctx.stroke(); } ctx.fillStyle='red'; ctx.beginPath(); ctx.arc(enemy.x+10, enemy.y+8, 2, 0, 2*Math.PI); ctx.arc(enemy.x+20, enemy.y+8, 2, 0, 2*Math.PI); ctx.fill(); } } function levelUp() { level++; enemySpeed+=0.2; enemyBulletSpeed+=0.5; enemyRows=Math.min(7, enemyRows+1); enemyCols=Math.min(12, enemyCols+1); bullets.length=0; enemyBullets.length=0; player.x=canvas.width/2-15; alert(`Level Up! Level ${level} - Enemies are faster and more numerous!`); levelElement.textContent=`Level: ${level}`; initEnemies(); } function update() { if (!gameRunning) return; if (mobileDetected) { shootPlayer(); } if (keys['ArrowLeft'] && player.x > 0) { player.x -= player.speed; } if (keys['ArrowRight'] && player.x < canvas.width - player.width) { player.x += player.speed; } if (isTouching) { player.x = Math.max(0, Math.min(canvas.width - player.width, touchX - player.width/2)); } for (let i=bullets.length-1; i>=0; i--) { const bullet=bullets[i]; bullet.y-=bulletSpeed; if (bullet.y < 0) { bullets.splice(i, 1); } } for (let i=enemyBullets.length-1; i>=0; i--) { const bullet=enemyBullets[i]; bullet.y+=enemyBulletSpeed; if(bullet.y > canvas.height){ enemyBullets.splice(i,1); } else if (collision(bullet, player)) { lives--; livesElement.textContent=`Lives: ${lives}`; enemyBullets.splice(i,1); if (lives <= 0) { gameOver(); } } } let edgeHit = false; enemies.forEach(enemy => { if (!enemy.alive) return; enemy.x += enemyDirection * enemySpeed; if (enemy.x <= 0 || enemy.x + enemy.width >= canvas.width) { edgeHit = true; } const shootInterval = Math.max(300, 800 - (level * 50)); if (Date.now() - lastEnemyShot > shootInterval && Math.random() < 0.003 + (level * 0.001) && enemy.alive) { enemyBullets.push({ x: enemy.x+enemy.width/2-2.5, y: enemy.y+enemy.height, width: 5, height: 10 }); lastEnemyShot=Date.now(); } for (let i=bullets.length-1; i>=0; i--) { if (collision(bullets[i], enemy)) { enemy.alive=false; bullets.splice(i,1); score+=10*level; scoreElement.textContent=`Score: ${score}`; break; } } if (enemy.y + enemy.height >= player.y || collision(enemy, player)) { lives--; livesElement.textContent=`Lives: ${lives}`; enemy.alive=false; if (lives <= 0) { gameOver(); } } }); if (edgeHit) { enemyDirection*=-1; enemies.forEach(enemy => { if (enemy.alive) enemy.y += 20; }); } if (enemies.filter(e => e.alive).length === 0) { levelUp(); } } function gameOver() { gameRunning = false; alert(`Game Over! Final Score: ${score} | Reached Level ${level}`); restartBtn.disabled = false; restartBtn.textContent = 'Restart Game'; } function render() { ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--bg-primary'); ctx.fillRect(0, 0, canvas.width, canvas.height); drawPlayer(); ctx.fillStyle = 'yellow'; bullets.forEach(bullet => ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height)); ctx.fillStyle = 'red'; enemyBullets.forEach(bullet => ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height)); enemies.forEach(enemy => { if (enemy.alive) drawEnemy(enemy); }); } function gameLoop() { update(); render(); requestAnimationFrame(gameLoop); } function restartGame() { score=0; lives=3; level=1; gameRunning=true; bullets.length=0; enemyBullets.length=0; player.x = canvas.width/2-15; enemySpeed=0.5; enemyBulletSpeed=3; enemyRows=5; enemyCols=10; scoreElement.textContent=`Score: ${score}`; levelElement.textContent=`Level: ${level}`; livesElement.textContent=`Lives: ${lives}`; initEnemies(); lastShotTime=0; lastEnemyShot=0; enemyDirection=1; restartBtn.disabled = true; restartBtn.textContent = 'Playing...'; tiltEnabled=false; if(mobileDetected) initTilt(); }
+        const canvas = document.getElementById('gameCanvas'); const ctx = canvas.getContext('2d'); const scoreElement = document.getElementById('score'); const levelElement = document.getElementById('level'); const livesElement = document.getElementById('lives'); const restartBtn = document.getElementById('restartBtn'); let score = 0; let lives = 3; let level = 1; let gameRunning = false; let lastShotTime = 0; let tiltEnabled = false; let mobileDetected = false; let tiltSensitivity = 3; let autoFireInterval = 300; const player = { x: canvas.width/2-15, y: canvas.height-50, width: 30, height: 20, speed: 5 }; const bullets = []; const bulletSpeed = 7; const enemyBullets = []; let enemyBulletSpeed = 3; const enemies = []; let enemyRows = 5; let enemyCols = 10; const enemyWidth = 30; const enemyHeight = 20; const enemyPadding = 10; let enemyDirection = 1; let enemySpeed = 0.5; let lastEnemyShot = 0; let isTouching = false; let touchX = 0; function initTilt() { if (!('DeviceOrientationEvent' in window)) return; mobileDetected = true; if (/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream) { canvas.addEventListener('touchstart', async (e) => { try { const permission = await DeviceOrientationEvent.requestPermission(); if (permission === 'granted') { tiltEnabled = true; window.addEventListener('deviceorientation', handleTilt); } } catch (err) { console.log('Tilt permission denied'); } }, { once: true }); } else { tiltEnabled = true; window.addEventListener('deviceorientation', handleTilt); } } function handleTilt(e) { const gamma = e.gamma || 0; const tiltDelta = gamma * tiltSensitivity; player.x += tiltDelta; player.x = Math.max(0, Math.min(canvas.width - player.width, player.x)); } function initEnemies() { enemies.length = 0; for (let row=0; row<enemyRows; row++) { for (let col=0; col<enemyCols; col++) { enemies.push({ x: col*(enemyWidth+enemyPadding)+50, y: row*(enemyHeight+enemyPadding)+50, width: enemyWidth, height: enemyHeight, alive: true, row: row }); } } } const keys = {}; document.addEventListener('keydown', (e) => { keys[e.code] = true; if (e.code === 'Space' && gameRunning && !mobileDetected) { e.preventDefault(); shootPlayer(); } }); document.addEventListener('keyup', (e) => { keys[e.code] = false; }); canvas.addEventListener('touchstart', (e) => { e.preventDefault(); isTouching = true; const touch = e.touches[0]; touchX = touch.clientX - canvas.getBoundingClientRect().left; if (!mobileDetected) shootPlayer(); if (!tiltEnabled) initTilt(); }); canvas.addEventListener('touchmove', (e) => { e.preventDefault(); if (isTouching) { const touch = e.touches[0]; touchX = touch.clientX - canvas.getBoundingClientRect().left; } }); canvas.addEventListener('touchend', (e) => { e.preventDefault(); isTouching = false; }); canvas.addEventListener('mousemove', (e) => { if (isTouching || tiltEnabled) return; touchX = e.clientX - canvas.getBoundingClientRect().left; }); function shootPlayer() { const now = Date.now(); if (now - lastShotTime > (mobileDetected ? autoFireInterval : 200) && gameRunning) { bullets.push({ x: player.x + player.width/2 - 2.5, y: player.y, width: 5, height: 10 }); lastShotTime = now; } } function collision(rect1, rect2) { return rect1.x < rect2.x + rect2.width && rect1.x + rect1.width > rect2.x && rect1.y < rect2.y + rect2.height && rect1.y + rect1.height > rect2.y; } function drawPlayer() { ctx.fillStyle = 'white'; ctx.strokeStyle = 'white'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(player.x+player.width/2, player.y); ctx.lineTo(player.x, player.y+player.height); ctx.lineTo(player.x+player.width, player.y+player.height); ctx.closePath(); ctx.fill(); ctx.stroke(); ctx.beginPath(); ctx.moveTo(player.x+5, player.y+10); ctx.lineTo(player.x, player.y+15); ctx.lineTo(player.x+10, player.y+10); ctx.moveTo(player.x+player.width-5, player.y+10); ctx.lineTo(player.x+player.width, player.y+15); ctx.lineTo(player.x+player.width-10, player.y+10); ctx.stroke(); ctx.fillStyle = 'orange'; ctx.beginPath(); ctx.moveTo(player.x+8, player.y+player.height); ctx.lineTo(player.x+player.width/2, player.y+player.height+5); ctx.lineTo(player.x+player.width-8, player.y+player.height); ctx.closePath(); ctx.fill(); } function drawEnemy(enemy) { const colors = ['#00ff41', '#00cc33', '#009922', '#006611', '#003300']; ctx.fillStyle = colors[enemy.row]; ctx.strokeStyle = '#00ff41'; ctx.lineWidth = 1; if (enemy.row === 0) { ctx.beginPath(); ctx.ellipse(enemy.x+enemy.width/2, enemy.y+enemy.height/2, 12, 8, 0, 0, 2 * Math.PI); ctx.fill(); ctx.stroke(); ctx.strokeStyle=colors[enemy.row]; ctx.lineWidth=2; for (let i=0; i<4; i++) { const angle=(Math.PI*2/4)*i; const tx=enemy.x+enemy.width/2+Math.cos(angle)*15; const ty=enemy.y+enemy.height/2+Math.sin(angle)*10; ctx.beginPath(); ctx.moveTo(enemy.x+enemy.width/2, enemy.y+enemy.height/2); ctx.lineTo(tx, ty); ctx.stroke(); } ctx.fillStyle='red'; ctx.beginPath(); ctx.arc(enemy.x+8, enemy.y+6, 2, 0, 2*Math.PI); ctx.arc(enemy.x+22, enemy.y+6, 2, 0, 2*Math.PI); ctx.fill(); } else if (enemy.row === 1 || enemy.row === 2) { ctx.beginPath(); ctx.roundRect(enemy.x+5, enemy.y, enemy.width-10, enemy.height, 5); ctx.fill(); ctx.stroke(); ctx.strokeStyle=colors[enemy.row]; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(enemy.x+5, enemy.y+15); ctx.lineTo(enemy.x, enemy.y+25); ctx.moveTo(enemy.x+25, enemy.y+15); ctx.lineTo(enemy.x+30, enemy.y+25); ctx.stroke(); ctx.fillStyle='red'; ctx.beginPath(); ctx.arc(enemy.x+12, enemy.y+8, 2, 0, 2*Math.PI); ctx.arc(enemy.x+18, enemy.y+8, 2, 0, 2*Math.PI); ctx.fill(); } else { ctx.beginPath(); ctx.rect(enemy.x+3, enemy.y+5, enemy.width-6, enemy.height-5); ctx.fill(); ctx.stroke(); ctx.strokeStyle=colors[enemy.row]; ctx.lineWidth=2; for (let i=0; i<6; i++) { const x=enemy.x+(i*(enemy.width/5)); ctx.beginPath(); ctx.moveTo(x, enemy.y+enemy.height); ctx.lineTo(x, enemy.y+enemy.height+8); ctx.stroke(); } ctx.fillStyle='red'; ctx.beginPath(); ctx.arc(enemy.x+10, enemy.y+8, 2, 0, 2*Math.PI); ctx.arc(enemy.x+20, enemy.y+8, 2, 0, 2*Math.PI); ctx.fill(); } } function levelUp() { level++; enemySpeed+=0.2; enemyBulletSpeed+=0.5; enemyRows=Math.min(7, enemyRows+1); enemyCols=Math.min(12, enemyCols+1); bullets.length=0; enemyBullets.length=0; player.x=canvas.width/2-15; alert(`Level Up! Level ${level} - Enemies are faster and more numerous!`); levelElement.textContent=`Level: ${level}`; initEnemies(); } function update() { if (!gameRunning) return; if (mobileDetected) { shootPlayer(); } if (keys['ArrowLeft'] && player.x > 0) { player.x -= player.speed; } if (keys['ArrowRight'] && player.x < canvas.width - player.width) { player.x += player.speed; } if (isTouching) { player.x = Math.max(0, Math.min(canvas.width - player.width, touchX - player.width/2)); } for (let i=bullets.length-1; i>=0; i--) { const bullet=bullets[i]; bullet.y-=bulletSpeed; if (bullet.y < 0) { bullets.splice(i, 1); } } for (let i=enemyBullets.length-1; i>=0; i--) { const bullet=enemyBullets[i]; bullet.y+=enemyBulletSpeed; if(bullet.y > canvas.height){ enemyBullets.splice(i,1); } else if (collision(bullet, player)) { lives--; livesElement.textContent=`Lives: ${lives}`; enemyBullets.splice(i,1); if (lives <= 0) { gameOver(); } } } let edgeHit = false; enemies.forEach(enemy => { if (!enemy.alive) return; enemy.x += enemyDirection * enemySpeed; if (enemy.x <= 0 || enemy.x + enemy.width >= canvas.width) { edgeHit = true; } const shootInterval = Math.max(300, 800 - (level * 50)); if (Date.now() - lastEnemyShot > shootInterval && Math.random() < 0.003 + (level * 0.001) && enemy.alive) { enemyBullets.push({ x: enemy.x+enemy.width/2-2.5, y: enemy.y+enemy.height, width: 5, height: 10 }); lastEnemyShot=Date.now(); } for (let i=bullets.length-1; i>=0; i--) { if (collision(bullets[i], enemy)) { enemy.alive=false; bullets.splice(i,1); score+=10*level; scoreElement.textContent=`Score: ${score}`; break; } } if (enemy.y + enemy.height >= player.y || collision(enemy, player)) { lives--; livesElement.textContent=`Lives: ${lives}`; enemy.alive=false; if (lives <= 0) { gameOver(); } } }); if (edgeHit) { enemyDirection*=-1; enemies.forEach(enemy => { if (enemy.alive) enemy.y += 20; }); } if (enemies.filter(e => e.alive).length === 0) { levelUp(); } } function gameOver() { gameRunning = false; alert(`Game Over! Final Score: ${score} | Reached Level ${level}`); restartBtn.disabled = false; restartBtn.textContent = 'Restart Game'; } function render() { ctx.fillStyle = 'black'; ctx.fillRect(0, 0, canvas.width, canvas.height); drawPlayer(); ctx.fillStyle = 'yellow'; bullets.forEach(bullet => ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height)); ctx.fillStyle = 'red'; enemyBullets.forEach(bullet => ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height)); enemies.forEach(enemy => { if (enemy.alive) drawEnemy(enemy); }); } function gameLoop() { update(); render(); requestAnimationFrame(gameLoop); } function restartGame() { score=0; lives=3; level=1; gameRunning=true; bullets.length=0; enemyBullets.length=0; player.x = canvas.width/2-15; enemySpeed=0.5; enemyBulletSpeed=3; enemyRows=5; enemyCols=10; scoreElement.textContent=`Score: ${score}`; levelElement.textContent=`Level: ${level}`; livesElement.textContent=`Lives: ${lives}`; initEnemies(); lastShotTime=0; lastEnemyShot=0; enemyDirection=1; restartBtn.disabled = true; restartBtn.textContent = 'Playing...'; tiltEnabled=false; if(mobileDetected) initTilt(); }
         // Initial setup
         restartBtn.disabled = false; initEnemies(); if (/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) { initTilt(); } gameLoop();
     </script>
