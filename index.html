@@ -377,6 +377,54 @@
         restartBtn.disabled = false; initEnemies(); if (/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) { initTilt(); } gameLoop();
         
         displayLeaderboard();
+    // --- NEW: Profanity Filter ---
+        // A more robust list of words to block.
+        const badWords = [
+          // Variations of the slur you mentioned
+          'nigger', 'nigga', 'n1gger', 'n1gga', 'nigg3r', 'nigg4',
+          // Other common profanities/slurs
+          'fuck', 'shit', 'cunt', 'bitch', 'asshole', 'faggot', 'fag', 'retard', 'whore'
+          // You can add any other words you want to block to this list
+        ];
+
+        function containsBadWord(name) {
+            // Converts name to lowercase and removes spaces for a more thorough check
+            const lowerCaseName = name.toLowerCase().replace(/\s/g, ''); 
+            return badWords.some(word => lowerCaseName.includes(word));
+        }
+
+
+        // --- UPDATED gameOver function ---
+        function gameOver() {
+            gameRunning = false;
+            restartBtn.disabled = false;
+            restartBtn.textContent = 'Restart Game';
+
+            const playerName = prompt(`Game Over! Final Score: ${score}\nEnter your name for the leaderboard:`, "Player");
+            
+            if (playerName) {
+                // --- Filter Check ---
+                if (containsBadWord(playerName)) {
+                    alert("That name is not allowed. Please choose a more appropriate name.");
+                    return; // Stops the score from being saved
+                }
+                // --- End of Filter Check ---
+
+                db.collection("scores").add({
+                    name: playerName,
+                    score: score,
+                    level: level,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                })
+                .then(() => {
+                    console.log("Score saved!");
+                    displayLeaderboard();
+                })
+                .catch((error) => {
+                    console.error("Error writing document: ", error);
+                });
+            }
+        }
     </script>
 </body>
 </html>
