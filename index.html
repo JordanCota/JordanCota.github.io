@@ -104,22 +104,16 @@
         .articles-list p { margin: 0; color: var(--text-secondary); font-size: 0.9rem; }
         
         .portfolio-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; }
-        .hobby-item { background: var(--bg-primary); border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px var(--shadow); transition: transform 0.2s; }
-        .hobby-item:hover { transform: translateY(-2px); }
-        
-        /* HOVER TO PLAY VIDEO CSS */
-        .hobby-item video { 
-            width: 100%; 
-            height: 200px; 
-            object-fit: cover; 
+        .hobby-item { 
+            background: var(--bg-primary); 
+            border-radius: 8px; 
+            overflow: hidden; 
+            box-shadow: 0 2px 8px var(--shadow); 
+            transition: transform 0.2s; 
             cursor: pointer;
-            filter: brightness(0.8);
-            transition: filter 0.3s ease;
         }
-        .hobby-item:hover video {
-            filter: brightness(1.1);
-        }
-        .hobby-item img { width: 100%; height: 200px; object-fit: cover; }
+        .hobby-item:hover { transform: translateY(-2px); }
+        .hobby-item img, .hobby-item video { width: 100%; height: 200px; object-fit: cover; }
         .hobby-item h3 { margin: 0.5rem; color: var(--text-primary); font-size: 1rem; }
         .hobby-item p { margin: 0 0.5rem 1rem; color: var(--text-secondary); font-size: 0.9rem; }
         
@@ -278,6 +272,7 @@
                         <div class="hobby-item"><img src="Nighthawk by the lake.jpg" alt="Honda Nighthawk Motorcycle"><h3>1991 Honda Nighthawk</h3><p>Taking my classic 1991 Honda Nighthawk 750 for a ride by the lake.</p></div>
                         <div class="hobby-item"><img src="Technics Radio.JPG" alt="Technics Radio"><h3>Vintage Audio</h3><p>Restoring and listening to old radios like this STA-78 Realistic receiver.</p></div>
                         <div class="hobby-item"><img src="Kombucha Jars.JPG" alt="Kombucha Jars"><h3>Kombucha Brewing</h3><p>My latest batch of home-brewed kombucha is getting its flavor infusion.</p></div>
+                        
                         <div class="hobby-item"><video src="Komcha bubbles.MOV" loop muted playsinline alt="Kombucha Bubbles"></video><h3>Second Fermentation</h3><p>The magic of carbonation happening during the second fermentation.</p></div>
                         <div class="hobby-item"><video src="Pickle (1) (1).mov" loop muted playsinline></video><h3>Pickleball Match</h3><p>Playing with the sweetie!</p></div>
                         <div class="hobby-item"><video src="RidingBike.mov" loop muted playsinline></video><h3>Bike Ride</h3><p>Sunset views from Roswell on the ole Nighthawk 750</p></div>
@@ -324,16 +319,23 @@
         // --- Tab Controls Script ---
         const tabBtns = document.querySelectorAll('.tab-btn'); const tabContents = document.querySelectorAll('.tab-content'); tabBtns.forEach(btn => { btn.addEventListener('click', () => { const tabId = btn.dataset.tab; tabBtns.forEach(b => b.classList.remove('active')); btn.classList.add('active'); tabContents.forEach(content => content.classList.remove('active')); document.getElementById(`${tabId}-tab`).classList.add('active'); }); });
     </script>
-    
+
     <script>
-        document.querySelectorAll('.hobby-item video').forEach(video => {
-            video.addEventListener('mouseenter', () => {
-                video.play();
-            });
-            video.addEventListener('mouseleave', () => {
-                video.pause();
-                // video.currentTime = 0; // Uncomment this if you want the video to reset every time
-            });
+        const videoHobbyItems = document.querySelectorAll('.hobby-item');
+        
+        videoHobbyItems.forEach(item => {
+            const video = item.querySelector('video');
+            if (video) {
+                // When mouse enters the card, play the video
+                item.addEventListener('mouseenter', () => {
+                    video.play();
+                });
+                
+                // When mouse leaves the card, pause the video
+                item.addEventListener('mouseleave', () => {
+                    video.pause();
+                });
+            }
         });
     </script>
 
