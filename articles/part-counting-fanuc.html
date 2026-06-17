@@ -81,6 +81,7 @@
             <h1>How to Set Up Part Counting on a Fanuc CNC Controller</h1>
             <p class="byline">By Jordan Cota<span class="sep">|</span>Controls &amp; Automation</p>
         </header>
+        <img src="images/FanucTitleImage.png" alt="Navigation path to Ethernet settings">
 
         <div class="source-note">
             Originally published on the Glassdome Sustainable Manufacturing Blog. Re-hosted here by the author.
@@ -111,18 +112,14 @@
 
             <h2>1. Part Counting Methods Overview</h2>
             <p>There are three common approaches to counting parts on a Fanuc CNC. Which one you use depends on how your programs are structured and whether your fixture produces more than one part per cycle.</p>
-            <figure class="screenshot-placeholder">
-                <div class="ph-box">SCREENSHOT &mdash; replace this box with &lt;img src="images/partcount-methods.png" alt="Three part-counting methods"&gt;</div>
-                <figcaption>Figure 1: Three methods for counting parts on Fanuc controllers</figcaption>
-            </figure>
+            <img src="images/Figure1.png" alt="Navigation path to Ethernet settings">
+             <figcaption>Figure 1: Three methods for counting parts on Fanuc controllers</figcaption>
             <p>The standard M30/M02 approach works fine for simple programs that make one part and end. But it falls apart in two common scenarios: programs that loop with M99 (like bar feeders), and multi-part fixtures where one cycle produces 2, 3, or more finished parts. For these situations, you need either a custom M code or a macro variable.</p>
 
             <h2>2. Method 1: Standard M Code Counting (M30/M02)</h2>
             <p>By default, most Fanuc controllers increment the part counter by 1 each time the program hits an M30 (program end and rewind) or M02 (program end). This behavior is controlled by parameters 6700 and 6710.</p>
-            <figure class="screenshot-placeholder">
-                <div class="ph-box">SCREENSHOT &mdash; replace this box with &lt;img src="images/partcount-param-6700.png" alt="Parameters 6700 and 6710"&gt;</div>
+            <img src="images/Figure2.png" alt="Navigation path to Ethernet settings">
                 <figcaption>Figure 2: Parameter 6700 and 6710 control which M codes trigger the count</figcaption>
-            </figure>
             <h3>How to Check Your Current Configuration</h3>
             <ol>
                 <li>Put the machine in MDI mode</li>
@@ -163,28 +160,21 @@ M99 ;   (loop back to start)</code></pre>
 
             <h2>4. Method 3: Macro Variable for Multi-Part Fixtures</h2>
             <p>This is the most flexible method and the one you want when a single program cycle produces 2, 3, or more finished parts. Instead of relying on M codes, you write directly to the Fanuc system variable that stores the part count.</p>
-            <figure class="screenshot-placeholder">
-                <div class="ph-box">SCREENSHOT &mdash; replace this box with &lt;img src="images/partcount-multipart.png" alt="Why standard counting fails for multi-part fixtures"&gt;</div>
+            <img src="images/Figure3.png" alt="Navigation path to Ethernet settings">
                 <figcaption>Figure 3: Why standard counting does not work for multi-part fixtures</figcaption>
-            </figure>
             <h3>The System Variables</h3>
-            <figure class="screenshot-placeholder">
-                <div class="ph-box">SCREENSHOT &mdash; replace this box with &lt;img src="images/partcount-system-vars.png" alt="Fanuc system variables for part counting"&gt;</div>
+            <img src="images/Figure4.png" alt="Navigation path to Ethernet settings">
                 <figcaption>Figure 4: Fanuc system variables used for part counting</figcaption>
-            </figure>
             <p>The two key variables are <code>#3901</code> (parts completed) and <code>#3902</code> (parts required / target). These are the same values displayed on the Work Counter screen. Writing to #3901 directly updates the counter the operator sees.</p>
             <h3>Basic Example: 1 Part Per Cycle</h3>
-            <figure class="screenshot-placeholder">
-                <div class="ph-box">SCREENSHOT &mdash; replace this box with &lt;img src="images/partcount-basic-macro.png" alt="Simple macro adding 1 per cycle"&gt;</div>
+            <img src="images/Figure5.png" alt="Navigation path to Ethernet settings">
                 <figcaption>Figure 5: Simple macro to add 1 to the part counter per cycle</figcaption>
             </figure>
             <p>This is functionally the same as counting on M30, but gives you explicit control. The line <code>#3901=#3901+1</code> takes the current count, adds 1, and writes it back. Place it near the end of your program, before M30 or M99.</p>
             <h3>Multi-Part Example: 2 or 3 Parts Per Cycle</h3>
             <p>This is where the macro approach pays off. If your fixture holds 2 parts and both are machined in a single program cycle, change the +1 to +2. If it holds 3, use +3. The principle is the same regardless of the number.</p>
-            <figure class="screenshot-placeholder">
-                <div class="ph-box">SCREENSHOT &mdash; replace this box with &lt;img src="images/partcount-2-per-cycle.png" alt="Macro counting 2 parts per cycle"&gt;</div>
+            <img src="images/Figure6.png" alt="Navigation path to Ethernet settings">
                 <figcaption>Figure 6: Macro adjusted to count 2 parts per program cycle</figcaption>
-            </figure>
             <p>Because M30 also adds 1 to the counter by default, you need to account for this to avoid double counting. There are two options:</p>
             <ul>
                 <li><strong>Option A: Disable M30 counting.</strong> Set Parameter 6700 Bit 0 to 1 and leave Parameter 6710 at 0 (no custom M code). This way only the macro line counts, and M30 does nothing to the counter.</li>
@@ -194,8 +184,7 @@ M99 ;   (loop back to start)</code></pre>
 
             <h2>5. Combining Macros with M99 Loops</h2>
             <p>Bar feed machines and other continuous production setups typically loop with M99 and never hit M30 until the bar runs out or the target count is reached. Here is how to build a self-stopping counter into a looped program.</p>
-            <figure class="screenshot-placeholder">
-                <div class="ph-box">SCREENSHOT &mdash; replace this box with &lt;img src="images/partcount-loop-autostop.png" alt="Looped program with auto-stop"&gt;</div>
+            <img src="images/Figure7.png" alt="Navigation path to Ethernet settings">
                 <figcaption>Figure 7: Looped program with macro counter and automatic stop at target</figcaption>
             </figure>
             <p>In this example, the program increments #3901 by 1 after each part, then checks if the count has reached the target stored in #3902. When the count meets or exceeds the target, the program jumps to N9000, triggers a user alarm (#3000=1), and ends with M30. Until then, M99 sends it back to the start for the next part.</p>
@@ -209,8 +198,7 @@ IF[#3901 GE #3902]GOTO 9000 ;</code></pre>
             <p>The IF/GOTO logic still works the same way. Just be aware that if the target in #3902 is not evenly divisible by your increment, the final count will overshoot slightly. For example, a target of 25 with +2 per cycle will end at 26. If precise counts matter, adjust the target accordingly or add rounding logic.</p>
 
             <h2>6. Viewing and Resetting the Part Count</h2>
-            <figure class="screenshot-placeholder">
-                <div class="ph-box">SCREENSHOT &mdash; replace this box with &lt;img src="images/partcount-viewing.png" alt="Three ways to check the part count"&gt;</div>
+            <img src="images/Figure8.png" alt="Navigation path to Ethernet settings">
                 <figcaption>Figure 8: Three ways to check the current part count on the controller</figcaption>
             </figure>
             <h3>Viewing the Count</h3>
