@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Configure a Static IP on a Fanuc CNC Controller | Jordan Cota</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#127949;</text></svg>">
+    <link rel="stylesheet" href="article.css">
+</head>
+<body>
+    <div class="stars">
+        <div class="stars-layer" id="stars1"></div>
+        <div class="stars-layer" id="stars2"></div>
+        <div class="stars-layer" id="stars3"></div>
+    </div>
+
+    <article class="article-container">
+        <nav class="top-nav">
+            <a href="../index.html">&#8592; Back to jordancota.site</a>
+        </nav>
+
+        <header class="article-header">
+            <h1>How to Configure a Static IP on a Fanuc CNC Controller</h1>
+            <p class="byline">By Jordan Cota<span class="sep">|</span>Controls &amp; Automation</p>
+        </header>
+
+        <div class="source-note">
+            Originally published on the Glassdome Sustainable Manufacturing Blog. Re-hosted here by the author.
+        </div>
+
+        <!-- =====================================================================
+             PASTE YOUR ARTICLE BELOW.
+             Just replace everything between this comment and the closing
+             </div> with your article text. Use these tags as you go:
+
+               <p>A normal paragraph.</p>
+               <h2>A major section heading</h2>
+               <h3>A smaller sub-heading</h3>
+               <ul><li>bullet</li><li>another bullet</li></ul>
+               <ol><li>step one</li><li>step two</li></ol>
+               <pre><code>command or code block, line breaks preserved</code></pre>
+               <img src="images/your-screenshot.png" alt="describe the image">
+                  ^ put article images in /articles/images/ and reference them like that
+               <table><tr><th>Param</th><th>Value</th></tr>
+                      <tr><td>...</td><td>...</td></tr></table>
+
+             Everything is already styled to match the site.
+             ===================================================================== -->
+        <div class="article-body">
+
+            <p><em>Need to set a static IP or do a FOCAS test? You're in the right place.</em></p>
+            <p>This guide walks through setting a static IP on Fanuc CNC controllers, covering the 0i-TF/PF, 30i/31i/32i, and 16i/18i/21i series. A static IP is the first step toward connecting your machine to monitoring software, DNC systems, or FOCAS-based data collection.</p>
+            <p><strong>Note:</strong> Most Fanuc controllers manufactured after 2005 include embedded Ethernet as standard. Older machines may need an optional Ethernet board or PCMCIA card.</p>
+
+            <h2>1. Check Your Hardware</h2>
+            <p>Before configuring anything, confirm which Ethernet interface your controller has. Look at the back of the control unit for an RJ-45 port (standard network cable connector).</p>
+            <table>
+                <tr><th>Interface</th><th>Found On</th><th>Max Connections</th></tr>
+                <tr><td>Embedded Ethernet (standard)</td><td>0i-D/F/TF/PF, all 30i, most 18i-B+</td><td>5 clients</td></tr>
+                <tr><td>Fast Ethernet Board (option)</td><td>Installed in option slot</td><td>20 clients</td></tr>
+                <tr><td>PCMCIA Ethernet Card</td><td>Memory card slot (temporary use)</td><td>1 client</td></tr>
+            </table>
+            <p>The embedded Ethernet port uses connector CD38A on the control unit or CD38S on the display unit. Plug in a standard Ethernet cable and confirm the link light is active.</p>
+
+            <h2>2. Navigate to the Ethernet Settings</h2>
+            <p>The menu path differs slightly depending on your controller series, but the concept is the same: get to the SYSTEM screen and find the Ethernet soft key.</p>
+            <figure class="screenshot-placeholder">
+                <div class="ph-box">SCREENSHOT &mdash; replace this box with &lt;img src="images/fanuc-ip-nav.png" alt="Navigation path to Ethernet settings"&gt;</div>
+                <figcaption>Figure 1: Navigation path to reach Ethernet settings</figcaption>
+            </figure>
+            <h3>0i-TF/PF and 30i/31i/32i Series</h3>
+            <ol>
+                <li>Press the [SYSTEM] hard key on the operator panel</li>
+                <li>Press the [+] continue key (right arrow) repeatedly</li>
+                <li>Look for [EMBED] or [EMBED PORT] in the soft key bar</li>
+                <li>Press it, then press [COMMON] to see IP settings</li>
+            </ol>
+            <h3>16i/18i/21i Series</h3>
+            <ol>
+                <li>Press [SYSTEM], then scroll with the continue key</li>
+                <li>Look for [ETHPRM] instead of [EMBED PORT]</li>
+                <li>Press [ETHPRM], then [EMBEDD] for the embedded port</li>
+            </ol>
+            <p><strong>Note:</strong> On the 16i/18i/21i, the CNC must be in MDI mode to edit Ethernet settings.</p>
+
+            <h2>3. Set the Static IP Address</h2>
+            <h3>Enable Parameter Write</h3>
+            <p>Before making changes, go to the SETTING screen and set PWE (Parameter Write Enable) to 1. Without this, the controller will reject your edits.</p>
+            <h3>Configure Key Parameters</h3>
+            <figure class="screenshot-placeholder">
+                <div class="ph-box">SCREENSHOT &mdash; replace this box with &lt;img src="images/fanuc-ip-params.png" alt="Key Ethernet parameters"&gt;</div>
+                <figcaption>Figure 2: Key parameters that must be set correctly</figcaption>
+            </figure>
+            <p>Set these parameters first:</p>
+            <ul>
+                <li><code>Parameter 0020 = 9</code> &mdash; selects Embedded Ethernet as the I/O channel</li>
+                <li><code>Parameter 14880 Bit 0 (ETH) = 0</code> &mdash; enables Ethernet; setting to 1 disables it and hides the menu</li>
+                <li><code>Parameter 14880 Bit 6 (DHC) = 1</code> &mdash; disables DHCP, forcing static IP mode; 0i and 30i only</li>
+            </ul>
+            <p><strong>Note:</strong> If the [EMBED] or [EMBED PORT] soft key is missing, Parameter 14880 Bit 0 is almost certainly set to 1. This is the most common issue reported by technicians.</p>
+            <h3>Enter the IP Address</h3>
+            <p>Navigate to the COMMON screen under EMBED PORT (or ETHPRM on 16i/18i/21i). You will see fields for IP Address, Subnet Mask, and Router IP Address.</p>
+            <figure class="screenshot-placeholder">
+                <div class="ph-box">SCREENSHOT &mdash; replace this box with &lt;img src="images/fanuc-ip-common.png" alt="COMMON IP entry screen"&gt;</div>
+                <figcaption>Figure 3: The COMMON screen where you enter IP, subnet, and gateway</figcaption>
+            </figure>
+            <p>Use the MDI keys to type each octet and press [INPUT] after each field. A typical shop floor setup might look like:</p>
+            <table>
+                <tr><th>Field</th><th>Example Value</th></tr>
+                <tr><td>IP Address</td><td>192.168.1.100</td></tr>
+                <tr><td>Subnet Mask</td><td>255.255.255.0</td></tr>
+                <tr><td>Router IP (Gateway)</td><td>192.168.1.1</td></tr>
+            </table>
+            <p>Coordinate with your IT department or network administrator to get an available IP address on your shop floor network. Make sure it does not conflict with any other device.</p>
+
+            <h2>4. Configure the FOCAS2 Port</h2>
+            <p>FOCAS (Fanuc Open CNC API Specification) is how monitoring software communicates with Fanuc controllers. It runs over TCP and needs a port number configured on the controller.</p>
+            <figure class="screenshot-placeholder">
+                <div class="ph-box">SCREENSHOT &mdash; replace this box with &lt;img src="images/fanuc-focas2.png" alt="FOCAS2 settings screen"&gt;</div>
+                <figcaption>Figure 4: FOCAS2 settings screen with the default port 8193</figcaption>
+            </figure>
+            <p>Navigate to the [FOCAS2] soft key (under EMBED PORT) and set:</p>
+            <ul>
+                <li><code>TCP Port = 8193</code> (this is the standard default)</li>
+                <li><code>UDP Port = 0</code></li>
+                <li><code>Time Interval = 0</code></li>
+            </ul>
+            <p><strong>Note:</strong> Port 8193 must match what your monitoring or data collection software expects. Most FOCAS-based tools use 8193 by default.</p>
+
+            <h2>5. Power Cycle the Controller</h2>
+            <p>Changes to IP settings and parameters do not take effect until the controller is restarted. You have two options:</p>
+            <ul>
+                <li><strong>Full power cycle:</strong> Turn the machine off and back on. This is the safest approach.</li>
+                <li><strong>Software restart (0i/30i only):</strong> Navigate to [EMBED PORT] &gt; [COMMON] &gt; [(OPRT)] &gt; [RESTART] &gt; [EXECUTE]. This restarts the Ethernet stack without powering down the whole machine.</li>
+            </ul>
+            <p><strong>Note:</strong> A software restart will drop any active Ethernet connections. Do not use it while a DNC program is transferring.</p>
+
+            <h2>6. Verify the Connection</h2>
+            <p>After the controller restarts, verify that the network is working from both sides.</p>
+            <h3>From the Fanuc Controller</h3>
+            <p>Navigate to [EMBED PORT] &gt; [PING]. Enter the IP address of a PC on the same network and press [P.EXEC]. A successful result displays "Response is received".</p>
+            <figure class="screenshot-placeholder">
+                <div class="ph-box">SCREENSHOT &mdash; replace this box with &lt;img src="images/fanuc-ping.png" alt="Built-in ping utility"&gt;</div>
+                <figcaption>Figure 5: Built-in ping utility and PC-side verification commands</figcaption>
+            </figure>
+            <h3>From a PC on the Same Network</h3>
+            <p>Open a Command Prompt and run:</p>
+            <pre><code>ping 192.168.1.100</code></pre>
+            <p>Then verify the FOCAS port is reachable:</p>
+            <pre><code>telnet 192.168.1.100 8193</code></pre>
+            <p>If ping works but telnet fails, the FOCAS port is likely not set correctly, or the FOCAS option is not activated on the controller.</p>
+
+            <h2>7. 16i/18i/21i Series Differences</h2>
+            <p>If you are working with the older 16i, 18i, or 21i controllers, there are a few important differences to be aware of.</p>
+            <figure class="screenshot-placeholder">
+                <div class="ph-box">SCREENSHOT &mdash; replace this box with &lt;img src="images/fanuc-ethprm.png" alt="ETHPRM screen"&gt;</div>
+                <figcaption>Figure 6: The ETHPRM screen used on 16i/18i/21i controllers</figcaption>
+            </figure>
+            <ul>
+                <li><strong>No DHCP support.</strong> These controllers only support static IP. There is no DHCP parameter to toggle.</li>
+                <li><strong>Different menu path.</strong> Use [ETHPRM] &gt; [EMBEDD] instead of [EMBED PORT] &gt; [COMMON].</li>
+                <li><strong>MDI mode required.</strong> The controller must be in MDI mode to edit network settings.</li>
+                <li><strong>7-segment LED reset.</strong> If you cannot access the settings screen (forgotten IP), hold the push switch on the main board for 5 seconds and release at number "2" to reset embedded Ethernet to factory defaults (192.168.1.1, port 8193).</li>
+                <li><strong>21i-B limitation.</strong> The Series 21i-B cannot use embedded Ethernet at all. It requires a PCMCIA card or option board.</li>
+            </ul>
+
+            <h2>8. Troubleshooting</h2>
+            <table>
+                <tr><th>Problem</th><th>Cause</th><th>Fix</th></tr>
+                <tr><td>[EMBED] soft key missing</td><td>Param 14880 Bit 0 = 1</td><td>Set Bit 0 to 0 and power cycle</td></tr>
+                <tr><td>Ping fails from PC</td><td>Subnet mismatch</td><td>Verify CNC and PC are on the same subnet</td></tr>
+                <tr><td>Ping works but FOCAS fails</td><td>Port not set or FOCAS not activated</td><td>Set FOCAS TCP port to 8193; confirm FOCAS option is enabled</td></tr>
+                <tr><td>DHCP ERROR on screen</td><td>No DHCP server found</td><td>Set Param 14880 Bit 6 = 1 for static IP</td></tr>
+                <tr><td>Intermittent connection drops</td><td>CNC on busy network</td><td>Use a dedicated subnet or VLAN for CNC machines</td></tr>
+                <tr><td>Windows PC cannot connect</td><td>Firewall blocking port</td><td>Add inbound rule for TCP 8193 in Windows Firewall</td></tr>
+            </table>
+
+            <h2>9. Connect to Your Monitoring System</h2>
+            <p>Once your Fanuc controller has a static IP and FOCAS is responding on port 8193, it is ready to add to a production monitoring system or SCADA.</p>
+            <p>Over FOCAS2, a monitoring platform can automatically read spindle speed, feed rates, axis positions, alarm states, part counts, cycle times, and program information. This data feeds into live dashboards, automated alerts, and historical trend analysis.</p>
+
+            <h2>Conclusion</h2>
+            <p>Setting a static IP on a Fanuc CNC is straightforward once you know where to look. The core steps are the same across all series: access the Ethernet screen under SYSTEM, enter your IP/subnet/gateway, set the FOCAS port to 8193, and power cycle. The 16i/18i/21i family uses a slightly different menu path ([ETHPRM] instead of [EMBED PORT]) and lacks DHCP, but the actual IP entry process is identical.</p>
+            <p>If you run into issues, start with Parameter 14880 Bit 0. That single bit being wrong accounts for the majority of connectivity problems on Fanuc machines.</p>
+
+        </div>
+        <!-- ===================== END OF ARTICLE CONTENT ====================== -->
+
+        <footer class="article-footer">
+            <a class="back-home" href="../index.html">&#8592; Back to Home</a>
+        </footer>
+    </article>
+</body>
+</html>

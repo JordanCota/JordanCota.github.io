@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Configure MTConnect on a Haas NGC Controller | Jordan Cota</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#127949;</text></svg>">
+    <link rel="stylesheet" href="article.css">
+</head>
+<body>
+    <div class="stars">
+        <div class="stars-layer" id="stars1"></div>
+        <div class="stars-layer" id="stars2"></div>
+        <div class="stars-layer" id="stars3"></div>
+    </div>
+
+    <article class="article-container">
+        <nav class="top-nav">
+            <a href="../index.html">&#8592; Back to jordancota.site</a>
+        </nav>
+
+        <header class="article-header">
+            <h1>Technical Guide: How to Configure MTConnect on a Haas NGC Controller</h1>
+            <p class="byline">By Jordan Cota<span class="sep">|</span>Controls &amp; Automation</p>
+        </header>
+
+        <div class="source-note">
+            Originally published on the Glassdome Sustainable Manufacturing Blog. Re-hosted here by the author.
+        </div>
+
+        <!-- =====================================================================
+             PASTE YOUR ARTICLE BELOW.
+             Just replace everything between this comment and the closing
+             </div> with your article text. Use these tags as you go:
+
+               <p>A normal paragraph.</p>
+               <h2>A major section heading</h2>
+               <h3>A smaller sub-heading</h3>
+               <ul><li>bullet</li><li>another bullet</li></ul>
+               <ol><li>step one</li><li>step two</li></ol>
+               <pre><code>command or code block, line breaks preserved</code></pre>
+               <img src="images/your-screenshot.png" alt="describe the image">
+                  ^ put article images in /articles/images/ and reference them like that
+               <table><tr><th>Param</th><th>Value</th></tr>
+                      <tr><td>...</td><td>...</td></tr></table>
+
+             Everything is already styled to match the site.
+             ===================================================================== -->
+        <div class="article-body">
+
+            <p><em>Need to configure MTConnect on a Haas NGC controller? You're in the right place.</em></p>
+            <p>MTConnect is a standard vocabulary that allows users to capture and share manufacturing data in real time. On Haas machines with the Next Generation Control (NGC), MTConnect lets you access status information, equipment metadata, and historical data using a simple HTTP-based Request/Response model outputting XML. By following the steps in this guide, you can set up MTConnect and verify its functionality on your Haas NGC machine.</p>
+            <p><strong>Note:</strong> Most Haas Controllers (NGC) created after 2017 support this MTConnect option.</p>
+
+            <h2>1. Check Machine Requirements</h2>
+            <h3>Software Version</h3>
+            <p>Confirm that your Haas NGC controller is running software version 100.20.000.1200 or newer. This ensures the best compatibility with MTConnect.</p>
+            <h3>Machine Naming</h3>
+            <p>If your machine's name contains a slash '/', you may need an additional patch for MTConnect to work correctly. Contact your local Haas Factory Outlet if this applies.</p>
+
+            <h2>2. Understand MTConnect Requests</h2>
+            <p>MTConnect on Haas NGC uses an HTTP-based approach where a client (e.g., monitoring software) sends a Request, and the Haas machine's MTConnect Agent (server role) returns a Response.</p>
+            <p>There are three primary MTConnect requests:</p>
+            <h3>Probe Request</h3>
+            <ul>
+                <li>Retrieves machine metadata, including descriptions of data points.</li>
+                <li><code>http://172.21.16.31:8082/probe</code></li>
+            </ul>
+            <h3>Current Request</h3>
+            <ul>
+                <li>Fetches the latest (real-time) values of each data point.</li>
+                <li><code>http://172.21.16.31:8082/current</code></li>
+            </ul>
+            <h3>Sample Request</h3>
+            <ul>
+                <li>Requests historical data from a specified range of sequence numbers.</li>
+                <li><code>http://172.21.16.31:8082/sample</code></li>
+            </ul>
+
+            <h2>3. Configure MTConnect on Haas NGC</h2>
+            <h3>Connect the Machine to Your Network</h3>
+            <p>From the Haas controller, navigate to Settings &gt; Network &gt; Wired Connection.</p>
+            <figure class="screenshot-placeholder">
+                <div class="ph-box">SCREENSHOT &mdash; replace this box with &lt;img src="images/haas-wired-connection.png" alt="Haas NGC Wired Connection screen"&gt;</div>
+                <figcaption>Haas NGC Wired Connection screen</figcaption>
+            </figure>
+            <p>If your machine already has an IP Address, Subnet Mask, and Gateway IP, record this information, and make sure Wired Network Enabled has a value of 'On'.</p>
+            <p>Confirm Setting 143 'Machine Data Collect' port is set to 5051 and press F4 to save.</p>
+            <p>The network status should be "UP" (active). If it shows "DOWN," confirm that cables or wireless connections are properly set up.</p>
+            <p>If this information is blank, complete the following steps on the "WIRED CONNECTION" screen:</p>
+            <ol>
+                <li>Enter a suitable IP, Subnet, and Gateway</li>
+                <li>Make sure 'Wired Network Enable' is 'ON', and 'Obtain Address Automatically' is 'OFF'</li>
+                <li>Save changes by pressing F4</li>
+                <li>Record the IP Address, Gateway, and Subnet of your machine &mdash; save these values by photo or written notes</li>
+                <li>Set Setting 143 'Machine Data Collect' port to '5051' by navigating to the "Settings" header, then press F4 to save</li>
+            </ol>
+            <figure class="screenshot-placeholder">
+                <div class="ph-box">SCREENSHOT &mdash; replace this box with &lt;img src="images/haas-setting-143.png" alt="Haas NGC Setting screen"&gt;</div>
+                <figcaption>Haas NGC Setting screen</figcaption>
+            </figure>
+            <h3>Confirm the MTConnect Port Is Allowed by Your Network</h3>
+            <p>Haas NGC will use TCP port 5051 internally (Adapter) for MTConnect after you have set it.</p>
+            <p>Ensure no firewall or other service is blocking traffic on TCP port 8082 (Agent).</p>
+            <p>You can connect to the local subnet and test this port from the command prompt on your PC.</p>
+
+            <h2>4. Construct MTConnect Request URLs</h2>
+            <p>MTConnect requests generally follow this format:</p>
+            <pre><code>http://&lt;machine_ip&gt;:8082/&lt;request_type&gt;</code></pre>
+            <ul>
+                <li><strong>machine_ip:</strong> The IP address of your Haas machine (e.g., 172.21.16.31).</li>
+                <li><strong>machine MTConnect Agent:</strong> port 8082</li>
+                <li><strong>request_type:</strong> One of probe, current, or sample.</li>
+            </ul>
+            <p><strong>Note:</strong> Most monitoring platforms primarily use the "Current" request type for real-time data retrieval.</p>
+
+            <h2>5. Test and Verify MTConnect</h2>
+            <h3>Use a Web Browser or HTTP Client</h3>
+            <ul>
+                <li>Type the MTConnect request URL into a web browser (Chrome, Edge, Firefox, etc.)</li>
+                <li>A successful response will display XML data describing the machine status or metadata.</li>
+                <li>Full address would be <code>172.21.16.31:8082/current</code> for this example.</li>
+            </ul>
+            <figure class="screenshot-placeholder">
+                <div class="ph-box">SCREENSHOT &mdash; replace this box with &lt;img src="images/haas-xml-output.png" alt="Example MTConnect XML output"&gt;</div>
+                <figcaption>Example Output (Current): MTConnect XML</figcaption>
+            </figure>
+
+            <h2>6. Troubleshooting Tips</h2>
+            <h3>Check Compatibility</h3>
+            <ul><li>Confirm your software version meets the MTConnect requirement.</li></ul>
+            <h3>Firewall Port</h3>
+            <ul><li>Verify port 8082 is open and allowed by your network's firewall.</li></ul>
+            <h3>Network Status</h3>
+            <ul>
+                <li>Make sure the status is "UP" on the Haas controller.</li>
+                <li>Confirm you have set the Machine Data Collect option correctly.</li>
+                <li>Confirm you can ping the machine from your local subnet.</li>
+            </ul>
+
+            <h2>7. Build Dashboards From the Data</h2>
+            <p>Once MTConnect is properly configured and responding on your Haas NGC controller, the data can feed a production monitoring system or SCADA for real-time analysis.</p>
+            <h3>Parse XML Data</h3>
+            <ul>
+                <li>A monitoring platform reads and interprets the MTConnectStreams XML.</li>
+                <li>It extracts key performance indicators (KPIs) such as cycle time, machine state, and feed override.</li>
+            </ul>
+            <h3>Build Real-Time Dashboards</h3>
+            <ul>
+                <li>Create widgets or charts to visualize data points (e.g., spindle load or part counts).</li>
+                <li>Customize layouts to highlight relevant metrics and display them on large monitors or individual workstations.</li>
+            </ul>
+            <h3>Historical Analysis</h3>
+            <ul>
+                <li>While the "Current" data stream drives real-time views, you can archive data for trend analysis.</li>
+                <li>Compare past machine states, identify downtime patterns, and plan predictive maintenance.</li>
+            </ul>
+            <h3>Alerts &amp; Notifications</h3>
+            <ul>
+                <li>An alert system can send messages when certain thresholds (like spindle load) exceed safe limits.</li>
+                <li>Receive notifications via email, text, or on-screen pop-ups, ensuring immediate attention to critical events.</li>
+            </ul>
+            <h3>Optimize Operations</h3>
+            <ul>
+                <li>By correlating real-time metrics with other manufacturing data, you can optimize tool usage, improve scheduling, and reduce idle times.</li>
+                <li>Data-driven insights help refine processes and support continuous improvement initiatives.</li>
+            </ul>
+            <p>Dashboard examples from live Haas machines outputting MTConnect:</p>
+            <figure class="screenshot-placeholder">
+                <div class="ph-box">SCREENSHOT &mdash; replace this box with &lt;img src="images/haas-dashboard-productivity.png" alt="Dashboard with Haas productivity data"&gt;</div>
+                <figcaption>Dashboard with Haas productivity data</figcaption>
+            </figure>
+            <figure class="screenshot-placeholder">
+                <div class="ph-box">SCREENSHOT &mdash; replace this box with &lt;img src="images/haas-dashboard-status.png" alt="Dashboard with Haas machine status"&gt;</div>
+                <figcaption>Dashboard with Haas machine status</figcaption>
+            </figure>
+
+            <h2>Conclusion</h2>
+            <p>Setting up MTConnect on your Haas NGC controller (e.g., VF-1450) opens the door to real-time monitoring and historical data review. If you encounter any challenges, reach out to your local Haas Factory Outlet or IT support.</p>
+            <p>By pairing this functionality with a production monitoring system or SCADA, you can transform raw data into meaningful dashboards, alerts, and analytics&mdash;empowering you to make informed decisions and elevate productivity on the shop floor.</p>
+
+        </div>
+        <!-- ===================== END OF ARTICLE CONTENT ====================== -->
+
+        <footer class="article-footer">
+            <a class="back-home" href="../index.html">&#8592; Back to Home</a>
+        </footer>
+    </article>
+</body>
+</html>
