@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Connect Older Machines to IoT (Without Replacing Them) | Jordan Cota</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#127949;</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; padding: 0; background: #ffffff; color: #2e2e2e;
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.65; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+        .stars { display: none !important; }
+
+        .article-container { max-width: 780px; margin: 0 auto; padding: 2.5rem 1.25rem 4rem; }
+
+        .top-nav { margin-bottom: 2rem; }
+        .top-nav a { color: #0e7c86; text-decoration: none; font-size: 0.95rem; font-weight: 600; }
+        .top-nav a:hover { text-decoration: underline; }
+
+        .article-header { background: none; color: inherit; padding: 0; margin: 0 0 1rem; border-radius: 0; box-shadow: none; }
+        .article-header h1 { margin: 0 0 0.65rem; font-size: 2.7rem; line-height: 1.08; font-weight: 800; letter-spacing: -0.015em; color: #111; }
+        .byline { margin: 0; font-size: 1rem; color: #6b7280; font-weight: 500; }
+        .byline .sep { margin: 0 0.5rem; color: #c7ced1; }
+
+        .source-note { background: #f3f8f8; border-left: 3px solid #0e7c86; border-radius: 4px; padding: 0.8rem 1.1rem; margin: 1.75rem 0 2.75rem; font-size: 0.92rem; color: #4b5563; }
+        .source-note a { color: #0e7c86; }
+
+        .article-body { font-size: 1.08rem; color: #2e2e2e; }
+        .article-body h2 { font-size: 2.05rem; font-weight: 800; line-height: 1.12; letter-spacing: -0.015em; color: #111; margin: 3rem 0 1.1rem; }
+        .article-body h3 { font-size: 1.32rem; font-weight: 700; color: #1a1a1a; margin: 2.1rem 0 0.65rem; }
+        .article-body p { margin: 0 0 1.25rem; }
+        .article-body ul, .article-body ol { margin: 0 0 1.25rem; padding-left: 1.5rem; }
+        .article-body li { margin-bottom: 0.55rem; }
+        .article-body a { color: #0e7c86; text-decoration: none; }
+        .article-body a:hover { text-decoration: underline; }
+        .article-body strong { color: #111; font-weight: 700; }
+        .article-body img { max-width: 100%; height: auto; border-radius: 6px; margin: 1.5rem 0; display: block; border: 1px solid #e5e7eb; }
+        .article-body blockquote { border-left: 3px solid #0e7c86; margin: 1.5rem 0; padding: 0.25rem 0 0.25rem 1rem; color: #555; font-style: italic; }
+
+        .article-body table { width: 100%; border-collapse: collapse; margin: 1.85rem 0; font-size: 1rem; }
+        .article-body th { text-align: left; font-weight: 700; color: #111; padding: 0.95rem 1.1rem; border-bottom: 1px solid #1a8f88; }
+        .article-body td { padding: 1rem 1.1rem; border-bottom: 1px solid #1a8f88; color: #2e2e2e; vertical-align: top; }
+        .article-body th:not(:last-child), .article-body td:not(:last-child) { border-right: 1px solid #e3e6e8; }
+
+        .article-body code { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; background: #f1f3f4; color: #0b5e66; padding: 0.12em 0.4em; border-radius: 4px; font-size: 0.9em; }
+        .article-body pre { background: #f6f8fa; border: 1px solid #e5e7eb; color: #24292f; border-radius: 8px; padding: 1rem 1.2rem; overflow-x: auto; margin: 1.5rem 0; line-height: 1.5; }
+        .article-body pre code { background: none; color: inherit; padding: 0; font-size: 0.9rem; }
+
+        .screenshot-placeholder { margin: 1.85rem 0; }
+        .screenshot-placeholder .ph-box { border: 2px dashed #b9c2c7; border-radius: 8px; padding: 2.5rem 1rem; text-align: center; color: #7a868d; background: #f7f9fa; font-size: 0.9rem; }
+        .screenshot-placeholder figcaption { font-size: 0.88rem; color: #6b7280; text-align: center; margin-top: 0.5rem; font-style: italic; }
+
+        .article-footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid #e5e7eb; text-align: center; }
+        .back-home { display: inline-block; padding: 0.7rem 1.6rem; background: #0e7c86; color: #fff; text-decoration: none; border-radius: 6px; font-weight: 600; }
+        .back-home:hover { background: #0a626a; }
+
+        @media (max-width: 768px) {
+            .article-container { padding: 1.75rem 1rem 3rem; }
+            .article-header h1 { font-size: 2.05rem; }
+            .article-body h2 { font-size: 1.6rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars">
+        <div class="stars-layer" id="stars1"></div>
+        <div class="stars-layer" id="stars2"></div>
+        <div class="stars-layer" id="stars3"></div>
+    </div>
+
+    <article class="article-container">
+        <nav class="top-nav">
+            <a href="../index.html">&#8592; Back to jordancota.site</a>
+        </nav>
+
+        <header class="article-header">
+            <h1>How to Connect Older Machines to IoT (Without Replacing Them)</h1>
+            <p class="byline">By Jordan Cota<span class="sep">|</span>Controls &amp; Automation</p>
+        </header>
+
+        <div class="source-note">
+            Originally published on the Glassdome Sustainable Manufacturing Blog. Re-hosted here by the author.
+        </div>
+
+        <!-- =====================================================================
+             PASTE YOUR ARTICLE BELOW.
+             Just replace everything between this comment and the closing
+             </div> with your article text. Use these tags as you go:
+
+               <p>A normal paragraph.</p>
+               <h2>A major section heading</h2>
+               <h3>A smaller sub-heading</h3>
+               <ul><li>bullet</li><li>another bullet</li></ul>
+               <ol><li>step one</li><li>step two</li></ol>
+               <pre><code>command or code block, line breaks preserved</code></pre>
+               <img src="images/your-screenshot.png" alt="describe the image">
+                  ^ put article images in /articles/images/ and reference them like that
+               <table><tr><th>Param</th><th>Value</th></tr>
+                      <tr><td>...</td><td>...</td></tr></table>
+
+             Everything is already styled to match the site.
+             ===================================================================== -->
+        <div class="article-body">
+
+            <p>You do not need the "latest and greatest" machinery to connect and monitor a machine. There are a variety of ways to interface with your "Big Bertha," a name commonly given to older machinery made before East and West Germany existed. Why replace a perfectly functional shear machine or band-saw just because it remembers 'trickle down theory'? Virtually any machine can be brought online and added to a production monitoring system or SCADA, regardless of age &mdash; so you can monitor live status, uptime/downtime, parts produced, alarm events, and more. We rely on current transducers (CTs), photo-eyes, wet contacts, and dry contacts to bring a machine into the 21st century. This explainer highlights just some of the methods you can use to bring Industry 4.0 to older machines, with real-world examples of the process.</p>
+            <p>A few different styles of IoT devices, "gateways," can funnel shop-floor machine data into a monitoring system. For older machines, a hard-wired or hardware-based gateway works well &mdash; for example, the EDATEC CM4 Industrial. This kind of unit is well suited to the shop floor and can switch between cellular/ethernet/wifi connections to stay connected. It accepts digital and analog input signals, and supports protocols like Allen-Bradley's EIP, Modbus, MTConnect, OPC-UA, Siemens S7, and TCP.</p>
+            <p>Let's get into it.</p>
+
+            <h2>Thalmann Metal Folder</h2>
+            <p>This unit was fairly modern in design and in the control system, with an EtherCAT-based Beckhoff system. Normally, we would target the Beckhoff computer to draw out the variables such as 'Is-Running', 'Part Complete', 'Fault', etc., but this requires direct access to the programming of the machine &mdash; something the OEM was unwilling to allow. After reviewing the schematics of the machine, we determined that we could use the 'Active Light' on the I/O board. It was a basic 24VDC signal, which means when 24VDC is active or flowing through the light, we know that the machine is running. With this, we can also count the number of cycles the machine is completing.</p>
+            <figure class="screenshot-placeholder">
+                <div class="ph-box">SCREENSHOT &mdash; replace this box with &lt;img src="images/thalmann-aktiv.png" alt="Thalmann I/O board active signal"&gt;</div>
+                <figcaption>Aktiv is the German word for Active. When power is active at X43.2_7,8, the machine is running.</figcaption>
+            </figure>
+            <p>This is a "wet contact" connection. It requires an external power supply. In this case, X43.2_7,8 supplies voltage to our gateway at input 2 'DIN1+', then we connect input 3 'DIN1-' to the common or 0V, allowing the gateway to detect a voltage change.</p>
+
+            <h2>Hydmech &ndash; Saw Band</h2>
+            <p>The client wanted to be able to monitor the uptime and be alerted if any downtime events took place on a few of their saw band machines. These machines were 'low-tech' with no controller or "brain" to monitor. We needed a hardwired solution. We decided to monitor the machine by using current transducers to monitor the power flowing into the sawband motor. If power is flowing into this motor, we consider the machine active.</p>
+            <figure class="screenshot-placeholder">
+                <div class="ph-box">SCREENSHOT &mdash; replace this box with &lt;img src="images/hydmech-cabinet.png" alt="Hydmech control cabinet with current transducer"&gt;</div>
+                <figcaption>A look inside the control cabinet. These two VFDs control the movement and cutting for the Hydmech and similar machines. The blue device atop the left VFD is the current transducer monitoring current flow.</figcaption>
+            </figure>
+            <p>Once current is flowing through the wire that the CT is clamped over, the CT will produce a small voltage change from 0.1V&ndash;1V. Once we connect the CT to our gateway, we can easily detect when the machine is running.</p>
+
+            <h2>Metal Bender</h2>
+            <p>The client requested that we monitor this bender for uptime, downtime, and part counts. Similar to the other machine, we had no way to directly interact with the computer within this machine. After reviewing the schematics, we found that relay KA4 will close or allow voltage to flow once the machine starts a cycle or begins to produce a part. A limit switch controls KA4. When the machine begins a cycle, it strikes the limit switch, energizing it, before committing to a part. Utilizing the motor that powers the system would have been easier, but it is a hydraulic-based system, meaning the motor is always running &mdash; but that does not mean the machine is actually producing parts. By wiring the Vout into the input side of the relay and wiring the output side of the relay to DIN1+, we can see when the limit switch is activated, thus knowing when a cycle has started and the total number of cycles.</p>
+            <figure class="screenshot-placeholder">
+                <div class="ph-box">SCREENSHOT &mdash; replace this box with &lt;img src="images/metal-bender-relay.png" alt="Metal bender relay KA4 wiring"&gt;</div>
+                <figcaption>Relay KA4 wiring for dry-contact cycle detection on the metal bender.</figcaption>
+            </figure>
+            <p>This is a "dry contact" connection. The input signal of a dry-contact connection mode is a passive switching signal. The change of the input state can be detected by disconnecting or shorting the DI and COM port.</p>
+
+            <h2>Metal Shear Machine</h2>
+            <p>This metal shear does exactly that: it shears. The problem is that the owner had no idea how often this unit was running or how many cycles the machine had completed daily. The easiest solution was to attach a diffused photo-eye to the machine. We determined that when the machine was making a cut to metal, the shaft of the shear would drop within a range that the photo eye could capture. As long as the photo eye changed states (ON/OFF) within 5 minutes, we considered the machine as active.</p>
+            <figure class="screenshot-placeholder">
+                <div class="ph-box">SCREENSHOT &mdash; replace this box with &lt;img src="images/metal-shear-photoeye.png" alt="Diffused photo-eye on the metal shear"&gt;</div>
+                <figcaption>The photo-eye used was NPN style. We can use the EDATEC gateway to power the photo-eye in remote situations.</figcaption>
+            </figure>
+
+            <h2>Final</h2>
+            <p>Your equipment doesn't need a LinkedIn profile to be part of Industry 4.0. Whether a machine predates the internet, the fall of the Berlin Wall, or disco, if it moves, cycles, or consumes power, it can be monitored.</p>
+            <p>Once a connection strategy is in place, the signal feeds straight into a production monitoring system or SCADA &mdash; no forklift to the scrapyard required.</p>
+
+        </div>
+        <!-- ===================== END OF ARTICLE CONTENT ====================== -->
+
+        <footer class="article-footer">
+            <a class="back-home" href="../index.html">&#8592; Back to Home</a>
+        </footer>
+    </article>
+</body>
+</html>
