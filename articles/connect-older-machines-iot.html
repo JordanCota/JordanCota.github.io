@@ -128,7 +128,7 @@
             <p>Once current is flowing through the wire that the CT is clamped over, the CT will produce a small voltage change from 0.1V&ndash;1V. Once we connect the CT to our gateway, we can easily detect when the machine is running.</p>
 
             <h2>Metal Bender</h2>
-            <img src="images/MeatlBender.png" alt="Metal Bender Overview">
+            <img src="images/MetalBender.png" alt="Metal Bender Overview">
             <p>The client requested that we monitor this bender for uptime, downtime, and part counts. Similar to the other machine, we had no way to directly interact with the computer within this machine. After reviewing the schematics, we found that relay KA4 will close or allow voltage to flow once the machine starts a cycle or begins to produce a part. A limit switch controls KA4. When the machine begins a cycle, it strikes the limit switch, energizing it, before committing to a part. Utilizing the motor that powers the system would have been easier, but it is a hydraulic-based system, meaning the motor is always running &mdash; but that does not mean the machine is actually producing parts. By wiring the Vout into the input side of the relay and wiring the output side of the relay to DIN1+, we can see when the limit switch is activated, thus knowing when a cycle has started and the total number of cycles.</p>
                 <img src="images/MetalBender-connection.png" alt="Gateway Connection Style">
                 <figcaption>Relay KA4 wiring for dry-contact cycle detection on the metal bender.</figcaption>
