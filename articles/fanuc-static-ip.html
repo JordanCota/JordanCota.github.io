@@ -81,7 +81,7 @@
             <h1>How to Configure a Static IP on a Fanuc CNC Controller</h1>
             <p class="byline">By Jordan Cota<span class="sep">|</span>Controls &amp; Automation</p>
         </header>
-
+        <img src="images/FanucTitleImage.png">
         <div class="source-note">
             Originally published on the Glassdome Sustainable Manufacturing Blog. Re-hosted here by the author.
         </div>
@@ -122,10 +122,8 @@
 
             <h2>2. Navigate to the Ethernet Settings</h2>
             <p>The menu path differs slightly depending on your controller series, but the concept is the same: get to the SYSTEM screen and find the Ethernet soft key.</p>
-            <figure class="screenshot-placeholder">
-                <div class="ph-box">SCREENSHOT &mdash; replace this box with &lt;img src="images/fanuc-ip-nav.png" alt="Navigation path to Ethernet settings"&gt;</div>
+                <img src="images/Navigateto.png" alt="Navigation path to Ethernet settings">
                 <figcaption>Figure 1: Navigation path to reach Ethernet settings</figcaption>
-            </figure>
             <h3>0i-TF/PF and 30i/31i/32i Series</h3>
             <ol>
                 <li>Press the [SYSTEM] hard key on the operator panel</li>
@@ -145,10 +143,8 @@
             <h3>Enable Parameter Write</h3>
             <p>Before making changes, go to the SETTING screen and set PWE (Parameter Write Enable) to 1. Without this, the controller will reject your edits.</p>
             <h3>Configure Key Parameters</h3>
-            <figure class="screenshot-placeholder">
-                <div class="ph-box">SCREENSHOT &mdash; replace this box with &lt;img src="images/fanuc-ip-params.png" alt="Key Ethernet parameters"&gt;</div>
-                <figcaption>Figure 2: Key parameters that must be set correctly</figcaption>
-            </figure>
+            <img src="images/ConfigKeyPara.png" alt="Navigation path to Ethernet settings">
+            <figcaption>Figure 2: Key parameters that must be set correctly</figcaption>
             <p>Set these parameters first:</p>
             <ul>
                 <li><code>Parameter 0020 = 9</code> &mdash; selects Embedded Ethernet as the I/O channel</li>
@@ -158,10 +154,8 @@
             <p><strong>Note:</strong> If the [EMBED] or [EMBED PORT] soft key is missing, Parameter 14880 Bit 0 is almost certainly set to 1. This is the most common issue reported by technicians.</p>
             <h3>Enter the IP Address</h3>
             <p>Navigate to the COMMON screen under EMBED PORT (or ETHPRM on 16i/18i/21i). You will see fields for IP Address, Subnet Mask, and Router IP Address.</p>
-            <figure class="screenshot-placeholder">
-                <div class="ph-box">SCREENSHOT &mdash; replace this box with &lt;img src="images/fanuc-ip-common.png" alt="COMMON IP entry screen"&gt;</div>
-                <figcaption>Figure 3: The COMMON screen where you enter IP, subnet, and gateway</figcaption>
-            </figure>
+            <img src="images/EnterIP.png" alt="Navigation path to Ethernet settings">
+             <figcaption>Figure 3: The COMMON screen where you enter IP, subnet, and gateway</figcaption>
             <p>Use the MDI keys to type each octet and press [INPUT] after each field. A typical shop floor setup might look like:</p>
             <table>
                 <tr><th>Field</th><th>Example Value</th></tr>
@@ -173,10 +167,8 @@
 
             <h2>4. Configure the FOCAS2 Port</h2>
             <p>FOCAS (Fanuc Open CNC API Specification) is how monitoring software communicates with Fanuc controllers. It runs over TCP and needs a port number configured on the controller.</p>
-            <figure class="screenshot-placeholder">
-                <div class="ph-box">SCREENSHOT &mdash; replace this box with &lt;img src="images/fanuc-focas2.png" alt="FOCAS2 settings screen"&gt;</div>
-                <figcaption>Figure 4: FOCAS2 settings screen with the default port 8193</figcaption>
-            </figure>
+            <img src="images/FOCAS2Port.png" alt="Navigation path to Ethernet settings">
+            <figcaption>Figure 4: FOCAS2 settings screen with the default port 8193</figcaption>
             <p>Navigate to the [FOCAS2] soft key (under EMBED PORT) and set:</p>
             <ul>
                 <li><code>TCP Port = 8193</code> (this is the standard default)</li>
@@ -197,10 +189,8 @@
             <p>After the controller restarts, verify that the network is working from both sides.</p>
             <h3>From the Fanuc Controller</h3>
             <p>Navigate to [EMBED PORT] &gt; [PING]. Enter the IP address of a PC on the same network and press [P.EXEC]. A successful result displays "Response is received".</p>
-            <figure class="screenshot-placeholder">
-                <div class="ph-box">SCREENSHOT &mdash; replace this box with &lt;img src="images/fanuc-ping.png" alt="Built-in ping utility"&gt;</div>
+            <img src="images/VerifyConnection.png" alt="Navigation path to Ethernet settings">
                 <figcaption>Figure 5: Built-in ping utility and PC-side verification commands</figcaption>
-            </figure>
             <h3>From a PC on the Same Network</h3>
             <p>Open a Command Prompt and run:</p>
             <pre><code>ping 192.168.1.100</code></pre>
@@ -210,10 +200,8 @@
 
             <h2>7. 16i/18i/21i Series Differences</h2>
             <p>If you are working with the older 16i, 18i, or 21i controllers, there are a few important differences to be aware of.</p>
-            <figure class="screenshot-placeholder">
-                <div class="ph-box">SCREENSHOT &mdash; replace this box with &lt;img src="images/fanuc-ethprm.png" alt="ETHPRM screen"&gt;</div>
+            <img src="images/Series_Diff.png" alt="Navigation path to Ethernet settings">
                 <figcaption>Figure 6: The ETHPRM screen used on 16i/18i/21i controllers</figcaption>
-            </figure>
             <ul>
                 <li><strong>No DHCP support.</strong> These controllers only support static IP. There is no DHCP parameter to toggle.</li>
                 <li><strong>Different menu path.</strong> Use [ETHPRM] &gt; [EMBEDD] instead of [EMBED PORT] &gt; [COMMON].</li>
