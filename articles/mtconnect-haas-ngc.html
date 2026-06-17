@@ -138,10 +138,10 @@
             <h2>3. Configure MTConnect on Haas NGC</h2>
             <h3>Connect the Machine to Your Network</h3>
             <p>From the Haas controller, navigate to Settings &gt; Network &gt; Wired Connection.</p>
-            <figure class="screenshot-placeholder">
-                <div class="ph-box"><img src="images/haas-wired-connection.png" alt="Haas NGC Wired Connection screen"></div>
+       
+               <img src="images/haas-wired-connection.png" alt="Haas NGC Wired Connection screen"></div>
                 <figcaption>Haas NGC Wired Connection screen</figcaption>
-            </figure>
+      
             <p>If your machine already has an IP Address, Subnet Mask, and Gateway IP, record this information, and make sure Wired Network Enabled has a value of 'On'.</p>
             <p>Confirm Setting 143 'Machine Data Collect' port is set to 5051 and press F4 to save.</p>
             <p>The network status should be "UP" (active). If it shows "DOWN," confirm that cables or wireless connections are properly set up.</p>
@@ -153,10 +153,10 @@
                 <li>Record the IP Address, Gateway, and Subnet of your machine &mdash; save these values by photo or written notes</li>
                 <li>Set Setting 143 'Machine Data Collect' port to '5051' by navigating to the "Settings" header, then press F4 to save</li>
             </ol>
-            <figure class="screenshot-placeholder">
-                <div class="ph-box"><img src="images/haas-setting-143.png" alt="Haas NGC Setting screen"></div>
+           
+               <img src="images/haas-setting-143.png" alt="Haas NGC Setting screen"></div>
                 <figcaption>Haas NGC Setting screen</figcaption>
-            </figure>
+        
             <h3>Confirm the MTConnect Port Is Allowed by Your Network</h3>
             <p>Haas NGC will use TCP port 5051 internally (Adapter) for MTConnect after you have set it.</p>
             <p>Ensure no firewall or other service is blocking traffic on TCP port 8082 (Agent).</p>
@@ -179,10 +179,10 @@
                 <li>A successful response will display XML data describing the machine status or metadata.</li>
                 <li>Full address would be <code>172.21.16.31:8082/current</code> for this example.</li>
             </ul>
-            <figure class="screenshot-placeholder">
-                <div class="ph-box"><img src="images/haas-xml-output.png" alt="Example MTConnect XML output"></div>
+            
+           <img src="images/haas-xml-output.png" alt="Example MTConnect XML output"></div>
                 <figcaption>Example Output (Current): MTConnect XML</figcaption>
-            </figure>
+          
 
             <h2>6. Troubleshooting Tips</h2>
             <h3>Check Compatibility</h3>
@@ -224,14 +224,14 @@
                 <li>Data-driven insights help refine processes and support continuous improvement initiatives.</li>
             </ul>
             <p>Dashboard examples from live Haas machines outputting MTConnect:</p>
-            <figure class="screenshot-placeholder">
-                <div class="ph-box"><img src="images/haas-dashboard-productivity.png" alt="Dashboard with Haas productivity data"></div>
+    
+                <img src="images/haas-dashboard-productivity.png" alt="Dashboard with Haas productivity data"></div>
                 <figcaption>Dashboard with Haas productivity data</figcaption>
-            </figure>
-            <figure class="screenshot-placeholder">
-                <div class="ph-box"><img src="images/haas-dashboard-status.png" alt="Dashboard with Haas machine status"></div>
+           
+           
+                <img src="images/haas-dashboard-status.png" alt="Dashboard with Haas machine status"></div>
                 <figcaption>Dashboard with Haas machine status</figcaption>
-            </figure>
+          
 
             <h2>Conclusion</h2>
             <p>Setting up MTConnect on your Haas NGC controller (e.g., VF-1450) opens the door to real-time monitoring and historical data review. If you encounter any challenges, reach out to your local Haas Factory Outlet or IT support.</p>
