@@ -81,7 +81,7 @@
             <h1>How to Configure MTConnect on an Okuma CNC with OSP-P Controls</h1>
             <p class="byline">By Jordan Cota<span class="sep">|</span>Controls &amp; Automation</p>
         </header>
-
+        <img src="images/okuma_title.png" alt="Troubleshooting flow for UNAVAILABLE data">
         <div class="source-note">
             Originally published on the Glassdome Sustainable Manufacturing Blog. Re-hosted here by the author.
         </div>
@@ -111,10 +111,8 @@
 
             <h2>1. How MTConnect Works on Okuma</h2>
             <p>Before jumping into configuration, it helps to understand the three software components involved. All three run inside the Okuma control on its embedded Windows PC.</p>
-            <figure class="screenshot-placeholder">
-                <div class="ph-box">SCREENSHOT &mdash; replace this box with &lt;img src="images/okuma-architecture.png" alt="MTConnect architecture on OSP-P"&gt;</div>
+                <div class="ph-box"><img src="images/okuma-architecture.png" alt="MTConnect architecture on OSP-P"></div>
                 <figcaption>Figure 1: MTConnect architecture on an Okuma OSP-P control</figcaption>
-            </figure>
             <p><strong>THINC API:</strong> This is Okuma's proprietary interface layer. It sits between the CNC system and any application that wants to read machine data. The MTConnect Adapter pulls data from the THINC API.</p>
             <p><strong>MTConnect Adapter:</strong> Reads machine data from the THINC API and converts it into the MTConnect format. It communicates with the Agent internally on port 7878.</p>
             <p><strong>MTConnect Agent:</strong> An HTTP server that makes the machine data available as an XML stream on port 5000. This is what your monitoring software connects to over the network.</p>
@@ -122,10 +120,10 @@
 
             <h2>2. Check Your Control Compatibility</h2>
             <p>Not every Okuma control supports MTConnect. It is limited to the OSP-P family, and even within that family, some older models need updates before MTConnect will work.</p>
-            <figure class="screenshot-placeholder">
-                <div class="ph-box">SCREENSHOT &mdash; replace this box with &lt;img src="images/okuma-compatibility.png" alt="OSP-P compatibility"&gt;</div>
+           
+                <div class="ph-box"><img src="images/okuma-compatibility.png" alt="OSP-P compatibility"></div>
                 <figcaption>Figure 2: OSP-P control compatibility with MTConnect</figcaption>
-            </figure>
+           
             <h3>How to Identify Your Control</h3>
             <p>The control model is displayed on the Okuma screen during startup (e.g., OSP-P300A). You can also find it in the system information screen under the SYSTEM menu on the control.</p>
             <h3>Checking Software Versions</h3>
@@ -140,10 +138,10 @@
 
             <h2>3. Access the Windows Backend</h2>
             <p>Since the Okuma control runs Windows internally, all MTConnect configuration happens through the Windows interface rather than the CNC screen. You need to get to the Windows desktop to proceed.</p>
-            <figure class="screenshot-placeholder">
-                <div class="ph-box">SCREENSHOT &mdash; replace this box with &lt;img src="images/okuma-windows-access.png" alt="Accessing the Windows backend"&gt;</div>
+       
+                <div class="ph-box"><img src="images/okuma-windows-access.png" alt="Accessing the Windows backend"></div>
                 <figcaption>Figure 3: How to access the Windows backend on an Okuma control</figcaption>
-            </figure>
+          
             <h3>Method 1: From the Running Control</h3>
             <p>Press CTRL + /// (the three-slash key on the Okuma operator panel) to bring up the Windows Start menu. From here you can access File Explorer, the Programs menu, and all standard Windows functions.</p>
             <h3>Method 2: During Startup</h3>
@@ -187,10 +185,10 @@
                 <li>You may be prompted for a username and password (the defaults are set during installation)</li>
                 <li>Click the Configurations tab at the top</li>
             </ol>
-            <figure class="screenshot-placeholder">
-                <div class="ph-box">SCREENSHOT &mdash; replace this box with &lt;img src="images/okuma-adapter-config.png" alt="MTConnect Adapter configuration window"&gt;</div>
+            
+                <div class="ph-box"><img src="images/okuma-adapter-config.png" alt="MTConnect Adapter configuration window"></div>
                 <figcaption>Figure 4: The MTConnect Adapter configuration window</figcaption>
-            </figure>
+          
             <h3>Connection Settings</h3>
             <p>Verify the following settings on the Configurations screen:</p>
             <table>
@@ -208,18 +206,18 @@
                 <li>Click SAVE &amp; CLOSE</li>
                 <li>Click MINIMIZE TO SYSTEM TRAY to close the configuration window</li>
             </ol>
-            <figure class="screenshot-placeholder">
-                <div class="ph-box">SCREENSHOT &mdash; replace this box with &lt;img src="images/okuma-monitoring-tags.png" alt="Recommended monitoring tags"&gt;</div>
+            
+                <div class="ph-box"><img src="images/okuma-monitoring-tags.png" alt="Recommended monitoring tags"></div>
                 <figcaption>Figure 5: Recommended monitoring tags to enable</figcaption>
-            </figure>
+       
             <p><strong>Note:</strong> If you just installed the adapter and no other applications are using it yet, it is safe to press UNCHECK ALL first, then enable only the tags listed above. You can always add more later.</p>
 
             <h2>6. Network Configuration</h2>
             <p>The Okuma control has a standard Windows network stack. The IP address is configured through Windows Network Connections, not through the CNC interface.</p>
-            <figure class="screenshot-placeholder">
-                <div class="ph-box">SCREENSHOT &mdash; replace this box with &lt;img src="images/okuma-network.png" alt="Network setup between Okuma and PC"&gt;</div>
+            
+                <div class="ph-box"><img src="images/okuma-network.png" alt="Network setup between Okuma and PC"></div>
                 <figcaption>Figure 6: Network setup between the Okuma control and monitoring PC</figcaption>
-            </figure>
+           
             <h3>Setting the IP Address</h3>
             <ol>
                 <li>Press CTRL + /// to access the Windows Start menu</li>
@@ -250,10 +248,10 @@
             <p>On a PC connected to the same network, open a browser and navigate to:</p>
             <pre><code>http://192.168.1.50:5000/current</code></pre>
             <p>Replace the IP with your Okuma control's actual address. You should see an XML response.</p>
-            <figure class="screenshot-placeholder">
-                <div class="ph-box">SCREENSHOT &mdash; replace this box with &lt;img src="images/okuma-xml-stream.png" alt="MTConnect XML stream in a browser"&gt;</div>
+            
+                <div class="ph-box"><img src="images/okuma-xml-stream.png" alt="MTConnect XML stream in a browser"></div>
                 <figcaption>Figure 7: XML data stream from the MTConnect Agent viewed in a browser</figcaption>
-            </figure>
+          
             <h3>What to Look For</h3>
             <ul>
                 <li><strong>Execution:</strong> Should show ACTIVE when a program is running, IDLE when stopped</li>
@@ -264,10 +262,10 @@
             <p>If all values show UNAVAILABLE, the agent is running but the adapter is not feeding data. See the troubleshooting section below.</p>
 
             <h2>8. Troubleshooting</h2>
-            <figure class="screenshot-placeholder">
-                <div class="ph-box">SCREENSHOT &mdash; replace this box with &lt;img src="images/okuma-troubleshooting.png" alt="Troubleshooting flow for UNAVAILABLE data"&gt;</div>
+          
+                <div class="ph-box"><img src="images/okuma-troubleshooting.png" alt="Troubleshooting flow for UNAVAILABLE data"></div>
                 <figcaption>Figure 8: Troubleshooting flow when data shows as UNAVAILABLE</figcaption>
-            </figure>
+          
             <table>
                 <tr><th>Problem</th><th>Cause</th><th>Fix</th></tr>
                 <tr><td>Cannot access http://&lt;IP&gt;:5000 from network</td><td>Firewall blocking port 5000</td><td>Add inbound firewall rule for TCP port 5000</td></tr>
