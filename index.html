@@ -171,6 +171,11 @@
         .restart-btn:hover { filter: brightness(1.08); }
         .restart-btn:disabled { background: var(--muted); cursor: not-allowed; }
         .game-controls { text-align: center; margin-top: 8px; font-size: 0.85rem; color: var(--muted); }
+        .game-dpad { display: none; gap: 14px; margin-top: 12px; align-items: center; justify-content: center; width: 100%; max-width: 800px; }
+        .dpad-btn { flex: 1; max-width: 120px; padding: 16px 0; font-size: 20px; font-weight: 700; color: var(--ink); background: var(--panel); border: 1px solid var(--line-2); border-radius: 10px; cursor: pointer; user-select: none; -webkit-user-select: none; touch-action: none; }
+        .dpad-btn:active { background: var(--amber); color: #07080f; border-color: var(--amber); }
+        .dpad-btn.fire { font-size: 14px; letter-spacing: .1em; max-width: 140px; }
+        @media (pointer: coarse) { .game-dpad { display: flex; } }
         #leaderboard-list { padding-left: 20px; color: var(--ink-2); margin: 10px 0 0; }
         #leaderboard-list li { margin-bottom: 0.5rem; }
         #leaderboard-list strong { color: var(--amber); }
@@ -244,9 +249,9 @@
     <!-- HERO -->
     <header class="wrap hero" id="top">
         <div class="hero-text">
-            <p class="kicker">Controls &amp; Automation Engineer &mdash; Atlanta, GA</p>
+            <p class="kicker">Controls &amp; Automation Engineer &middot; Atlanta, GA</p>
             <h1>Jordan<br>Cota</h1>
-            <p class="lede">Old machines, new data, vintage radios, and one stubborn 1986 BMW. Eight years turning plant-floor data into uptime &mdash; PLC logic, SCADA, and the protocols that tie it together.</p>
+            <p class="lede">Old machines, new data, vintage radios, and one stubborn 1986 BMW. Eight years turning plant-floor data into uptime: PLC logic, SCADA, and the protocols that tie it together.</p>
             <div class="rule"></div>
             <div class="hero-quick">
                 <a href="#experience">View experience</a>
@@ -302,7 +307,7 @@
                 </button>
                 <div class="role-body">
                     <div class="role-body-inner"><ul>
-                        <li>Led hardware and software deployments for manufacturing controls across North America, co-managing a three-person team to connect 100+ devices through IIoT edge gateways over Ethernet, WiFi, and cellular using MQTT &mdash; delivering 27 real-time dashboards and 24 interfaces with zero client churn.</li>
+                        <li>Led hardware and software deployments for manufacturing controls across North America, co-managing a three-person team to connect 100+ devices through IIoT edge gateways over Ethernet, WiFi, and cellular using MQTT, delivering 27 real-time dashboards and 24 interfaces with zero client churn.</li>
                         <li>Directed customer meetings and technical trainings, driving adoption by 85+ users while producing training videos and documentation.</li>
                         <li>Saved $36,000 in licensing fees per customer by developing a FANUC FOCAS tag list for OEE monitoring and optimizing data schemas.</li>
                         <li>Owned the full lifecycle from integration through ongoing support, and proposed product features to align development with client needs.</li>
@@ -343,7 +348,7 @@
                 <div class="role-body">
                     <div class="role-body-inner"><ul>
                         <li>Maintained and diagnosed electrical power systems, including 480V power quality and 24V control power, using oscilloscopes, scope meters, and BMS software.</li>
-                        <li>Managed industrial robotics &mdash; robotic arm work cells, drives, AGV systems, and guidance &mdash; raising robotic uptime by 20% when on shift.</li>
+                        <li>Managed industrial robotics (robotic arm work cells, drives, AGV systems, and guidance), raising robotic uptime by 20% when on shift.</li>
                         <li>Administered over 9 miles of smart logistics equipment (PLCs, VFDs, vision systems) and advised operations with regular KPI and flow-monitoring reports.</li>
                         <li>Trained journey-level RME personnel and mechatronics apprentices, and served as liaison between maintenance and operations during critical incidents.</li>
                     </ul></div>
@@ -424,7 +429,7 @@
             </div>
 
             <div class="project">
-                <h3>Water Quality &mdash; Modbus TCP Conversion</h3>
+                <h3>Water Quality: Modbus TCP Conversion</h3>
                 <p>I retrofitted a legacy Arduino-based monitoring system into a standard Modbus TCP application to future-proof it. The client needed real-time pH, chlorine (FCL), water temperature, and flow (GPM) with alarming across several water stations. The original system used I2C and the installer had been bought out, so I converted the signals from I2C to 4&ndash;20mA and into a Modbus TCP analog input module.</p>
                 <div class="slideshow-container">
                     <div class="mySlides2"><img src="Final DWSD.png" alt="Water Quality System Overview"></div>
@@ -507,7 +512,7 @@
             </div>
 
             <h3 class="subhead">Play Space Invaders</h3>
-            <p class="sub-note">Built right here. Arrow keys to move, spacebar to shoot. Survive the invasion &mdash; high scores save to the leaderboard below.</p>
+            <p class="sub-note">Built right here. Arrow keys to move, spacebar to shoot. Survive the invasion. High scores save to the leaderboard below.</p>
             <div class="game-container">
                 <div class="game-info">
                     <span id="score">Score: 0</span>
@@ -515,8 +520,13 @@
                     <span id="lives">Lives: 3</span>
                 </div>
                 <canvas id="gameCanvas" width="800" height="600"></canvas>
+                <div class="game-dpad" aria-hidden="true">
+                    <button id="dpadLeft" class="dpad-btn" type="button">&#9664;</button>
+                    <button id="dpadFire" class="dpad-btn fire" type="button">FIRE</button>
+                    <button id="dpadRight" class="dpad-btn" type="button">&#9654;</button>
+                </div>
                 <button class="restart-btn" id="restartBtn" onclick="restartGame()">Start Game</button>
-                <div class="game-controls"><p>&#8592; &#8594; to move | Space to shoot</p></div>
+                <div class="game-controls"><p>Desktop: &#8592; &#8594; to move, Space to shoot &nbsp;&middot;&nbsp; Mobile: use the D-pad</p></div>
             </div>
 
             <h3 class="subhead">High Scores</h3>
@@ -526,14 +536,14 @@
         <!-- GARAGE  (HIDDEN FOR NOW — to publish it, delete the word "hidden" on the section tag just below, AND on the Garage nav link near the top of the file) -->
         <section id="garage" class="wrap" hidden>
             <h2 class="sec-title">// The Garage</h2>
-            <p style="max-width:62ch;color:var(--ink-2);margin:0 0 24px;">A build log &mdash; what I'm wrenching on after hours: the 1986 BMW K75, vintage receivers, the truck, and whatever else ends up on the bench.</p>
+            <p style="max-width:62ch;color:var(--ink-2);margin:0 0 24px;">A build log of what I'm wrenching on after hours: the 1986 BMW K75, vintage receivers, the truck, and whatever else ends up on the bench.</p>
             <div class="garage-list">
                 <!-- Replace these example posts with your own. Each "Read post" link points to a page in /garage/ that you'll create from a post template. -->
                 <article class="post">
-                    <div class="post-meta">Motorcycle &middot; Draft</div>
-                    <h3>Reviving the 1986 BMW K75</h3>
-                    <p>Carb sync, fresh fluids, and chasing a stubborn electrical gremlin on the old flying brick.</p>
-                    <a class="read" href="garage/k75-revival.html">Read post &#8594;</a>
+                    <div class="post-meta">Motorcycle</div>
+                    <h3>How I Got the Bike</h3>
+                    <p>A Facebook Marketplace ad, a guy named John at Blue Moon Cycle, and a 1986 "flying brick" named Ines that hadn't run since 2020.</p>
+                    <a class="read" href="garage/how-i-got-the-bike.html">Read post &#8594;</a>
                 </article>
                 <article class="post">
                     <div class="post-meta">Audio &middot; Draft</div>
@@ -553,25 +563,25 @@
         <!-- TRIP REPORTS  (HIDDEN FOR NOW — to publish it, delete the word "hidden" on the section tag just below, AND on the Trips nav link near the top of the file) -->
         <section id="trips" class="wrap" hidden>
             <h2 class="sec-title">// Trip Reports</h2>
-            <p style="max-width:62ch;color:var(--ink-2);margin:0 0 24px;">Where the bike, the boots, or the truck have taken me &mdash; routes, gear, and the stories worth keeping.</p>
+            <p style="max-width:62ch;color:var(--ink-2);margin:0 0 24px;">Where the bike, the boots, or the truck have taken me: routes, gear, and the stories worth keeping.</p>
             <div class="garage-list">
                 <!-- Replace these example reports with your own. Each "Read report" link points to a page in /trips/ that you'll create from a post template. -->
                 <article class="post">
                     <div class="post-meta">Motorcycle &middot; Draft</div>
                     <h3>Blue Ridge on the K75</h3>
-                    <p>Two days of mountain switchbacks on the flying brick &mdash; the route, the stops, and what I'd pack differently.</p>
+                    <p>Two days of mountain switchbacks on the flying brick: the route, the stops, and what I'd pack differently.</p>
                     <a class="read" href="trips/blue-ridge-k75.html">Read report &#8594;</a>
                 </article>
                 <article class="post">
                     <div class="post-meta">Hike &middot; Draft</div>
                     <h3>North Georgia Backcountry</h3>
-                    <p>A weekend on the trail with friends &mdash; mileage, camp notes, and the gear that earned its keep.</p>
+                    <p>A weekend on the trail with friends: mileage, camp notes, and the gear that earned its keep.</p>
                     <a class="read" href="trips/north-georgia-hike.html">Read report &#8594;</a>
                 </article>
                 <article class="post">
                     <div class="post-meta">Coast &middot; Draft</div>
                     <h3>Long Walks, Salt Air</h3>
-                    <p>A slower trip down to the coast &mdash; where to go, where to eat, and where to do nothing at all.</p>
+                    <p>A slower trip down to the coast: where to go, where to eat, and where to do nothing at all.</p>
                     <a class="read" href="trips/coast.html">Read report &#8594;</a>
                 </article>
             </div>
@@ -718,37 +728,13 @@
         const restartBtn = document.getElementById('restartBtn');
 
         let score = 0, lives = 3, level = 1, gameRunning = false, lastShotTime = 0;
-        let tiltEnabled = false, mobileDetected = false;
-        const autoFireInterval = 300;
+        let firing = false;
         const player = { x: canvas.width / 2 - 15, y: canvas.height - 50, width: 30, height: 20, speed: 5 };
         const bullets = [], enemyBullets = [], enemies = [];
         const bulletSpeed = 7;
         let enemyBulletSpeed = 3, enemyRows = 5, enemyCols = 10;
         const enemyWidth = 30, enemyHeight = 20, enemyPadding = 10;
         let enemyDirection = 1, enemySpeed = 0.5, lastEnemyShot = 0;
-        let isTouching = false, touchX = 0;
-
-        function getScaleX() { return canvas.width / canvas.getBoundingClientRect().width; }
-
-        function initTilt() {
-            if (!('DeviceOrientationEvent' in window)) return;
-            mobileDetected = true;
-            if (/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream) {
-                canvas.addEventListener('touchstart', async (e) => {
-                    try {
-                        const permission = await DeviceOrientationEvent.requestPermission();
-                        if (permission === 'granted') { tiltEnabled = true; window.addEventListener('deviceorientation', handleTilt); }
-                    } catch (err) { console.log('Tilt permission denied'); }
-                }, { once: true });
-            } else { tiltEnabled = true; window.addEventListener('deviceorientation', handleTilt); }
-        }
-
-        function handleTilt(e) {
-            const gamma = e.gamma || 0;
-            const clampedGamma = Math.max(-30, Math.min(30, gamma));
-            player.x += clampedGamma * 0.15;
-            player.x = Math.max(0, Math.min(canvas.width - player.width, player.x));
-        }
 
         function initEnemies() {
             enemies.length = 0;
@@ -762,36 +748,29 @@
         const keys = {};
         document.addEventListener('keydown', (e) => {
             keys[e.code] = true;
-            if (e.code === 'Space' && gameRunning && !mobileDetected) { e.preventDefault(); shootPlayer(); }
+            if (e.code === 'Space' && gameRunning) { e.preventDefault(); shootPlayer(); }
         });
         document.addEventListener('keyup', (e) => { keys[e.code] = false; });
 
-        canvas.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            isTouching = true;
-            const touch = e.touches[0];
-            const rect = canvas.getBoundingClientRect();
-            touchX = (touch.clientX - rect.left) * getScaleX();
-            if (!mobileDetected) shootPlayer();
-            if (!tiltEnabled) initTilt();
-        });
-        canvas.addEventListener('touchmove', (e) => {
-            e.preventDefault();
-            if (isTouching) {
-                const touch = e.touches[0];
-                const rect = canvas.getBoundingClientRect();
-                touchX = (touch.clientX - rect.left) * getScaleX();
-            }
-        });
-        canvas.addEventListener('touchend', (e) => { e.preventDefault(); isTouching = false; });
-        canvas.addEventListener('mousemove', (e) => {
-            if (isTouching || tiltEnabled) return;
-            touchX = e.clientX - canvas.getBoundingClientRect().left;
-        });
+        // On-screen D-pad (mobile)
+        function bindHold(el, on, off) {
+            if (!el) return;
+            const start = (e) => { e.preventDefault(); on(); };
+            const end = (e) => { e.preventDefault(); off(); };
+            el.addEventListener('touchstart', start, { passive: false });
+            el.addEventListener('touchend', end, { passive: false });
+            el.addEventListener('touchcancel', end, { passive: false });
+            el.addEventListener('mousedown', start);
+            el.addEventListener('mouseup', end);
+            el.addEventListener('mouseleave', end);
+        }
+        bindHold(document.getElementById('dpadLeft'), () => keys['ArrowLeft'] = true, () => keys['ArrowLeft'] = false);
+        bindHold(document.getElementById('dpadRight'), () => keys['ArrowRight'] = true, () => keys['ArrowRight'] = false);
+        bindHold(document.getElementById('dpadFire'), () => firing = true, () => firing = false);
 
         function shootPlayer() {
             const now = Date.now();
-            if (now - lastShotTime > (mobileDetected ? autoFireInterval : 200) && gameRunning) {
+            if (now - lastShotTime > 200 && gameRunning) {
                 bullets.push({ x: player.x + player.width / 2 - 2.5, y: player.y, width: 5, height: 10 });
                 lastShotTime = now;
             }
@@ -824,10 +803,9 @@
 
         function update() {
             if (!gameRunning) return;
-            if (mobileDetected) shootPlayer();
+            if (firing) shootPlayer();
             if (keys['ArrowLeft'] && player.x > 0) player.x -= player.speed;
             if (keys['ArrowRight'] && player.x < canvas.width - player.width) player.x += player.speed;
-            if (isTouching) player.x = Math.max(0, Math.min(canvas.width - player.width, touchX - player.width / 2));
 
             for (let i = bullets.length - 1; i >= 0; i--) { bullets[i].y -= bulletSpeed; if (bullets[i].y < 0) bullets.splice(i, 1); }
 
@@ -888,7 +866,7 @@
             scoreElement.textContent = `Score: ${score}`; levelElement.textContent = `Level: ${level}`; livesElement.textContent = `Lives: ${lives}`;
             initEnemies(); lastShotTime = 0; lastEnemyShot = 0; enemyDirection = 1;
             restartBtn.disabled = true; restartBtn.textContent = 'Playing...';
-            tiltEnabled = false; if (mobileDetected) initTilt();
+            firing = false;
         }
 
         function displayLeaderboard() {
@@ -911,7 +889,6 @@
 
         restartBtn.disabled = false;
         initEnemies();
-        if (/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) initTilt();
         gameLoop();
         displayLeaderboard();
     </script>
