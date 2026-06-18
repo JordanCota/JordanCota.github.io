@@ -191,15 +191,15 @@
         .post .read:hover { text-decoration: underline; }
 
         /* ---------- Collapsible sections ---------- */
-        .collapsible .sec-toggle { width: 100%; background: none; border: none; cursor: pointer; text-align: left; display: flex; align-items: center; gap: 12px; padding: 4px 0; color: inherit; font-family: inherit; }
-        .collapsible .sec-title-text { font-size: 13px; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); font-family: var(--font-mono); font-weight: 500; transition: color .2s; }
-        .collapsible .sec-count { font-family: var(--font-mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); opacity: .6; }
-        .collapsible .sec-chev { margin-left: auto; color: var(--muted); font-size: 12px; transition: transform .25s ease; }
+        .collapsible .sec-toggle { width: 100%; background: none; border: none; cursor: pointer; text-align: left; display: flex; align-items: center; gap: 14px; padding: 26px 0; color: inherit; font-family: inherit; }
+        .collapsible .sec-title-text { font-size: 14px; letter-spacing: .22em; text-transform: uppercase; color: var(--ink-2); font-family: var(--font-mono); font-weight: 600; transition: color .2s; }
+        .collapsible .sec-count { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); opacity: .6; }
+        .collapsible .sec-chev { margin-left: auto; color: var(--muted); font-size: 13px; transition: transform .25s ease; }
         .collapsible .sec-toggle:hover .sec-title-text { color: var(--ink); }
         .collapsible.open .sec-chev { transform: rotate(180deg); color: var(--amber); }
         .sec-panel { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .32s ease; }
         .sec-panel-clip { overflow: hidden; min-height: 0; }
-        .sec-panel-inner { padding-top: 22px; }
+        .sec-panel-inner { padding-top: 6px; padding-bottom: 40px; }
         .sec-panel-inner > :first-child { margin-top: 0; }
         .collapsible.open .sec-panel { grid-template-rows: 1fr; }
 
@@ -255,8 +255,7 @@
                 <a href="#experience">Experience</a>
                 <a href="#writing">Writing</a>
                 <a href="#work">Work</a>
-                <a href="#play">Play</a>
-                <a href="#garage">Garage</a>
+                <a href="#play">Off the Clock</a>
                 <a href="#trips" hidden>Trips</a>
                 <a href="#contact">Contact</a>
             </div>
@@ -292,7 +291,7 @@
         <section id="experience" class="wrap collapsible">
             <button class="sec-toggle" aria-expanded="false">
                 <span class="sec-title-text">// Career Progression</span>
-                <span class="sec-count">2017 &ndash; Present &middot; 6 roles</span>
+                <span class="sec-count">2017 &ndash; Present &middot;</span>
                 <span class="sec-chev">&#9660;</span>
             </button>
             <div class="sec-panel"><div class="sec-panel-clip"><div class="sec-panel-inner">
@@ -493,9 +492,15 @@
             </div></div></div>
         </section>
 
-        <!-- PLAY / HOBBIES -->
-        <section id="play" class="wrap">
-            <h2 class="sec-title">// Off the Clock</h2>
+        <!-- OFF THE CLOCK (hobbies + build log + game) -->
+        <section id="play" class="wrap collapsible">
+            <button class="sec-toggle" aria-expanded="false">
+                <span class="sec-title-text">// Off the Clock</span>
+                <span class="sec-count">hobbies, build log &amp; a game</span>
+                <span class="sec-chev">&#9660;</span>
+            </button>
+            <div class="sec-panel"><div class="sec-panel-clip"><div class="sec-panel-inner">
+
             <div class="portfolio-grid">
                 <div class="hobby-item">
                     <img src="Image 1.jpeg" alt="BMW K75C Motorcycle">
@@ -547,6 +552,29 @@
                 </div>
             </div>
 
+            <h3 class="subhead">Build Log</h3>
+            <p class="sub-note">What I'm wrenching on after hours: the 1986 BMW K75, vintage receivers, the truck, and whatever else ends up on the bench.</p>
+            <div class="garage-list">
+                <article class="post">
+                    <div class="post-meta">Motorcycle</div>
+                    <h3>How I Got the Bike</h3>
+                    <p>A Facebook Marketplace ad, a guy named John at Blue Moon Cycle, and a 1986 "flying brick" named Ines that hadn't run since 2020.</p>
+                    <a class="read" href="garage/how-i-got-the-bike.html">Read post &#8594;</a>
+                </article>
+                <article class="post">
+                    <div class="post-meta">Audio &middot; Draft</div>
+                    <h3>Inside the STA-78 Realistic Receiver</h3>
+                    <p>Recapping a vintage receiver and bringing it back to life without smoking the output stage.</p>
+                    <a class="read" href="garage/sta-78-receiver.html">Read post &#8594;</a>
+                </article>
+                <article class="post">
+                    <div class="post-meta">Truck &middot; Draft</div>
+                    <h3>The Truck Project: First Teardown</h3>
+                    <p>Where it started, what's broken, and the plan to get it road-worthy.</p>
+                    <a class="read" href="garage/truck-teardown.html">Read post &#8594;</a>
+                </article>
+            </div>
+
             <h3 class="subhead">Play Space Invaders</h3>
             <p class="sub-note">Built right here. Desktop: arrow keys to move, spacebar to shoot. Mobile: on-screen D-pad. High scores save to the leaderboard.</p>
             <button class="launch-btn" id="launchGame" type="button">&#9654; Launch Space Invaders</button>
@@ -570,33 +598,8 @@
                 <h3 class="subhead">High Scores</h3>
                 <ol id="leaderboard-list"></ol>
             </div>
-        </section>
 
-        <!-- GARAGE  (HIDDEN FOR NOW — to publish it, delete the word "hidden" on the section tag just below, AND on the Garage nav link near the top of the file) -->
-        <section id="garage" class="wrap">
-            <h2 class="sec-title">// The Garage</h2>
-            <p style="max-width:62ch;color:var(--ink-2);margin:0 0 24px;">A build log of what I'm wrenching on after hours: the 1986 BMW K75, vintage receivers, the truck, and whatever else ends up on the bench.</p>
-            <div class="garage-list">
-                <!-- Replace these example posts with your own. Each "Read post" link points to a page in /garage/ that you'll create from a post template. -->
-                <article class="post">
-                    <div class="post-meta">Motorcycle</div>
-                    <h3>How I Got the Bike</h3>
-                    <p>A Facebook Marketplace ad, a guy named John at Blue Moon Cycle, and a 1986 "flying brick" named Ines that hadn't run since 2020.</p>
-                    <a class="read" href="garage/how-i-got-the-bike.html">Read post &#8594;</a>
-                </article>
-                <article class="post">
-                    <div class="post-meta">Audio &middot; Draft</div>
-                    <h3>Inside the STA-78 Realistic Receiver</h3>
-                    <p>Recapping a vintage receiver and bringing it back to life without smoking the output stage.</p>
-                    <a class="read" href="garage/sta-78-receiver.html">Read post &#8594;</a>
-                </article>
-                <article class="post">
-                    <div class="post-meta">Truck &middot; Draft</div>
-                    <h3>The Truck Project: First Teardown</h3>
-                    <p>Where it started, what's broken, and the plan to get it road-worthy.</p>
-                    <a class="read" href="garage/truck-teardown.html">Read post &#8594;</a>
-                </article>
-            </div>
+            </div></div></div>
         </section>
 
         <!-- TRIP REPORTS  (HIDDEN FOR NOW — to publish it, delete the word "hidden" on the section tag just below, AND on the Trips nav link near the top of the file) -->
