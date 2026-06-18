@@ -4,7 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jordan Cota | Controls &amp; Automation Engineer</title>
-    <meta name="description" content="Jordan Cota — controls and automation engineer in Atlanta. Eight years turning plant-floor data into uptime: PLC logic, SCADA, and the protocols that tie it together.">
+    <meta name="description" content="Jordan Cota, controls and automation engineer in Atlanta. Eight years turning plant-floor data into uptime: PLC logic, SCADA, and the protocols that tie it together.">
+
+    <!-- Link preview (Open Graph + Twitter) -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jordancota.site/">
+    <meta property="og:title" content="Jordan Cota | Controls &amp; Automation Engineer">
+    <meta property="og:description" content="Eight years turning plant-floor data into uptime: PLC logic, SCADA, and the protocols that tie it together. Plus a 1986 BMW, vintage radios, and a homemade Space Invaders.">
+    <meta property="og:image" content="https://jordancota.site/og-preview.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Jordan Cota | Controls &amp; Automation Engineer">
+    <meta name="twitter:description" content="Eight years turning plant-floor data into uptime: PLC logic, SCADA, and the protocols that tie it together.">
+    <meta name="twitter:image" content="https://jordancota.site/og-preview.png">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏍️</text></svg>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -149,17 +162,25 @@
         .caption-container { text-align: center; position: absolute; bottom: 0; left: 0; right: 0; background-color: rgba(0,0,0,0.55); padding: 7px; z-index: 5; }
         #caption, #caption2, #caption3 { margin: 0; font-size: 13px; color: #fff; font-family: var(--font-mono); letter-spacing: .04em; }
 
-        /* ---------- Hobbies / Play ---------- */
+        /* ---------- Hobbies / Gallery ---------- */
         .portfolio-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; }
         .hobby-item { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; transition: transform 0.2s, border-color .2s; }
         .hobby-item:hover { transform: translateY(-3px); border-color: var(--line-2); }
-        .hobby-item > img, .hobby-item video { width: 100%; height: 180px; object-fit: cover; display: block; }
+        .tile-media { display: block; width: 100%; aspect-ratio: 4 / 3; position: relative; padding: 0; margin: 0; border: none; background: #04050b; cursor: pointer; overflow: hidden; }
+        .tile-media img, .tile-media video { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .35s ease; }
+        .tile-media:hover img, .tile-media:hover video { transform: scale(1.05); }
+        .play-badge { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 54px; height: 54px; border-radius: 50%; background: rgba(7,8,15,.55); border: 1px solid rgba(255,255,255,.55); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 19px; padding-left: 3px; pointer-events: none; }
         .hobby-item h3 { margin: 12px 14px 4px; color: var(--ink); font-size: 15px; }
         .hobby-item p { margin: 0 14px 14px; color: var(--muted); font-size: 13px; }
-        .video-wrapper { position: relative; width: 100%; height: 180px; }
-        .video-wrapper video { width: 100%; height: 100%; object-fit: cover; display: block; }
-        .play-hint { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.55); color: #fff; font-size: 0.8rem; padding: 6px 12px; border-radius: 20px; pointer-events: none; opacity: 1; transition: opacity 0.3s; white-space: nowrap; }
-        .video-wrapper.playing .play-hint { opacity: 0; }
+
+        /* ---------- Lightbox ---------- */
+        .lightbox { position: fixed; inset: 0; z-index: 100; display: none; align-items: center; justify-content: center; background: rgba(4,5,11,.92); backdrop-filter: blur(4px); padding: 24px; }
+        .lightbox.open { display: flex; }
+        .lightbox-content { max-width: min(92vw, 1100px); max-height: 86vh; display: flex; }
+        .lightbox-content img, .lightbox-content video { max-width: 100%; max-height: 86vh; width: auto; height: auto; border-radius: 10px; display: block; box-shadow: 0 20px 60px rgba(0,0,0,.6); }
+        .lightbox-close { position: absolute; top: 18px; right: 22px; width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,.08); border: 1px solid var(--line-2); color: var(--ink); font-size: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1; }
+        .lightbox-close:hover { background: rgba(255,255,255,.16); }
+        .lightbox-cap { position: absolute; bottom: 20px; left: 0; right: 0; text-align: center; color: var(--ink-2); font-size: 13.5px; font-family: var(--font-mono); letter-spacing: .03em; padding: 0 24px; }
 
         .subhead { font-size: 16px; color: var(--ink); margin: 40px 0 6px; font-weight: 700; }
         .sub-note { font-size: 13.5px; color: var(--muted); margin: 0 0 18px; }
@@ -283,15 +304,15 @@
         <!-- ABOUT -->
         <section id="about" class="wrap about">
             <h2 class="sec-title">// About</h2>
-            <p>I've been in controls and automation since 2020. I started in food and beverage, built a maintenance ticketing system from the ground up, and put a status light on the production floor so anyone could see at a glance whether the line was running. Simple ideas that worked. Since then I've connected PLCs, built SCADA systems, integrated protocols most people haven't touched, and made machines readable to the people running them. I don't wait to be handed a problem. I find it, figure it out, and build something that lasts.</p>
-            <p>I studied at the University of West Georgia in Carrollton with a focus in history, where I received an Associate's Degree. I have a wide variety of passions and enjoy many activities in my free time: pickleball, making kombucha, hiking with friends, long walks on the beach, the discovery of new hobbies, and the Oxford comma. I love working on my 1986 BMW K75 and old radios; I have a STA-78 Realistic upstairs and a Sansui A2000 in the living area. I built this website by hand in HTML, so I'm always tinkering in the analog and digital world.</p>
+            <p>I've been in controls and automation since 2017. I started HVAC and then moved to food & beverage, where I built a maintenance ticketing system from the ground up, and put a status light on the production floor so anyone could see at a glance whether the line was running. Simple ideas that worked. Since then I've connected PLCs, built SCADA systems, integrated protocols most people haven't touched, and made machines readable to the people running them. I don't wait to be handed a problem. I find it, figure it out, and build something that lasts.</p>
+            <p>I studied at the University of West Georgia in Carrollton with a focus in history, where I received an Associate's Degree. I have a wide variety of passions and enjoy many activities in my free time: pickleball, making kombucha, hiking with friends, long walks on the beach, the discovery of new hobbies, and the Oxford comma. I love working on my 1986 BMW K75 and old radios; I have a STA-78 Realistic upstairs and a Sansui A2000 in the living area. I built this website by hand in HTML (a lot of help from claude), so I'm always tinkering in the analog and digital world.</p>
         </section>
 
         <!-- EXPERIENCE -->
         <section id="experience" class="wrap collapsible">
             <button class="sec-toggle" aria-expanded="false">
                 <span class="sec-title-text">// Career Progression</span>
-                <span class="sec-count">2017 &ndash; Present</span>
+                <span class="sec-count">2017 &ndash; Present &middot; 6 roles</span>
                 <span class="sec-chev">&#9660;</span>
             </button>
             <div class="sec-panel"><div class="sec-panel-clip"><div class="sec-panel-inner">
@@ -503,50 +524,56 @@
 
             <div class="portfolio-grid">
                 <div class="hobby-item">
-                    <img src="Image 1.jpeg" alt="BMW K75C Motorcycle">
+                    <button class="tile-media" type="button" data-type="image" data-src="Image 1.jpeg" data-caption="1986 BMW K75C. Taking the K75 out for a ride.">
+                        <img src="Image 1.jpeg" alt="1986 BMW K75C motorcycle" loading="lazy">
+                    </button>
                     <h3>1986 BMW K75C</h3>
                     <p>Taking the K75 out for a ride.</p>
                 </div>
                 <div class="hobby-item">
-                    <img src="Technics Radio.JPG" alt="Technics Radio">
+                    <button class="tile-media" type="button" data-type="image" data-src="Technics Radio.JPG" data-caption="Vintage Audio. Restoring and listening to old radios like this STA-78 Realistic receiver.">
+                        <img src="Technics Radio.JPG" alt="Vintage Technics radio" loading="lazy">
+                    </button>
                     <h3>Vintage Audio</h3>
                     <p>Restoring and listening to old radios like this STA-78 Realistic receiver.</p>
                 </div>
                 <div class="hobby-item">
-                    <img src="Kombucha Jars.JPG" alt="Kombucha Jars">
+                    <button class="tile-media" type="button" data-type="image" data-src="Kombucha Jars.JPG" data-caption="Kombucha Brewing. My latest batch getting its flavor infusion.">
+                        <img src="Kombucha Jars.JPG" alt="Kombucha jars" loading="lazy">
+                    </button>
                     <h3>Kombucha Brewing</h3>
                     <p>My latest batch getting its flavor infusion.</p>
                 </div>
                 <div class="hobby-item">
-                    <div class="video-wrapper">
-                        <video muted playsinline loop preload="metadata">
+                    <button class="tile-media" type="button" data-type="video" data-mp4="Komcha bubbles.mp4" data-mov="Komcha bubbles.MOV" data-caption="Second Fermentation. Carbonation happening during the second fermentation.">
+                        <video muted playsinline preload="metadata">
                             <source src="Komcha bubbles.mp4" type="video/mp4">
                             <source src="Komcha bubbles.MOV" type="video/quicktime">
                         </video>
-                        <span class="play-hint">Tap to play</span>
-                    </div>
+                        <span class="play-badge" aria-hidden="true">&#9654;</span>
+                    </button>
                     <h3>Second Fermentation</h3>
                     <p>Carbonation happening during the second fermentation.</p>
                 </div>
                 <div class="hobby-item">
-                    <div class="video-wrapper">
-                        <video muted playsinline loop preload="metadata">
+                    <button class="tile-media" type="button" data-type="video" data-mp4="Pickle (1) (1)-2.mp4" data-mov="Pickle (1) (1).mov" data-caption="Pickleball Match. Playing with the sweetie.">
+                        <video muted playsinline preload="metadata">
                             <source src="Pickle (1) (1)-2.mp4" type="video/mp4">
                             <source src="Pickle (1) (1).mov" type="video/quicktime">
                         </video>
-                        <span class="play-hint">Tap to play</span>
-                    </div>
+                        <span class="play-badge" aria-hidden="true">&#9654;</span>
+                    </button>
                     <h3>Pickleball Match</h3>
                     <p>Playing with the sweetie.</p>
                 </div>
                 <div class="hobby-item">
-                    <div class="video-wrapper">
-                        <video muted playsinline loop preload="metadata">
+                    <button class="tile-media" type="button" data-type="video" data-mp4="RidingBike-2.mp4" data-mov="RidingBike.mov" data-caption="Bike Ride. Sunset views from Roswell on the ole K75.">
+                        <video muted playsinline preload="metadata">
                             <source src="RidingBike-2.mp4" type="video/mp4">
                             <source src="RidingBike.mov" type="video/quicktime">
                         </video>
-                        <span class="play-hint">Tap to play</span>
-                    </div>
+                        <span class="play-badge" aria-hidden="true">&#9654;</span>
+                    </button>
                     <h3>Bike Ride</h3>
                     <p>Sunset views from Roswell on the ole K75.</p>
                 </div>
@@ -650,6 +677,13 @@
         </section>
     </main>
 
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox" aria-hidden="true">
+        <button class="lightbox-close" id="lightboxClose" type="button" aria-label="Close">&times;</button>
+        <div class="lightbox-content" id="lightboxContent"></div>
+        <div class="lightbox-cap" id="lightboxCap"></div>
+    </div>
+
     <footer>
         <div class="wrap">
             <span>&copy; 2026 Jordan Cota</span>
@@ -723,21 +757,6 @@
                     if (b) b.click();
                 }
             });
-        });
-    </script>
-
-    <!-- Video play/pause -->
-    <script>
-        document.querySelectorAll('.video-wrapper').forEach(wrapper => {
-            const video = wrapper.querySelector('video');
-            if (!video) return;
-            wrapper.addEventListener('mouseenter', () => { video.play().catch(() => {}); wrapper.classList.add('playing'); });
-            wrapper.addEventListener('mouseleave', () => { video.pause(); wrapper.classList.remove('playing'); });
-            wrapper.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                if (video.paused) { video.play().then(() => wrapper.classList.add('playing')).catch(() => {}); }
-                else { video.pause(); wrapper.classList.remove('playing'); }
-            }, { passive: false });
         });
     </script>
 
@@ -963,6 +982,46 @@
             restartGame();
             reveal.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         });
+    </script>
+
+    <!-- Lightbox (click-to-enlarge gallery) -->
+    <script>
+        (function () {
+            const lb = document.getElementById('lightbox');
+            const content = document.getElementById('lightboxContent');
+            const cap = document.getElementById('lightboxCap');
+            const closeBtn = document.getElementById('lightboxClose');
+            if (!lb) return;
+
+            function openTile(tile) {
+                content.innerHTML = '';
+                if (tile.dataset.type === 'video') {
+                    const v = document.createElement('video');
+                    v.controls = true; v.autoplay = true; v.loop = true; v.muted = false; v.playsInline = true;
+                    if (tile.dataset.mp4) { const s = document.createElement('source'); s.src = tile.dataset.mp4; s.type = 'video/mp4'; v.appendChild(s); }
+                    if (tile.dataset.mov) { const s = document.createElement('source'); s.src = tile.dataset.mov; s.type = 'video/quicktime'; v.appendChild(s); }
+                    content.appendChild(v);
+                } else {
+                    const img = document.createElement('img');
+                    img.src = tile.dataset.src; img.alt = tile.dataset.caption || '';
+                    content.appendChild(img);
+                }
+                cap.textContent = tile.dataset.caption || '';
+                lb.classList.add('open');
+                lb.setAttribute('aria-hidden', 'false');
+                document.body.style.overflow = 'hidden';
+            }
+            function closeLb() {
+                lb.classList.remove('open');
+                lb.setAttribute('aria-hidden', 'true');
+                content.innerHTML = '';
+                document.body.style.overflow = '';
+            }
+            document.querySelectorAll('.tile-media').forEach(t => t.addEventListener('click', () => openTile(t)));
+            closeBtn.addEventListener('click', closeLb);
+            lb.addEventListener('click', (e) => { if (e.target === lb) closeLb(); });
+            document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && lb.classList.contains('open')) closeLb(); });
+        })();
     </script>
 </body>
 </html>
