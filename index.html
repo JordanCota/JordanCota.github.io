@@ -190,6 +190,23 @@
         .post .read { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; font-weight: 600; color: var(--amber); text-decoration: none; }
         .post .read:hover { text-decoration: underline; }
 
+        /* ---------- Collapsible sections ---------- */
+        .collapsible .sec-toggle { width: 100%; background: none; border: none; cursor: pointer; text-align: left; display: flex; align-items: center; gap: 12px; padding: 4px 0; color: inherit; font-family: inherit; }
+        .collapsible .sec-title-text { font-size: 13px; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); font-family: var(--font-mono); font-weight: 500; transition: color .2s; }
+        .collapsible .sec-count { font-family: var(--font-mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); opacity: .6; }
+        .collapsible .sec-chev { margin-left: auto; color: var(--muted); font-size: 12px; transition: transform .25s ease; }
+        .collapsible .sec-toggle:hover .sec-title-text { color: var(--ink); }
+        .collapsible.open .sec-chev { transform: rotate(180deg); color: var(--amber); }
+        .sec-panel { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .32s ease; }
+        .sec-panel-clip { overflow: hidden; min-height: 0; }
+        .sec-panel-inner { padding-top: 22px; }
+        .sec-panel-inner > :first-child { margin-top: 0; }
+        .collapsible.open .sec-panel { grid-template-rows: 1fr; }
+
+        /* ---------- Game launch ---------- */
+        .launch-btn { display: inline-flex; align-items: center; gap: 10px; background: var(--amber); color: #07080f; border: none; padding: 13px 26px; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: 700; font-family: inherit; transition: filter .2s, transform .2s; }
+        .launch-btn:hover { filter: brightness(1.08); transform: translateY(-2px); }
+
         /* ---------- Contact ---------- */
         .contact-buttons { display: flex; gap: 12px; margin-top: 6px; flex-wrap: wrap; }
         .contact-buttons a { display: inline-flex; align-items: center; gap: 10px; padding: 11px 18px; background: var(--panel); color: var(--ink); text-decoration: none; border: 1px solid var(--line-2); border-radius: 8px; transition: border-color .2s, transform .2s; font-size: 14px; }
@@ -239,7 +256,7 @@
                 <a href="#writing">Writing</a>
                 <a href="#work">Work</a>
                 <a href="#play">Play</a>
-                <a href="#garage" hidden>Garage</a>
+                <a href="#garage">Garage</a>
                 <a href="#trips" hidden>Trips</a>
                 <a href="#contact">Contact</a>
             </div>
@@ -267,13 +284,18 @@
         <!-- ABOUT -->
         <section id="about" class="wrap about">
             <h2 class="sec-title">// About</h2>
-            <p>I've been in controls and automation since 2017. I started in HVAC then food and beverage, where I built a maintenance ticketing system from the ground up, and put a status light on the production floor so anyone could see at a glance whether the line was running. Simple ideas that worked. Since then I've connected PLCs, built SCADA systems, integrated protocols most people haven't touched, and made machines readable to the people running them. I don't wait to be handed a problem. I find it, figure it out, and build something that lasts.</p>
+            <p>I've been in controls and automation since 2020. I started in food and beverage, built a maintenance ticketing system from the ground up, and put a status light on the production floor so anyone could see at a glance whether the line was running. Simple ideas that worked. Since then I've connected PLCs, built SCADA systems, integrated protocols most people haven't touched, and made machines readable to the people running them. I don't wait to be handed a problem. I find it, figure it out, and build something that lasts.</p>
             <p>I studied at the University of West Georgia in Carrollton with a focus in history, where I received an Associate's Degree. I have a wide variety of passions and enjoy many activities in my free time: pickleball, making kombucha, hiking with friends, long walks on the beach, the discovery of new hobbies, and the Oxford comma. I love working on my 1986 BMW K75 and old radios; I have a STA-78 Realistic upstairs and a Sansui A2000 in the living area. I built this website by hand in HTML, so I'm always tinkering in the analog and digital world.</p>
         </section>
 
         <!-- EXPERIENCE -->
-        <section id="experience" class="wrap">
-            <h2 class="sec-title">// Career Progression</h2>
+        <section id="experience" class="wrap collapsible">
+            <button class="sec-toggle" aria-expanded="false">
+                <span class="sec-title-text">// Career Progression</span>
+                <span class="sec-count">2017 &ndash; Present &middot; 6 roles</span>
+                <span class="sec-chev">&#9660;</span>
+            </button>
+            <div class="sec-panel"><div class="sec-panel-clip"><div class="sec-panel-inner">
 
             <div class="role open">
                 <button class="role-head" aria-expanded="true">
@@ -394,11 +416,18 @@
             </div>
 
             <div class="edu-line">Education &middot; University of West Georgia &middot; Associate's, History &nbsp;|&nbsp; Lean Six Sigma White Belt &middot; NFPA 70E / LOTO</div>
+
+            </div></div></div>
         </section>
 
         <!-- WRITING -->
-        <section id="writing" class="wrap">
-            <h2 class="sec-title">// Writing</h2>
+        <section id="writing" class="wrap collapsible">
+            <button class="sec-toggle" aria-expanded="false">
+                <span class="sec-title-text">// Writing</span>
+                <span class="sec-count">6 articles</span>
+                <span class="sec-chev">&#9660;</span>
+            </button>
+            <div class="sec-panel"><div class="sec-panel-clip"><div class="sec-panel-inner">
             <ol class="writing">
                 <li><a href="articles/fanuc-static-ip.html"><span class="w-num">01</span><span class="w-title">How to Configure a Static IP on a Fanuc CNC Controller</span><span class="w-cat">CNC</span></a></li>
                 <li><a href="articles/part-counting-fanuc.html"><span class="w-num">02</span><span class="w-title">How to Set Up Part Counting on a Fanuc CNC Controller</span><span class="w-cat">CNC</span></a></li>
@@ -407,11 +436,17 @@
                 <li><a href="articles/nat-device-ot-network.html"><span class="w-num">05</span><span class="w-title">Why You Need a NAT Device for Your OT Network</span><span class="w-cat">Networking</span></a></li>
                 <li><a href="articles/connect-older-machines-iot.html"><span class="w-num">06</span><span class="w-title">How to Connect Older Machines to IoT (Without Replacing Them)</span><span class="w-cat">IIoT</span></a></li>
             </ol>
+            </div></div></div>
         </section>
 
         <!-- WORK / PROJECTS -->
-        <section id="work" class="wrap">
-            <h2 class="sec-title">// Selected Work</h2>
+        <section id="work" class="wrap collapsible">
+            <button class="sec-toggle" aria-expanded="false">
+                <span class="sec-title-text">// Selected Work</span>
+                <span class="sec-count">3 projects</span>
+                <span class="sec-chev">&#9660;</span>
+            </button>
+            <div class="sec-panel"><div class="sec-panel-clip"><div class="sec-panel-inner">
 
             <div class="project">
                 <h3>Forklift Conveyor System</h3>
@@ -455,6 +490,7 @@
                     <div class="caption-container"><p id="caption3"></p></div>
                 </div>
             </div>
+            </div></div></div>
         </section>
 
         <!-- PLAY / HOBBIES -->
@@ -512,25 +548,28 @@
             </div>
 
             <h3 class="subhead">Play Space Invaders</h3>
-            <p class="sub-note">Built right here. Arrow keys to move, spacebar to shoot. Survive the invasion. High scores save to the leaderboard below.</p>
-            <div class="game-container">
-                <div class="game-info">
-                    <span id="score">Score: 0</span>
-                    <span id="level">Level: 1</span>
-                    <span id="lives">Lives: 3</span>
+            <p class="sub-note">Built right here. Desktop: arrow keys to move, spacebar to shoot. Mobile: on-screen D-pad. High scores save to the leaderboard.</p>
+            <button class="launch-btn" id="launchGame" type="button">&#9654; Launch Space Invaders</button>
+            <div id="gameReveal" hidden>
+                <div class="game-container">
+                    <div class="game-info">
+                        <span id="score">Score: 0</span>
+                        <span id="level">Level: 1</span>
+                        <span id="lives">Lives: 3</span>
+                    </div>
+                    <canvas id="gameCanvas" width="800" height="600"></canvas>
+                    <div class="game-dpad" aria-hidden="true">
+                        <button id="dpadLeft" class="dpad-btn" type="button">&#9664;</button>
+                        <button id="dpadFire" class="dpad-btn fire" type="button">FIRE</button>
+                        <button id="dpadRight" class="dpad-btn" type="button">&#9654;</button>
+                    </div>
+                    <button class="restart-btn" id="restartBtn" onclick="restartGame()">Start Game</button>
+                    <div class="game-controls"><p>Desktop: &#8592; &#8594; to move, Space to shoot &nbsp;&middot;&nbsp; Mobile: use the D-pad</p></div>
                 </div>
-                <canvas id="gameCanvas" width="800" height="600"></canvas>
-                <div class="game-dpad" aria-hidden="true">
-                    <button id="dpadLeft" class="dpad-btn" type="button">&#9664;</button>
-                    <button id="dpadFire" class="dpad-btn fire" type="button">FIRE</button>
-                    <button id="dpadRight" class="dpad-btn" type="button">&#9654;</button>
-                </div>
-                <button class="restart-btn" id="restartBtn" onclick="restartGame()">Start Game</button>
-                <div class="game-controls"><p>Desktop: &#8592; &#8594; to move, Space to shoot &nbsp;&middot;&nbsp; Mobile: use the D-pad</p></div>
-            </div>
 
-            <h3 class="subhead">High Scores</h3>
-            <ol id="leaderboard-list"></ol>
+                <h3 class="subhead">High Scores</h3>
+                <ol id="leaderboard-list"></ol>
+            </div>
         </section>
 
         <!-- GARAGE  (HIDDEN FOR NOW — to publish it, delete the word "hidden" on the section tag just below, AND on the Garage nav link near the top of the file) -->
@@ -660,6 +699,27 @@
         });
         window.addEventListener('resize', () => {
             document.querySelectorAll('.role.open .role-body').forEach(b => { b.style.maxHeight = b.scrollHeight + 'px'; });
+        });
+
+        // Collapsible section toggles
+        document.querySelectorAll('.collapsible .sec-toggle').forEach(btn => {
+            const sec = btn.closest('section');
+            btn.addEventListener('click', () => {
+                const open = sec.classList.toggle('open');
+                btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+                if (open) sec.querySelectorAll('.role.open .role-body').forEach(b => { b.style.maxHeight = b.scrollHeight + 'px'; });
+            });
+        });
+
+        // Open a collapsible section when its nav tab is clicked
+        navLinks.forEach(a => {
+            a.addEventListener('click', () => {
+                const target = document.querySelector(a.getAttribute('href'));
+                if (target && target.classList.contains('collapsible') && !target.classList.contains('open')) {
+                    const b = target.querySelector('.sec-toggle');
+                    if (b) b.click();
+                }
+            });
         });
     </script>
 
@@ -890,7 +950,16 @@
         restartBtn.disabled = false;
         initEnemies();
         gameLoop();
-        displayLeaderboard();
+
+        // Launch button reveals the game + leaderboard, then starts a round
+        document.getElementById('launchGame').addEventListener('click', function () {
+            const reveal = document.getElementById('gameReveal');
+            reveal.hidden = false;
+            this.style.display = 'none';
+            displayLeaderboard();
+            restartGame();
+            reveal.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        });
     </script>
 </body>
 </html>
