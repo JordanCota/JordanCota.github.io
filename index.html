@@ -200,9 +200,6 @@
         #leaderboard-list { padding-left: 20px; color: var(--ink-2); margin: 10px 0 0; }
         #leaderboard-list li { margin-bottom: 0.5rem; }
         #leaderboard-list strong { color: var(--amber); }
-        /* ---------- Sling Shot game ---------- */
-        #birdCanvas { border: 1px solid var(--line-2); border-radius: 10px; background-color: #04050b; max-width: 100%; height: auto; touch-action: none; cursor: grab; }
-        #birdCanvas:active { cursor: grabbing; }
 
         /* ---------- Garage (build log) ---------- */
         .garage-list { display: grid; gap: 14px; }
@@ -596,13 +593,13 @@
                     <div class="post-meta">Audio &middot; Draft</div>
                     <h3>Inside the STA-78 Realistic Receiver</h3>
                     <p>Recapping a vintage receiver and bringing it back to life without smoking the output stage.</p>
-                    <a class="read" href="garage/sta-78-receiver.html">Read post &#8594;</a>
+                    <span class="read" style="opacity:.5;cursor:default;">Coming soon</span>
                 </article>
                 <article class="post">
                     <div class="post-meta">Truck &middot; Draft</div>
                     <h3>The Truck Project: First Teardown</h3>
                     <p>Where it started, what's broken, and the plan to get it road-worthy.</p>
-                    <a class="read" href="garage/truck-teardown.html">Read post &#8594;</a>
+                    <span class="read" style="opacity:.5;cursor:default;">Coming soon</span>
                 </article>
             </div>
 
@@ -628,22 +625,6 @@
 
                 <h3 class="subhead">High Scores</h3>
                 <ol id="leaderboard-list"></ol>
-            </div>
-
-            <h3 class="subhead">Play Sling Shot</h3>
-            <p class="sub-note">Same idea as that bird game everyone knows. Pull the slingshot back, let go, and knock the towers down to splat the little green guys. Five levels, and it gets meaner as you go. Works with a mouse or your thumb.</p>
-            <button class="launch-btn" id="launchBirds" type="button">&#9654; Launch Sling Shot</button>
-            <div id="birdsReveal" hidden>
-                <div class="game-container">
-                    <div class="game-info">
-                        <span id="bg-level">Level: 1/5</span>
-                        <span id="bg-birds">Comets: 3</span>
-                        <span id="bg-score">Score: 0</span>
-                    </div>
-                    <canvas id="birdCanvas" width="800" height="600"></canvas>
-                    <button class="restart-btn" id="birdsRestart" type="button">Restart Run</button>
-                    <div class="game-controls"><p>Drag the comet back from the slingshot and release. Clear every target to move on.</p></div>
-                </div>
             </div>
 
             </div></div></div>
@@ -685,7 +666,7 @@
                     <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
                     <span>Email</span>
                 </a>
-                <a href="https://www.linkedin.com/in/jordan-trey-cota-19269117a" target="_blank" rel="noopener">
+                <a href="https://www.linkedin.com/in/jordan-cota-19269117a" target="_blank" rel="noopener">
                     <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
                     <span>LinkedIn</span>
                 </a>
@@ -822,759 +803,492 @@
 
     <!-- Space Invaders -->
     <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        const scoreElement = document.getElementById('score');
-        const levelElement = document.getElementById('level');
-        const livesElement = document.getElementById('lives');
-        const restartBtn = document.getElementById('restartBtn');
+/* ===========================================================
+   Space Invaders  -  sprite edition for jordancota.site
+   Pixel-art invaders (3 types, 2 frames), destructible
+   bunkers, bonus saucer, marching beat, explosions.
+   Keeps the Firebase "scores" leaderboard + mobile D-pad.
+   Global scope on purpose so restartGame() works from markup.
+   =========================================================== */
 
-        let score = 0, lives = 3, level = 1, gameRunning = false, lastShotTime = 0;
-        let firing = false;
-        const player = { x: canvas.width / 2 - 15, y: canvas.height - 50, width: 30, height: 20, speed: 5 };
-        const bullets = [], enemyBullets = [], enemies = [];
-        const bulletSpeed = 7;
-        let enemyBulletSpeed = 3, enemyRows = 5, enemyCols = 10;
-        const enemyWidth = 30, enemyHeight = 20, enemyPadding = 10;
-        let enemyDirection = 1, enemySpeed = 0.5, lastEnemyShot = 0;
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+const scoreElement = document.getElementById('score');
+const levelElement = document.getElementById('level');
+const livesElement = document.getElementById('lives');
+const restartBtn = document.getElementById('restartBtn');
 
-        function initEnemies() {
-            enemies.length = 0;
-            for (let row = 0; row < enemyRows; row++) {
-                for (let col = 0; col < enemyCols; col++) {
-                    enemies.push({ x: col * (enemyWidth + enemyPadding) + 50, y: row * (enemyHeight + enemyPadding) + 50, width: enemyWidth, height: enemyHeight, alive: true, row: row });
+const VW = canvas.width, VH = canvas.height;
+
+/* ---------- sprites (X = filled) ---------- */
+const SPR = {
+    squid: [
+        ["...XX...","..XXXX..",".XXXXXX.","XX.XX.XX","XXXXXXXX",".X.XX.X.","X......X",".X....X."],
+        ["...XX...","..XXXX..",".XXXXXX.","XX.XX.XX","XXXXXXXX","..X..X..",".X.XX.X.","X.X..X.X"]
+    ],
+    crab: [
+        ["..X.....X..","...X...X...","..XXXXXXX..",".XX.XXX.XX.","XXXXXXXXXXX","X.XXXXXXX.X","X.X.....X.X","...XX.XX..."],
+        ["..X.....X..","X..X...X..X","X.XXXXXXX.X","XXX.XXX.XXX","XXXXXXXXXXX",".XXXXXXXXX.","..X.....X..",".X.......X."]
+    ],
+    octo: [
+        ["....XXXX....",".XXXXXXXXXX.","XXXXXXXXXXXX","XXX..XX..XXX","XXXXXXXXXXXX","...XX..XX...","..XX.XX.XX..","XX........XX"],
+        ["....XXXX....",".XXXXXXXXXX.","XXXXXXXXXXXX","XXX..XX..XXX","XXXXXXXXXXXX","..XXX..XXX..",".XX..XX..XX.","..XX....XX.."]
+    ],
+    player: ["......X......",".....XXX.....",".....XXX.....",".XXXXXXXXXXX.","XXXXXXXXXXXXX","XXXXXXXXXXXXX","XXXXXXXXXXXXX","XXXXXXXXXXXXX"],
+    ufo: ["....XXXXXXXX....","..XXXXXXXXXXXX..",".XXXXXXXXXXXXXX.","XXXXXXXXXXXXXXXX",".X.XX.XX.XX.XX.X","..XXX..XX..XXX..","...X........X..."],
+    boom: ["X..X...X..X","",".X..X.X..X.","..X.....X..","....XXX....","..X.....X..",".X..X.X..X.","X..X...X..X"]
+};
+const TYPE = {
+    squid: { color: '#b06ee6', points: 30, w: 8 },
+    crab:  { color: '#46e08a', points: 20, w: 11 },
+    octo:  { color: '#f0962a', points: 10, w: 12 }
+};
+const SCALE = 3;
+const ROW_TYPES = ['squid', 'crab', 'crab', 'octo', 'octo'];
+
+function spriteW(grid) { return Math.max(...grid.map(r => r.length)) * SCALE; }
+function spriteH(grid) { return grid.length * SCALE; }
+function drawBitmap(grid, x, y, color, scale) {
+    scale = scale || SCALE;
+    ctx.fillStyle = color;
+    for (let r = 0; r < grid.length; r++) {
+        const row = grid[r];
+        for (let c = 0; c < row.length; c++) {
+            if (row[c] === 'X') ctx.fillRect(Math.round(x + c * scale), Math.round(y + r * scale), scale, scale);
+        }
+    }
+}
+
+/* ---------- state ---------- */
+let score = 0, lives = 3, level = 1, gameRunning = false;
+let firing = false, lastShotTime = 0;
+const keys = {};
+
+const CELL_W = 46, CELL_H = 36, COLS = 11, BASE_ROWS = 5;
+let invaders = [];
+let dir = 1, animFrame = 0, moveTimer = 0, marchNote = 0;
+let swarmTop = 64;
+
+const player = { x: VW / 2, y: VH - 56, w: 13 * SCALE, h: 8 * SCALE, speed: 5, dead: 0 };
+let pBullet = null;                 // single player bullet (classic)
+const eBullets = [];
+let bunkers = [];
+let ufo = null, ufoTimer = 0;
+let booms = [];                     // explosion sprites
+let particles = [];
+
+/* ---------- sound (WebAudio, lazy, mutable) ---------- */
+let soundOn = true, actx = null;
+function audio() {
+    if (!actx) { try { actx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { actx = null; } }
+    return actx;
+}
+function blip(freq, dur, type, vol) {
+    if (!soundOn) return;
+    const a = audio(); if (!a) return;
+    try {
+        const o = a.createOscillator(), g = a.createGain();
+        o.type = type || 'square'; o.frequency.value = freq;
+        g.gain.value = vol == null ? 0.05 : vol;
+        o.connect(g); g.connect(a.destination);
+        const t = a.currentTime;
+        g.gain.setValueAtTime(g.gain.value, t);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+        o.start(t); o.stop(t + dur);
+    } catch (e) {}
+}
+const MARCH = [98, 92, 87, 82];
+function marchTick() { blip(MARCH[marchNote % 4], 0.09, 'square', 0.06); marchNote++; }
+function sndShoot() { blip(880, 0.08, 'square', 0.04); }
+function sndInvader() { blip(160, 0.12, 'sawtooth', 0.05); }
+function sndUfo() { blip(1200, 0.05, 'sine', 0.05); }
+function sndPlayer() { if (soundOn) { blip(120, 0.5, 'sawtooth', 0.08); } }
+
+/* ---------- build ---------- */
+function initWave(reset) {
+    invaders = [];
+    const rows = Math.min(6, BASE_ROWS + Math.floor((level - 1) / 2));
+    const startX = (VW - COLS * CELL_W) / 2 + 8;
+    swarmTop = 64 + Math.min(60, (level - 1) * 10);
+    for (let r = 0; r < rows; r++) {
+        const t = ROW_TYPES[Math.min(r, ROW_TYPES.length - 1)];
+        for (let c = 0; c < COLS; c++) {
+            invaders.push({ col: c, row: r, type: t, alive: true,
+                x: startX + c * CELL_W, y: swarmTop + r * CELL_H });
+        }
+    }
+    dir = 1; animFrame = 0; moveTimer = 0; marchNote = 0;
+    eBullets.length = 0; pBullet = null; ufo = null;
+    ufoTimer = 900 + Math.random() * 600;
+    if (reset) buildBunkers();
+}
+
+function buildBunkers() {
+    bunkers = [];
+    const BW = 24, BH = 18, s = 3;
+    const count = 4;
+    const gap = (VW - count * BW * s) / (count + 1);
+    for (let i = 0; i < count; i++) {
+        const ox = gap + i * (BW * s + gap);
+        const oy = VH - 150;
+        const mask = [];
+        for (let y = 0; y < BH; y++) {
+            mask[y] = [];
+            for (let x = 0; x < BW; x++) {
+                // dome: rounded top, flat bottom, with an arch notch cut from bottom-center
+                const cx = (BW - 1) / 2;
+                const topCurve = y >= (Math.abs(x - cx) * Math.abs(x - cx)) / (BW * 0.9);
+                const notch = (y > BH - 7) && (Math.abs(x - cx) < 4 - (BH - y) * 0.2);
+                mask[y][x] = topCurve && !notch ? 1 : 0;
+            }
+        }
+        bunkers.push({ x: ox, y: oy, s: s, w: BW, h: BH, mask: mask });
+    }
+}
+
+/* ---------- input ---------- */
+document.addEventListener('keydown', (e) => {
+    keys[e.code] = true;
+    if (e.code === 'Space' && gameRunning) { e.preventDefault(); shootPlayer(); }
+});
+document.addEventListener('keyup', (e) => { keys[e.code] = false; });
+
+function bindHold(el, on, off) {
+    if (!el) return;
+    const start = (e) => { e.preventDefault(); on(); };
+    const end = (e) => { e.preventDefault(); off(); };
+    el.addEventListener('touchstart', start, { passive: false });
+    el.addEventListener('touchend', end, { passive: false });
+    el.addEventListener('touchcancel', end, { passive: false });
+    el.addEventListener('mousedown', start);
+    el.addEventListener('mouseup', end);
+    el.addEventListener('mouseleave', end);
+}
+bindHold(document.getElementById('dpadLeft'), () => keys['ArrowLeft'] = true, () => keys['ArrowLeft'] = false);
+bindHold(document.getElementById('dpadRight'), () => keys['ArrowRight'] = true, () => keys['ArrowRight'] = false);
+bindHold(document.getElementById('dpadFire'), () => firing = true, () => firing = false);
+
+function shootPlayer() {
+    const now = Date.now();
+    if (!gameRunning || player.dead) return;
+    if (pBullet) return;                       // one player bullet at a time
+    if (now - lastShotTime < 250) return;
+    pBullet = { x: player.x + player.w / 2 - 2, y: player.y - 6, w: 4, h: 12 };
+    lastShotTime = now;
+    sndShoot();
+}
+
+/* ---------- helpers ---------- */
+function invaderBox(inv) {
+    const g = SPR[inv.type][animFrame];
+    return { x: inv.x, y: inv.y, w: spriteW(g), h: spriteH(g) };
+}
+function rectHit(a, b) {
+    return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
+}
+function aliveCount() { return invaders.reduce((n, i) => n + (i.alive ? 1 : 0), 0); }
+
+function hitBunker(bx, by, bw, bh) {
+    // returns true if a filled bunker cell overlaps the rect; erodes on hit
+    for (const bk of bunkers) {
+        if (bx + bw < bk.x || bx > bk.x + bk.w * bk.s || by + bh < bk.y || by > bk.y + bk.h * bk.s) continue;
+        for (let y = 0; y < bk.h; y++) {
+            for (let x = 0; x < bk.w; x++) {
+                if (!bk.mask[y][x]) continue;
+                const cx = bk.x + x * bk.s, cy = bk.y + y * bk.s;
+                if (bx < cx + bk.s && bx + bw > cx && by < cy + bk.s && by + bh > cy) {
+                    // erode a small blob around the impact
+                    for (let dy = -1; dy <= 1; dy++)
+                        for (let dx = -1; dx <= 1; dx++) {
+                            const nx = x + dx, ny = y + dy;
+                            if (ny >= 0 && ny < bk.h && nx >= 0 && nx < bk.w && Math.random() < 0.8) bk.mask[ny][nx] = 0;
+                        }
+                    return true;
                 }
             }
         }
-
-        const keys = {};
-        document.addEventListener('keydown', (e) => {
-            keys[e.code] = true;
-            if (e.code === 'Space' && gameRunning) { e.preventDefault(); shootPlayer(); }
-        });
-        document.addEventListener('keyup', (e) => { keys[e.code] = false; });
-
-        // On-screen D-pad (mobile)
-        function bindHold(el, on, off) {
-            if (!el) return;
-            const start = (e) => { e.preventDefault(); on(); };
-            const end = (e) => { e.preventDefault(); off(); };
-            el.addEventListener('touchstart', start, { passive: false });
-            el.addEventListener('touchend', end, { passive: false });
-            el.addEventListener('touchcancel', end, { passive: false });
-            el.addEventListener('mousedown', start);
-            el.addEventListener('mouseup', end);
-            el.addEventListener('mouseleave', end);
-        }
-        bindHold(document.getElementById('dpadLeft'), () => keys['ArrowLeft'] = true, () => keys['ArrowLeft'] = false);
-        bindHold(document.getElementById('dpadRight'), () => keys['ArrowRight'] = true, () => keys['ArrowRight'] = false);
-        bindHold(document.getElementById('dpadFire'), () => firing = true, () => firing = false);
-
-        function shootPlayer() {
-            const now = Date.now();
-            if (now - lastShotTime > 200 && gameRunning) {
-                bullets.push({ x: player.x + player.width / 2 - 2.5, y: player.y, width: 5, height: 10 });
-                lastShotTime = now;
-            }
-        }
-
-        function collision(r1, r2) {
-            return r1.x < r2.x + r2.width && r1.x + r1.width > r2.x && r1.y < r2.y + r2.height && r1.y + r1.height > r2.y;
-        }
-
-        function drawPlayer() {
-            ctx.fillStyle = '#f4b73c'; ctx.strokeStyle = '#f4b73c'; ctx.lineWidth = 2;
-            ctx.beginPath(); ctx.moveTo(player.x + player.width / 2, player.y); ctx.lineTo(player.x, player.y + player.height); ctx.lineTo(player.x + player.width, player.y + player.height); ctx.closePath(); ctx.fill(); ctx.stroke();
-            ctx.fillStyle = 'orange'; ctx.beginPath(); ctx.moveTo(player.x + 8, player.y + player.height); ctx.lineTo(player.x + player.width / 2, player.y + player.height + 5); ctx.lineTo(player.x + player.width - 8, player.y + player.height); ctx.closePath(); ctx.fill();
-        }
-
-        function drawEnemy(enemy) {
-            const colors = ['#7fd5ff', '#5cc4f0', '#46a8e0', '#3a8fd0', '#2f78b8'];
-            ctx.fillStyle = colors[enemy.row] || '#7fd5ff'; ctx.strokeStyle = '#bfe6ff'; ctx.lineWidth = 1;
-            ctx.beginPath(); ctx.roundRect(enemy.x + 4, enemy.y, enemy.width - 8, enemy.height, 4); ctx.fill(); ctx.stroke();
-            ctx.fillStyle = '#07080f'; ctx.beginPath(); ctx.arc(enemy.x + 12, enemy.y + 8, 2, 0, 2 * Math.PI); ctx.arc(enemy.x + 18, enemy.y + 8, 2, 0, 2 * Math.PI); ctx.fill();
-        }
-
-        function levelUp() {
-            level++; enemySpeed += 0.2; enemyBulletSpeed += 0.5;
-            enemyRows = Math.min(7, enemyRows + 1); enemyCols = Math.min(12, enemyCols + 1);
-            bullets.length = 0; enemyBullets.length = 0; player.x = canvas.width / 2 - 15;
-            alert(`Level Up! Level ${level} - Enemies are faster and more numerous!`);
-            levelElement.textContent = `Level: ${level}`; initEnemies();
-        }
-
-        function update() {
-            if (!gameRunning) return;
-            if (firing) shootPlayer();
-            if (keys['ArrowLeft'] && player.x > 0) player.x -= player.speed;
-            if (keys['ArrowRight'] && player.x < canvas.width - player.width) player.x += player.speed;
-
-            for (let i = bullets.length - 1; i >= 0; i--) { bullets[i].y -= bulletSpeed; if (bullets[i].y < 0) bullets.splice(i, 1); }
-
-            for (let i = enemyBullets.length - 1; i >= 0; i--) {
-                enemyBullets[i].y += enemyBulletSpeed;
-                if (enemyBullets[i].y > canvas.height) { enemyBullets.splice(i, 1); }
-                else if (collision(enemyBullets[i], player)) { lives--; livesElement.textContent = `Lives: ${lives}`; enemyBullets.splice(i, 1); if (lives <= 0) gameOver(); }
-            }
-
-            let edgeHit = false;
-            enemies.forEach(enemy => {
-                if (!enemy.alive) return;
-                enemy.x += enemyDirection * enemySpeed;
-                if (enemy.x <= 0 || enemy.x + enemy.width >= canvas.width) edgeHit = true;
-                const shootInterval = Math.max(300, 800 - (level * 50));
-                if (Date.now() - lastEnemyShot > shootInterval && Math.random() < 0.003 + (level * 0.001) && enemy.alive) {
-                    enemyBullets.push({ x: enemy.x + enemy.width / 2 - 2.5, y: enemy.y + enemy.height, width: 5, height: 10 });
-                    lastEnemyShot = Date.now();
-                }
-                for (let i = bullets.length - 1; i >= 0; i--) {
-                    if (collision(bullets[i], enemy)) { enemy.alive = false; bullets.splice(i, 1); score += 10 * level; scoreElement.textContent = `Score: ${score}`; break; }
-                }
-                if (enemy.y + enemy.height >= player.y || collision(enemy, player)) { lives--; livesElement.textContent = `Lives: ${lives}`; enemy.alive = false; if (lives <= 0) gameOver(); }
-            });
-
-            if (edgeHit) { enemyDirection *= -1; enemies.forEach(enemy => { if (enemy.alive) enemy.y += 20; }); }
-            if (enemies.filter(e => e.alive).length === 0) levelUp();
-        }
-
-        const badWords = ['nigger', 'nigga', 'n1gger', 'n1gga', 'nigg3r', 'nigg4', 'fuck', 'shit', 'cunt', 'bitch', 'asshole', 'faggot', 'fag', 'retard', 'whore'];
-        function containsBadWord(name) { return badWords.some(word => name.toLowerCase().replace(/\s/g, '').includes(word)); }
-
-        function gameOver() {
-            gameRunning = false; restartBtn.disabled = false; restartBtn.textContent = 'Restart Game';
-            const playerName = prompt(`Game Over! Final Score: ${score}\nEnter your name for the leaderboard:`, "Player");
-            if (playerName) {
-                if (containsBadWord(playerName)) { alert("That name is not allowed. Please choose a more appropriate name."); return; }
-                db.collection("scores").add({ name: playerName, score: score, level: level, timestamp: firebase.firestore.FieldValue.serverTimestamp() })
-                    .then(() => { displayLeaderboard(); })
-                    .catch((error) => { console.error("Error writing document: ", error); });
-            }
-        }
-
-        function render() {
-            ctx.fillStyle = '#04050b'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-            drawPlayer();
-            ctx.fillStyle = '#f4b73c'; bullets.forEach(b => ctx.fillRect(b.x, b.y, b.width, b.height));
-            ctx.fillStyle = '#ff5a5a'; enemyBullets.forEach(b => ctx.fillRect(b.x, b.y, b.width, b.height));
-            enemies.forEach(enemy => { if (enemy.alive) drawEnemy(enemy); });
-        }
-
-        function gameLoop() { update(); render(); requestAnimationFrame(gameLoop); }
-
-        function restartGame() {
-            score = 0; lives = 3; level = 1; gameRunning = true;
-            bullets.length = 0; enemyBullets.length = 0; player.x = canvas.width / 2 - 15;
-            enemySpeed = 0.5; enemyBulletSpeed = 3; enemyRows = 5; enemyCols = 10;
-            scoreElement.textContent = `Score: ${score}`; levelElement.textContent = `Level: ${level}`; livesElement.textContent = `Lives: ${lives}`;
-            initEnemies(); lastShotTime = 0; lastEnemyShot = 0; enemyDirection = 1;
-            restartBtn.disabled = true; restartBtn.textContent = 'Playing...';
-            firing = false;
-        }
-
-        function displayLeaderboard() {
-            const leaderboardList = document.getElementById('leaderboard-list');
-            if (!leaderboardList) return;
-            leaderboardList.innerHTML = '<li>Loading scores...</li>';
-            db.collection("scores").orderBy("score", "desc").limit(10).get()
-                .then((querySnapshot) => {
-                    if (querySnapshot.empty) { leaderboardList.innerHTML = "<li>No scores yet. Be the first!</li>"; return; }
-                    leaderboardList.innerHTML = '';
-                    querySnapshot.forEach((doc) => {
-                        const data = doc.data();
-                        const li = document.createElement('li');
-                        li.innerHTML = `<strong>${data.name}</strong> - ${data.score} (Level ${data.level})`;
-                        leaderboardList.appendChild(li);
-                    });
-                })
-                .catch((error) => { console.error("Error fetching scores: ", error); leaderboardList.innerHTML = "<li>Could not load scores.</li>"; });
-        }
-
-        restartBtn.disabled = false;
-        initEnemies();
-        gameLoop();
-
-        // Launch button reveals the game + leaderboard, then starts a round
-        document.getElementById('launchGame').addEventListener('click', function () {
-            const reveal = document.getElementById('gameReveal');
-            reveal.hidden = false;
-            this.style.display = 'none';
-            displayLeaderboard();
-            restartGame();
-            reveal.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        });
-    </script>
-
-    <!-- Sling Shot (slingshot physics game) -->
-    <script>
-/* ============================================================
-   Sling Shot  -  a slingshot/physics game for jordancota.site
-   Self-contained IIFE. No leaderboard / no high scores.
-   ============================================================ */
-(function () {
-    const canvas = document.getElementById('birdCanvas');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-
-    const W = canvas.width, H = canvas.height;
-    const GROUND = 552;
-    const G = 0.5;                 // gravity
-    const ANCHOR = { x: 150, y: 392 };
-    const BIRD_R = 14;
-    const MAX_STRETCH = 95;
-    const POWER = 0.235;
-    const VMAX = 28;
-
-    // ---- materials ----
-    const MAT = {
-        wood:  { hp: 55,  mass: 2.2, fill: '#7a5230', edge: '#a9743f' },
-        stone: { hp: 130, mass: 4.5, fill: '#3a4150', edge: '#5a6477' }
-    };
-
-    // ---- level data (structures rest exactly on the ground / each other) ----
-    function blk(x, y, w, h, mat) { return { x, y, w, h, mat }; }
-    function pig(x, y, r) { return { x, y, r: r || 16 }; }
-
-    const LEVELS = [
-        { // 1  - warm up
-            birds: 3,
-            blocks: [
-                blk(560, GROUND - 90, 24, 90, 'wood'),
-                blk(656, GROUND - 90, 24, 90, 'wood'),
-                blk(548, GROUND - 114, 144, 24, 'wood')
-            ],
-            pigs: [ pig(608, GROUND - 16) ]
-        },
-        { // 2  - a little tower
-            birds: 4,
-            blocks: [
-                blk(600, GROUND - 40, 40, 40, 'wood'),
-                blk(644, GROUND - 40, 40, 40, 'wood'),
-                blk(596, GROUND - 64, 92, 24, 'wood'),
-                blk(610, GROUND - 104, 24, 40, 'wood'),
-                blk(660, GROUND - 104, 24, 40, 'wood')
-            ],
-            pigs: [ pig(540, GROUND - 16), pig(624, GROUND - 80) ]
-        },
-        { // 3  - first stone
-            birds: 4,
-            blocks: [
-                blk(500, GROUND - 90, 24, 90, 'stone'),
-                blk(700, GROUND - 90, 24, 90, 'stone'),
-                blk(488, GROUND - 114, 248, 24, 'wood'),
-                blk(560, GROUND - 154, 24, 40, 'wood'),
-                blk(652, GROUND - 154, 24, 40, 'wood'),
-                blk(548, GROUND - 178, 128, 24, 'wood')
-            ],
-            pigs: [ pig(540, GROUND - 16), pig(684, GROUND - 16), pig(612, GROUND - 130) ]
-        },
-        { // 4  - taller, mixed
-            birds: 5,
-            blocks: [
-                blk(470, GROUND - 110, 24, 110, 'stone'),
-                blk(560, GROUND - 110, 24, 110, 'stone'),
-                blk(458, GROUND - 134, 126, 24, 'wood'),
-                blk(640, GROUND - 70, 24, 70, 'wood'),
-                blk(720, GROUND - 70, 24, 70, 'wood'),
-                blk(632, GROUND - 94, 112, 24, 'wood'),
-                blk(500, GROUND - 174, 24, 40, 'wood'),
-                blk(534, GROUND - 174, 24, 40, 'wood'),
-                blk(492, GROUND - 198, 90, 24, 'stone')
-            ],
-            pigs: [ pig(516, GROUND - 16), pig(676, GROUND - 16),
-                    pig(522, GROUND - 150), pig(682, GROUND - 110) ]
-        },
-        { // 5  - the fortress
-            birds: 5,
-            blocks: [
-                blk(440, GROUND - 130, 28, 130, 'stone'),
-                blk(560, GROUND - 130, 28, 130, 'stone'),
-                blk(700, GROUND - 130, 28, 130, 'stone'),
-                blk(430, GROUND - 154, 188, 24, 'stone'),
-                blk(580, GROUND - 154, 148, 24, 'stone'),
-                blk(470, GROUND - 194, 24, 40, 'wood'),
-                blk(520, GROUND - 194, 24, 40, 'wood'),
-                blk(620, GROUND - 194, 24, 40, 'wood'),
-                blk(670, GROUND - 194, 24, 40, 'wood'),
-                blk(458, GROUND - 218, 110, 24, 'wood'),
-                blk(608, GROUND - 218, 110, 24, 'wood')
-            ],
-            pigs: [ pig(500, GROUND - 16), pig(620, GROUND - 16),
-                    pig(508, GROUND - 170), pig(648, GROUND - 170),
-                    pig(584, GROUND - 16) ]
-        }
-    ];
-
-    // ---- runtime state ----
-    let levelIndex = 0;
-    let totalScore = 0;       // banked from cleared levels
-    let levelScore = 0;       // this level's running points
-    let birdsLeft = 0;
-    let blocks = [];
-    let pigs = [];
-    let particles = [];
-    let bird = null;          // active flying/loaded bird
-    let state = 'idle';       // idle | aim | drag | fly | reload | won | lost | done
-    let settleTimer = 0;
-    let msg = '';
-
-    function deepBlocks(src) {
-        return src.map(b => ({
-            x: b.x, y: b.y, w: b.w, h: b.h, mat: b.mat,
-            vx: 0, vy: 0, hp: MAT[b.mat].hp, maxhp: MAT[b.mat].hp, rest: false
-        }));
     }
-    function deepPigs(src) {
-        return src.map(p => ({
-            x: p.x, y: p.y, r: p.r, vx: 0, vy: 0,
-            hp: 100, maxhp: 100, alive: true
-        }));
+    return false;
+}
+
+function spawnBoom(x, y, color) {
+    booms.push({ x, y, color, life: 14 });
+    for (let i = 0; i < 8; i++) {
+        const a = Math.random() * Math.PI * 2, sp = 1 + Math.random() * 3;
+        particles.push({ x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life: 1, color });
+    }
+}
+
+/* ---------- update ---------- */
+let frameCount = 0;
+function update() {
+    if (!gameRunning) return;
+    frameCount++;
+
+    if (player.dead > 0) {
+        player.dead--;
+        if (player.dead === 0 && lives <= 0) { gameOver(); return; }
+        // freeze most action during death pause but keep particles moving
+        stepParticles();
+        return;
     }
 
-    function loadLevel(i) {
-        const L = LEVELS[i];
-        blocks = deepBlocks(L.blocks);
-        pigs = deepPigs(L.pigs);
-        particles = [];
-        birdsLeft = L.birds;
-        levelScore = 0;
-        bird = null;
-        msg = '';
-        state = 'aim';
-        loadBird();
-        updateHUD();
-    }
+    if (firing) shootPlayer();
+    if ((keys['ArrowLeft'] || keys['KeyA']) && player.x > 6) player.x -= player.speed;
+    if ((keys['ArrowRight'] || keys['KeyD']) && player.x < VW - player.w - 6) player.x += player.speed;
 
-    function loadBird() {
-        if (birdsLeft <= 0) return;
-        bird = { x: ANCHOR.x, y: ANCHOR.y, vx: 0, vy: 0, r: BIRD_R, launched: false, life: 0, idle: 0 };
-        state = 'aim';
-    }
-
-    // ---------- input ----------
-    function getPos(e) {
-        const rect = canvas.getBoundingClientRect();
-        const t = e.touches && e.touches[0] ? e.touches[0] : e;
-        const sx = canvas.width / rect.width, sy = canvas.height / rect.height;
-        return { x: (t.clientX - rect.left) * sx, y: (t.clientY - rect.top) * sy };
-    }
-    function clampStretch(p) {
-        let dx = p.x - ANCHOR.x, dy = p.y - ANCHOR.y;
-        const d = Math.hypot(dx, dy);
-        if (d > MAX_STRETCH) { dx = dx / d * MAX_STRETCH; dy = dy / d * MAX_STRETCH; }
-        return { x: ANCHOR.x + dx, y: ANCHOR.y + dy };
-    }
-    function onDown(e) {
-        if (state === 'won' || state === 'lost' || state === 'done') { e.preventDefault(); advance(); return; }
-        if (state !== 'aim' || !bird) return;
-        e.preventDefault();
-        state = 'drag';
-        const p = clampStretch(getPos(e));
-        bird.x = p.x; bird.y = p.y;
-    }
-    function onMove(e) {
-        if (state !== 'drag' || !bird) return;
-        e.preventDefault();
-        const p = clampStretch(getPos(e));
-        bird.x = p.x; bird.y = p.y;
-    }
-    function onUp(e) {
-        if (state !== 'drag' || !bird) return;
-        e.preventDefault();
-        bird.vx = clampV((ANCHOR.x - bird.x) * POWER);
-        bird.vy = clampV((ANCHOR.y - bird.y) * POWER);
-        bird.launched = true;
-        state = 'fly';
-    }
-    function clampV(v) { return Math.max(-VMAX, Math.min(VMAX, v)); }
-
-    canvas.addEventListener('mousedown', onDown);
-    window.addEventListener('mousemove', onMove);
-    window.addEventListener('mouseup', onUp);
-    canvas.addEventListener('touchstart', onDown, { passive: false });
-    canvas.addEventListener('touchmove', onMove, { passive: false });
-    canvas.addEventListener('touchend', onUp, { passive: false });
-
-    // ---------- physics helpers ----------
-    function aabbResolve(a, b) {
-        const ax2 = a.x + a.w, ay2 = a.y + a.h, bx2 = b.x + b.w, by2 = b.y + b.h;
-        const ox = Math.min(ax2, bx2) - Math.max(a.x, b.x);
-        const oy = Math.min(ay2, by2) - Math.max(a.y, b.y);
-        if (ox <= 0 || oy <= 0) return;
-        const ma = MAT[a.mat].mass, mb = MAT[b.mat].mass, tot = ma + mb;
-        if (ox < oy) {
-            const dir = (a.x + a.w / 2) < (b.x + b.w / 2) ? -1 : 1;
-            a.x += dir * ox * (mb / tot); b.x -= dir * ox * (ma / tot);
-            const rel = a.vx - b.vx;
-            if ((dir < 0 && rel > 0) || (dir > 0 && rel < 0)) {
-                const j = -(1.15) * rel / (1 / ma + 1 / mb);
-                a.vx += j / ma; b.vx -= j / mb;
-            }
-            a.vx *= 0.96; b.vx *= 0.96;
+    /* swarm march */
+    const remaining = aliveCount();
+    const total = COLS * Math.min(6, BASE_ROWS + Math.floor((level - 1) / 2));
+    const interval = Math.max(4, Math.round(34 * (remaining / total)) + 3 - level);
+    moveTimer++;
+    if (moveTimer >= interval) {
+        moveTimer = 0;
+        let minX = Infinity, maxX = -Infinity;
+        invaders.forEach(i => { if (i.alive) { const b = invaderBox(i); minX = Math.min(minX, b.x); maxX = Math.max(maxX, b.x + b.w); } });
+        if (minX === Infinity) { winWave(); return; }
+        const stepX = 10;
+        if ((dir === 1 && maxX + stepX > VW - 6) || (dir === -1 && minX - stepX < 6)) {
+            dir *= -1;
+            invaders.forEach(i => { if (i.alive) i.y += 16; });
         } else {
-            const dir = (a.y + a.h / 2) < (b.y + b.h / 2) ? -1 : 1;
-            a.y += dir * oy * (mb / tot); b.y -= dir * oy * (ma / tot);
-            const rel = a.vy - b.vy;
-            if ((dir < 0 && rel > 0) || (dir > 0 && rel < 0)) {
-                const j = -(1.05) * rel / (1 / ma + 1 / mb);
-                a.vy += j / ma; b.vy -= j / mb;
-                const impact = Math.abs(rel);
-                if (impact > 6) { a.hp -= impact * 1.2; b.hp -= impact * 1.2; }
-            }
-            if (dir < 0) a.vx *= 0.8; else b.vx *= 0.8;
+            invaders.forEach(i => { if (i.alive) i.x += dir * stepX; });
+        }
+        animFrame ^= 1;
+        marchTick();
+        // reached the player line?
+        for (const i of invaders) {
+            if (i.alive && invaderBox(i).y + invaderBox(i).h >= player.y) { lives = 0; killPlayer(); return; }
         }
     }
 
-    function circleAABB(c, b) {
-        const nx = Math.max(b.x, Math.min(c.x, b.x + b.w));
-        const ny = Math.max(b.y, Math.min(c.y, b.y + b.h));
-        let dx = c.x - nx, dy = c.y - ny;
-        let d = Math.hypot(dx, dy);
-        if (d >= c.r) return 0;
-        if (d === 0) { dx = 0; dy = -1; d = 0.001; }
-        const nxx = dx / d, nyy = dy / d, pen = c.r - d;
-        c.x += nxx * pen; c.y += nyy * pen;
-        const mB = MAT[b.mat].mass, mC = 1.6;
-        const relvx = c.vx - b.vx, relvy = c.vy - b.vy;
-        const vn = relvx * nxx + relvy * nyy;
-        let impact = 0;
-        if (vn < 0) {
-            impact = -vn;
-            const j = -(1 + 0.25) * vn / (1 / mC + 1 / mB);
-            c.vx += (j / mC) * nxx; c.vy += (j / mC) * nyy;
-            b.vx -= (j / mB) * nxx; b.vy -= (j / mB) * nyy;
-            if (impact > 2.5) b.hp -= impact * (b.mat === 'stone' ? 1.6 : 3.4);
-        }
-        return impact;
-    }
-
-    function circleCircle(c, p) {
-        let dx = p.x - c.x, dy = p.y - c.y;
-        let d = Math.hypot(dx, dy);
-        const sum = c.r + p.r;
-        if (d >= sum) return 0;
-        if (d === 0) { dx = 0; dy = -1; d = 0.001; }
-        const nx = dx / d, ny = dy / d, pen = sum - d;
-        c.x -= nx * pen * 0.5; p.x += nx * pen * 0.5;
-        c.y -= ny * pen * 0.5; p.y += ny * pen * 0.5;
-        const rel = (c.vx - p.vx) * nx + (c.vy - p.vy) * ny;
-        let impact = 0;
-        if (rel > 0) {
-            impact = rel;
-            c.vx -= nx * rel * 0.6; c.vy -= ny * rel * 0.6;
-            p.vx += nx * rel * 0.6; p.vy += ny * rel * 0.6;
-        }
-        return impact;
-    }
-
-    function settleBox(b) {
-        if (b.y + b.h > GROUND) {
-            b.y = GROUND - b.h;
-            if (b.vy > 4) b.hp -= b.vy * 0.6;
-            b.vy *= -0.12; b.vx *= 0.7;
-            if (Math.abs(b.vy) < 0.6) b.vy = 0;
-        }
-        if (b.x < 0) { b.x = 0; b.vx *= -0.3; }
-        if (b.x + b.w > W) { b.x = W - b.w; b.vx *= -0.3; }
-    }
-
-    function pop(x, y, color, n) {
-        for (let i = 0; i < (n || 10); i++) {
-            const a = Math.random() * Math.PI * 2, s = 1 + Math.random() * 4;
-            particles.push({ x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s - 2, life: 1, color });
+    /* enemy fire: random bottom-most invader */
+    const fireChance = 0.012 + level * 0.004;
+    if (Math.random() < fireChance && eBullets.length < 2 + level) {
+        const byCol = {};
+        invaders.forEach(i => { if (i.alive) { if (!byCol[i.col] || i.y > byCol[i.col].y) byCol[i.col] = i; } });
+        const shooters = Object.values(byCol);
+        if (shooters.length) {
+            const s = shooters[Math.floor(Math.random() * shooters.length)];
+            const b = invaderBox(s);
+            eBullets.push({ x: b.x + b.w / 2 - 2, y: b.y + b.h, w: 4, h: 10, vy: 3 + level * 0.4 });
         }
     }
 
-    // ---------- update ----------
-    function update() {
-        if (bird && bird.launched && state === 'fly') {
-            bird.vy += G;
-            bird.vx = clampV(bird.vx); bird.vy = clampV(bird.vy);
-            const speed = Math.hypot(bird.vx, bird.vy);
-            const steps = Math.max(1, Math.ceil(speed / (BIRD_R * 0.7)));
-            for (let s = 0; s < steps; s++) {
-                bird.x += bird.vx / steps; bird.y += bird.vy / steps;
-                for (const b of blocks) {
-                    const imp = circleAABB(bird, b);
-                    if (imp) pop(bird.x, bird.y, '#a9743f', 3);
-                }
-                for (const p of pigs) {
-                    if (!p.alive) continue;
-                    const imp = circleCircle(bird, p);
-                    if (imp > 2) { p.hp -= imp * 9; }
-                }
-                if (bird.y + bird.r > GROUND) {
-                    bird.y = GROUND - bird.r;
-                    bird.vy *= -0.32; bird.vx *= 0.78;
-                }
-                if (bird.x - bird.r < 0) { bird.x = bird.r; bird.vx *= -0.4; }
-                if (bird.x + bird.r > W) { bird.x = W - bird.r; bird.vx *= -0.4; }
-            }
-            bird.life++;
-            const sp = Math.hypot(bird.vx, bird.vy);
-            if (sp < 0.6 && bird.y + bird.r >= GROUND - 1) bird.idle++; else bird.idle = 0;
-            if (bird.idle > 28 || bird.life > 480 || bird.x > W + 60 || bird.x < -60) {
-                endTurn();
+    /* player bullet */
+    if (pBullet) {
+        pBullet.y -= 9;
+        if (pBullet.y + pBullet.h < 0) pBullet = null;
+        else if (hitBunker(pBullet.x, pBullet.y, pBullet.w, pBullet.h)) pBullet = null;
+    }
+    if (pBullet) {
+        for (const inv of invaders) {
+            if (!inv.alive) continue;
+            if (rectHit(pBullet, invaderBox(inv))) {
+                inv.alive = false;
+                score += TYPE[inv.type].points * level;
+                scoreElement.textContent = `Score: ${score}`;
+                spawnBoom(inv.x, inv.y, TYPE[inv.type].color);
+                sndInvader();
+                pBullet = null;
+                break;
             }
         }
-
-        for (const b of blocks) {
-            b.vy += G;
-            b.vy = clampV(b.vy); b.vx = clampV(b.vx);
-            b.x += b.vx; b.y += b.vy;
-        }
-        for (let iter = 0; iter < 4; iter++) {
-            for (let i = 0; i < blocks.length; i++) {
-                for (let j = i + 1; j < blocks.length; j++) aabbResolve(blocks[i], blocks[j]);
-            }
-            for (const b of blocks) settleBox(b);
-        }
-        for (const b of blocks) { if (Math.abs(b.vx) < 0.05) b.vx = 0; }
-
-        for (const p of pigs) {
-            if (!p.alive) continue;
-            p.vy += G; p.x += p.vx; p.y += p.vy;
-            p.vx *= 0.98;
-            if (p.y + p.r > GROUND) {
-                p.y = GROUND - p.r;
-                if (p.vy > 7) p.hp -= (p.vy - 7) * 12;
-                p.vy *= -0.2; p.vx *= 0.7;
-            }
-            if (p.x - p.r < 0) { p.x = p.r; p.vx *= -0.3; }
-            if (p.x + p.r > W) { p.x = W - p.r; p.vx *= -0.3; }
-            for (const b of blocks) {
-                const imp = circleAABB(p, b);
-                if (imp > 6) p.hp -= imp * 7;
-            }
-        }
-
-        for (let i = blocks.length - 1; i >= 0; i--) {
-            if (blocks[i].hp <= 0) {
-                pop(blocks[i].x + blocks[i].w / 2, blocks[i].y + blocks[i].h / 2, MAT[blocks[i].mat].edge, 14);
-                levelScore += 50;
-                blocks.splice(i, 1);
-            }
-        }
-        for (const p of pigs) {
-            if (p.alive && p.hp <= 0) {
-                p.alive = false;
-                pop(p.x, p.y, '#46e08a', 18);
-                levelScore += 1000;
-            }
-        }
-
-        for (let i = particles.length - 1; i >= 0; i--) {
-            const pt = particles[i];
-            pt.vy += 0.15; pt.x += pt.vx; pt.y += pt.vy; pt.life -= 0.025;
-            if (pt.life <= 0) particles.splice(i, 1);
-        }
-
-        if (state === 'fly' || state === 'aim') {
-            if (pigs.filter(p => p.alive).length === 0 && state !== 'won') winLevel();
-        }
-        updateHUD();
+    }
+    if (pBullet && ufo && rectHit(pBullet, ufo)) {
+        const bonus = [50, 100, 150, 300][Math.floor(Math.random() * 4)];
+        score += bonus; scoreElement.textContent = `Score: ${score}`;
+        spawnBoom(ufo.x, ufo.y, '#ff5a5a');
+        ufo = null; pBullet = null;
     }
 
-    function endTurn() {
-        bird = null;
-        birdsLeft--;
-        if (pigs.filter(p => p.alive).length === 0) { winLevel(); return; }
-        if (birdsLeft <= 0) { loseLevel(); return; }
-        settleTimer = 26;
-        state = 'reload';
-    }
-
-    function winLevel() {
-        if (state === 'won') return;
-        levelScore += birdsLeft * 2000;
-        totalScore += levelScore;
-        bird = null;
-        state = 'won';
-        msg = (levelIndex + 1 >= LEVELS.length)
-            ? 'All five cleared. Nice shooting.'
-            : 'Level ' + (levelIndex + 1) + ' clear. Tap to continue.';
-    }
-    function loseLevel() {
-        state = 'lost';
-        msg = 'Out of comets. Tap to retry this level.';
-    }
-
-    function advance() {
-        if (state === 'lost') { loadLevel(levelIndex); return; }
-        if (state === 'won') {
-            if (levelIndex + 1 >= LEVELS.length) { finish(); return; }
-            levelIndex++; loadLevel(levelIndex); return;
-        }
-        if (state === 'done') { restart(); }
-    }
-
-    function finish() {
-        state = 'done';
-        msg = 'Run complete. Final score ' + totalScore + '. Tap to play again.';
-    }
-
-    function restart() {
-        levelIndex = 0; totalScore = 0;
-        loadLevel(0);
-    }
-
-    function updateHUD() {
-        const lv = document.getElementById('bg-level');
-        const bd = document.getElementById('bg-birds');
-        const sc = document.getElementById('bg-score');
-        if (lv) lv.textContent = 'Level: ' + (levelIndex + 1) + '/' + LEVELS.length;
-        if (bd) bd.textContent = 'Comets: ' + Math.max(0, birdsLeft);
-        if (sc) sc.textContent = 'Score: ' + (totalScore + levelScore);
-    }
-
-    // ---------- render ----------
-    function roundRect(x, y, w, h, r) {
-        ctx.beginPath();
-        ctx.moveTo(x + r, y);
-        ctx.arcTo(x + w, y, x + w, y + h, r);
-        ctx.arcTo(x + w, y + h, x, y + h, r);
-        ctx.arcTo(x, y + h, x, y, r);
-        ctx.arcTo(x, y, x + w, y, r);
-        ctx.closePath();
-    }
-
-    function drawComet(x, y, r) {
-        ctx.save();
-        ctx.shadowColor = 'rgba(244,183,60,.6)'; ctx.shadowBlur = 14;
-        ctx.fillStyle = '#f4b73c';
-        ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
-        ctx.shadowBlur = 0;
-        ctx.fillStyle = '#fff';
-        ctx.beginPath(); ctx.arc(x - r * 0.3, y - r * 0.3, r * 0.32, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = '#07080f';
-        ctx.beginPath(); ctx.arc(x - r * 0.22, y - r * 0.28, r * 0.14, 0, Math.PI * 2); ctx.fill();
-        ctx.restore();
-    }
-
-    function drawPig(p) {
-        ctx.save();
-        ctx.fillStyle = '#46e08a';
-        ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = '#2aa765';
-        ctx.beginPath(); ctx.arc(p.x - p.r * 0.4, p.y - p.r * 0.55, p.r * 0.22, 0, Math.PI * 2);
-        ctx.arc(p.x + p.r * 0.4, p.y - p.r * 0.55, p.r * 0.22, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = '#07140d';
-        ctx.beginPath(); ctx.arc(p.x - p.r * 0.32, p.y - p.r * 0.1, p.r * 0.16, 0, Math.PI * 2);
-        ctx.arc(p.x + p.r * 0.32, p.y - p.r * 0.1, p.r * 0.16, 0, Math.PI * 2); ctx.fill();
-        ctx.restore();
-    }
-
-    function predictPath() {
-        if (state !== 'drag' || !bird) return;
-        let px = bird.x, py = bird.y;
-        let vx = clampV((ANCHOR.x - bird.x) * POWER);
-        let vy = clampV((ANCHOR.y - bird.y) * POWER);
-        ctx.fillStyle = 'rgba(241,244,250,.5)';
-        for (let i = 0; i < 40; i++) {
-            vy += G; px += vx; py += vy;
-            if (i % 3 === 0) { ctx.beginPath(); ctx.arc(px, py, 2.4, 0, Math.PI * 2); ctx.fill(); }
-            if (py > GROUND || px > W) break;
+    /* enemy bullets */
+    for (let i = eBullets.length - 1; i >= 0; i--) {
+        const b = eBullets[i];
+        b.y += b.vy;
+        if (b.y > VH) { eBullets.splice(i, 1); continue; }
+        if (hitBunker(b.x, b.y, b.w, b.h)) { eBullets.splice(i, 1); continue; }
+        if (rectHit(b, { x: player.x, y: player.y, w: player.w, h: player.h })) {
+            eBullets.splice(i, 1); killPlayer(); return;
         }
     }
 
-    function render() {
-        ctx.clearRect(0, 0, W, H);
-        ctx.fillStyle = '#04050b'; ctx.fillRect(0, 0, W, H);
-        ctx.fillStyle = 'rgba(170,179,198,.35)';
-        for (const s of STARS) { ctx.fillRect(s.x, s.y, s.s, s.s); }
-        ctx.fillStyle = '#0d0f18'; ctx.fillRect(0, GROUND, W, H - GROUND);
-        ctx.strokeStyle = 'rgba(244,183,60,.5)'; ctx.lineWidth = 2;
-        ctx.beginPath(); ctx.moveTo(0, GROUND); ctx.lineTo(W, GROUND); ctx.stroke();
-
-        ctx.strokeStyle = '#a9743f'; ctx.lineWidth = 8; ctx.lineCap = 'round';
-        ctx.beginPath(); ctx.moveTo(ANCHOR.x, GROUND); ctx.lineTo(ANCHOR.x, ANCHOR.y + 6); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(ANCHOR.x, ANCHOR.y + 6); ctx.lineTo(ANCHOR.x - 16, ANCHOR.y - 14); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(ANCHOR.x, ANCHOR.y + 6); ctx.lineTo(ANCHOR.x + 16, ANCHOR.y - 14); ctx.stroke();
-
-        if (bird && (state === 'aim' || state === 'drag')) {
-            ctx.strokeStyle = '#5a3a1f'; ctx.lineWidth = 5;
-            ctx.beginPath(); ctx.moveTo(ANCHOR.x - 16, ANCHOR.y - 14); ctx.lineTo(bird.x, bird.y); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(ANCHOR.x + 16, ANCHOR.y - 14); ctx.lineTo(bird.x, bird.y); ctx.stroke();
-        }
-
-        predictPath();
-
-        for (const b of blocks) {
-            const m = MAT[b.mat];
-            ctx.fillStyle = m.fill;
-            roundRect(b.x, b.y, b.w, b.h, 4); ctx.fill();
-            ctx.strokeStyle = m.edge; ctx.lineWidth = 2;
-            roundRect(b.x + 1, b.y + 1, b.w - 2, b.h - 2, 4); ctx.stroke();
-            const dmg = 1 - b.hp / b.maxhp;
-            if (dmg > 0.05) {
-                ctx.fillStyle = 'rgba(0,0,0,' + (dmg * 0.45) + ')';
-                roundRect(b.x, b.y, b.w, b.h, 4); ctx.fill();
-            }
-        }
-
-        for (const p of pigs) if (p.alive) drawPig(p);
-        if (bird) drawComet(bird.x, bird.y, bird.r);
-
-        for (const pt of particles) {
-            ctx.globalAlpha = Math.max(0, pt.life);
-            ctx.fillStyle = pt.color;
-            ctx.fillRect(pt.x, pt.y, 3, 3);
-        }
-        ctx.globalAlpha = 1;
-
-        if (state === 'won' || state === 'lost' || state === 'done') {
-            ctx.fillStyle = 'rgba(4,5,11,.72)'; ctx.fillRect(0, 0, W, H);
-            ctx.fillStyle = '#f4b73c';
-            ctx.font = '700 26px Inter, system-ui, sans-serif';
-            ctx.textAlign = 'center';
-            ctx.fillText(msg, W / 2, H / 2 - 6);
-            ctx.fillStyle = '#aab3c6';
-            ctx.font = '600 14px ui-monospace, monospace';
-            ctx.fillText('Score so far: ' + (totalScore + (state === 'won' ? 0 : levelScore)), W / 2, H / 2 + 28);
-            ctx.textAlign = 'left';
-        }
+    /* UFO */
+    ufoTimer--;
+    if (!ufo && ufoTimer <= 0 && remaining > 2) {
+        const fromLeft = Math.random() < 0.5;
+        ufo = { x: fromLeft ? -48 : VW + 48, y: 34, w: spriteW(SPR.ufo), h: spriteH(SPR.ufo), vx: fromLeft ? 2.2 : -2.2 };
+        ufoTimer = 1100 + Math.random() * 800;
+    }
+    if (ufo) {
+        ufo.x += ufo.vx;
+        if (ufo.vx > 0 && ufo.x > VW + 50) ufo = null;
+        else if (ufo.vx < 0 && ufo.x < -50) ufo = null;
+        else if (frameCount % 9 === 0) sndUfo();
     }
 
-    const STARS = [];
-    for (let i = 0; i < 70; i++) {
-        STARS.push({ x: Math.random() * W, y: Math.random() * (GROUND - 10), s: Math.random() < 0.2 ? 2 : 1 });
-    }
+    stepParticles();
+    if (aliveCount() === 0) winWave();
+}
 
-    // ---------- main loop ----------
-    function tick() {
-        if (state === 'reload') {
-            settleTimer--;
-            update();
-            if (settleTimer <= 0) loadBird();
-        } else if (state !== 'idle' && state !== 'won' && state !== 'lost' && state !== 'done') {
-            update();
-        } else if (state === 'won' || state === 'lost' || state === 'done') {
-            for (let i = particles.length - 1; i >= 0; i--) {
-                const pt = particles[i];
-                pt.vy += 0.15; pt.x += pt.vx; pt.y += pt.vy; pt.life -= 0.025;
-                if (pt.life <= 0) particles.splice(i, 1);
-            }
+function stepParticles() {
+    for (let i = booms.length - 1; i >= 0; i--) { booms[i].life--; if (booms[i].life <= 0) booms.splice(i, 1); }
+    for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i]; p.x += p.vx; p.y += p.vy; p.vy += 0.08; p.life -= 0.04;
+        if (p.life <= 0) particles.splice(i, 1);
+    }
+}
+
+function killPlayer() {
+    lives--;
+    livesElement.textContent = `Lives: ${Math.max(0, lives)}`;
+    spawnBoom(player.x + player.w / 2 - 16, player.y - 8, '#f4b73c');
+    sndPlayer();
+    player.dead = 70;
+    player.x = VW / 2;
+    if (lives <= 0) { /* gameOver triggers after death pause */ }
+}
+
+function winWave() {
+    level++;
+    levelElement.textContent = `Level: ${level}`;
+    blip(660, 0.12, 'square', 0.06); setTimeout(() => blip(880, 0.14, 'square', 0.06), 120);
+    initWave(false);                 // keep current bunkers between waves
+}
+
+/* ---------- profanity guard (leaderboard) ---------- */
+const badWords = ['nigger', 'nigga', 'n1gger', 'n1gga', 'nigg3r', 'nigg4', 'fuck', 'shit', 'cunt', 'bitch', 'asshole', 'faggot', 'fag', 'retard', 'whore'];
+function containsBadWord(name) { return badWords.some(w => name.toLowerCase().replace(/\s/g, '').includes(w)); }
+
+function gameOver() {
+    gameRunning = false;
+    restartBtn.disabled = false; restartBtn.textContent = 'Restart Game';
+    const playerName = prompt(`Game Over! Final Score: ${score}\nEnter your name for the leaderboard:`, "Player");
+    if (playerName) {
+        if (containsBadWord(playerName)) { alert("That name is not allowed. Please choose a more appropriate name."); return; }
+        if (typeof db !== 'undefined' && db) {
+            db.collection("scores").add({ name: playerName, score: score, level: level, timestamp: firebase.firestore.FieldValue.serverTimestamp() })
+                .then(() => { displayLeaderboard(); })
+                .catch((error) => { console.error("Error writing document: ", error); });
         }
-        render();
-        requestAnimationFrame(tick);
+    }
+}
+
+/* ---------- render ---------- */
+function render() {
+    ctx.fillStyle = '#04050b'; ctx.fillRect(0, 0, VW, VH);
+
+    // ground line
+    ctx.strokeStyle = 'rgba(244,183,60,.5)'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(0, VH - 26); ctx.lineTo(VW, VH - 26); ctx.stroke();
+
+    // bunkers
+    for (const bk of bunkers) {
+        ctx.fillStyle = '#b9935a';
+        for (let y = 0; y < bk.h; y++)
+            for (let x = 0; x < bk.w; x++)
+                if (bk.mask[y][x]) ctx.fillRect(bk.x + x * bk.s, bk.y + y * bk.s, bk.s, bk.s);
     }
 
-    // ---------- launch button ----------
-    const launchBtn = document.getElementById('launchBirds');
-    if (launchBtn) {
-        launchBtn.addEventListener('click', function () {
-            const reveal = document.getElementById('birdsReveal');
-            reveal.hidden = false;
-            this.style.display = 'none';
-            restart();
-            reveal.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        });
+    // invaders
+    for (const inv of invaders) {
+        if (!inv.alive) continue;
+        drawBitmap(SPR[inv.type][animFrame], inv.x, inv.y, TYPE[inv.type].color);
     }
-    const restartBtn = document.getElementById('birdsRestart');
-    if (restartBtn) restartBtn.addEventListener('click', restart);
 
-    render();
-    requestAnimationFrame(tick);
-})();
+    // ufo
+    if (ufo) drawBitmap(SPR.ufo, ufo.x, ufo.y, '#ff5a5a');
+
+    // player
+    if (!player.dead || Math.floor(player.dead / 6) % 2 === 0) {
+        drawBitmap(SPR.player, player.x, player.y, '#f4b73c');
+    }
+
+    // bullets
+    if (pBullet) { ctx.fillStyle = '#f4b73c'; ctx.fillRect(pBullet.x, pBullet.y, pBullet.w, pBullet.h); }
+    ctx.fillStyle = '#ff5a5a';
+    for (const b of eBullets) ctx.fillRect(b.x, b.y, b.w, b.h);
+
+    // explosions + particles
+    for (const bm of booms) drawBitmap(SPR.boom, bm.x, bm.y, bm.color, 3);
+    for (const p of particles) {
+        ctx.globalAlpha = Math.max(0, p.life);
+        ctx.fillStyle = p.color; ctx.fillRect(p.x, p.y, 3, 3);
+    }
+    ctx.globalAlpha = 1;
+
+    if (!gameRunning && score === 0 && lives === 3) {
+        ctx.fillStyle = 'rgba(170,179,198,.85)';
+        ctx.font = '600 15px ui-monospace, monospace'; ctx.textAlign = 'center';
+        ctx.fillText('Press Start Game', VW / 2, VH / 2);
+        ctx.textAlign = 'left';
+    }
+}
+
+function gameLoop() { update(); render(); requestAnimationFrame(gameLoop); }
+
+function restartGame() {
+    score = 0; lives = 3; level = 1; gameRunning = true;
+    player.x = VW / 2; player.dead = 0;
+    booms = []; particles = [];
+    scoreElement.textContent = `Score: ${score}`;
+    levelElement.textContent = `Level: ${level}`;
+    livesElement.textContent = `Lives: ${lives}`;
+    initWave(true);
+    lastShotTime = 0; firing = false;
+    restartBtn.disabled = true; restartBtn.textContent = 'Playing...';
+    if (soundOn) audio();             // unlock audio on the Start gesture
+}
+
+function displayLeaderboard() {
+    const list = document.getElementById('leaderboard-list');
+    if (!list) return;
+    if (typeof db === 'undefined' || !db) { list.innerHTML = '<li>Leaderboard offline.</li>'; return; }
+    list.innerHTML = '<li>Loading scores...</li>';
+    db.collection("scores").orderBy("score", "desc").limit(10).get()
+        .then((qs) => {
+            if (qs.empty) { list.innerHTML = "<li>No scores yet. Be the first!</li>"; return; }
+            list.innerHTML = '';
+            qs.forEach((doc) => {
+                const d = doc.data();
+                const li = document.createElement('li');
+                li.innerHTML = `<strong>${d.name}</strong> - ${d.score} (Level ${d.level})`;
+                list.appendChild(li);
+            });
+        })
+        .catch((e) => { console.error("Error fetching scores: ", e); list.innerHTML = "<li>Could not load scores.</li>"; });
+}
+
+/* ---------- mute toggle (injected) ---------- */
+function makeMuteButton() {
+    if (document.getElementById('muteBtn')) return;
+    const b = document.createElement('button');
+    b.id = 'muteBtn'; b.type = 'button'; b.className = 'restart-btn';
+    b.style.marginLeft = '8px'; b.style.background = 'transparent';
+    b.style.color = 'var(--ink-2)'; b.style.border = '1px solid var(--line-2)';
+    b.textContent = 'Sound: On';
+    b.addEventListener('click', () => {
+        soundOn = !soundOn;
+        b.textContent = soundOn ? 'Sound: On' : 'Sound: Off';
+        if (soundOn) audio();
+    });
+    if (restartBtn && restartBtn.parentNode) restartBtn.parentNode.insertBefore(b, restartBtn.nextSibling);
+}
+
+/* ---------- boot ---------- */
+restartBtn.disabled = false;
+initWave(true);
+gameLoop();
+
+document.getElementById('launchGame').addEventListener('click', function () {
+    const reveal = document.getElementById('gameReveal');
+    reveal.hidden = false;
+    this.style.display = 'none';
+    makeMuteButton();
+    displayLeaderboard();
+    restartGame();
+    reveal.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+});
     </script>
 
     <!-- Lightbox (click-to-enlarge gallery) -->
