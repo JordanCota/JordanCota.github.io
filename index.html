@@ -200,6 +200,9 @@
         #leaderboard-list { padding-left: 20px; color: var(--ink-2); margin: 10px 0 0; }
         #leaderboard-list li { margin-bottom: 0.5rem; }
         #leaderboard-list strong { color: var(--amber); }
+        /* ---------- Sling Shot game ---------- */
+        #birdCanvas { border: 1px solid var(--line-2); border-radius: 10px; background-color: #04050b; max-width: 100%; height: auto; touch-action: none; cursor: grab; }
+        #birdCanvas:active { cursor: grabbing; }
 
         /* ---------- Garage (build log) ---------- */
         .garage-list { display: grid; gap: 14px; }
@@ -627,6 +630,22 @@
                 <ol id="leaderboard-list"></ol>
             </div>
 
+            <h3 class="subhead">Play Sling Shot</h3>
+            <p class="sub-note">Same idea as that bird game everyone knows. Pull the slingshot back, let go, and knock the towers down to splat the little green guys. Five levels, and it gets meaner as you go. Works with a mouse or your thumb.</p>
+            <button class="launch-btn" id="launchBirds" type="button">&#9654; Launch Sling Shot</button>
+            <div id="birdsReveal" hidden>
+                <div class="game-container">
+                    <div class="game-info">
+                        <span id="bg-level">Level: 1/5</span>
+                        <span id="bg-birds">Comets: 3</span>
+                        <span id="bg-score">Score: 0</span>
+                    </div>
+                    <canvas id="birdCanvas" width="800" height="600"></canvas>
+                    <button class="restart-btn" id="birdsRestart" type="button">Restart Run</button>
+                    <div class="game-controls"><p>Drag the comet back from the slingshot and release. Clear every target to move on.</p></div>
+                </div>
+            </div>
+
             </div></div></div>
         </section>
 
@@ -983,6 +1002,579 @@
             restartGame();
             reveal.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         });
+    </script>
+
+    <!-- Sling Shot (slingshot physics game) -->
+    <script>
+/* ============================================================
+   Sling Shot  -  a slingshot/physics game for jordancota.site
+   Self-contained IIFE. No leaderboard / no high scores.
+   ============================================================ */
+(function () {
+    const canvas = document.getElementById('birdCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    const W = canvas.width, H = canvas.height;
+    const GROUND = 552;
+    const G = 0.5;                 // gravity
+    const ANCHOR = { x: 150, y: 392 };
+    const BIRD_R = 14;
+    const MAX_STRETCH = 95;
+    const POWER = 0.235;
+    const VMAX = 28;
+
+    // ---- materials ----
+    const MAT = {
+        wood:  { hp: 55,  mass: 2.2, fill: '#7a5230', edge: '#a9743f' },
+        stone: { hp: 130, mass: 4.5, fill: '#3a4150', edge: '#5a6477' }
+    };
+
+    // ---- level data (structures rest exactly on the ground / each other) ----
+    function blk(x, y, w, h, mat) { return { x, y, w, h, mat }; }
+    function pig(x, y, r) { return { x, y, r: r || 16 }; }
+
+    const LEVELS = [
+        { // 1  - warm up
+            birds: 3,
+            blocks: [
+                blk(560, GROUND - 90, 24, 90, 'wood'),
+                blk(656, GROUND - 90, 24, 90, 'wood'),
+                blk(548, GROUND - 114, 144, 24, 'wood')
+            ],
+            pigs: [ pig(608, GROUND - 16) ]
+        },
+        { // 2  - a little tower
+            birds: 4,
+            blocks: [
+                blk(600, GROUND - 40, 40, 40, 'wood'),
+                blk(644, GROUND - 40, 40, 40, 'wood'),
+                blk(596, GROUND - 64, 92, 24, 'wood'),
+                blk(610, GROUND - 104, 24, 40, 'wood'),
+                blk(660, GROUND - 104, 24, 40, 'wood')
+            ],
+            pigs: [ pig(540, GROUND - 16), pig(624, GROUND - 80) ]
+        },
+        { // 3  - first stone
+            birds: 4,
+            blocks: [
+                blk(500, GROUND - 90, 24, 90, 'stone'),
+                blk(700, GROUND - 90, 24, 90, 'stone'),
+                blk(488, GROUND - 114, 248, 24, 'wood'),
+                blk(560, GROUND - 154, 24, 40, 'wood'),
+                blk(652, GROUND - 154, 24, 40, 'wood'),
+                blk(548, GROUND - 178, 128, 24, 'wood')
+            ],
+            pigs: [ pig(540, GROUND - 16), pig(684, GROUND - 16), pig(612, GROUND - 130) ]
+        },
+        { // 4  - taller, mixed
+            birds: 5,
+            blocks: [
+                blk(470, GROUND - 110, 24, 110, 'stone'),
+                blk(560, GROUND - 110, 24, 110, 'stone'),
+                blk(458, GROUND - 134, 126, 24, 'wood'),
+                blk(640, GROUND - 70, 24, 70, 'wood'),
+                blk(720, GROUND - 70, 24, 70, 'wood'),
+                blk(632, GROUND - 94, 112, 24, 'wood'),
+                blk(500, GROUND - 174, 24, 40, 'wood'),
+                blk(534, GROUND - 174, 24, 40, 'wood'),
+                blk(492, GROUND - 198, 90, 24, 'stone')
+            ],
+            pigs: [ pig(516, GROUND - 16), pig(676, GROUND - 16),
+                    pig(522, GROUND - 150), pig(682, GROUND - 110) ]
+        },
+        { // 5  - the fortress
+            birds: 5,
+            blocks: [
+                blk(440, GROUND - 130, 28, 130, 'stone'),
+                blk(560, GROUND - 130, 28, 130, 'stone'),
+                blk(700, GROUND - 130, 28, 130, 'stone'),
+                blk(430, GROUND - 154, 188, 24, 'stone'),
+                blk(580, GROUND - 154, 148, 24, 'stone'),
+                blk(470, GROUND - 194, 24, 40, 'wood'),
+                blk(520, GROUND - 194, 24, 40, 'wood'),
+                blk(620, GROUND - 194, 24, 40, 'wood'),
+                blk(670, GROUND - 194, 24, 40, 'wood'),
+                blk(458, GROUND - 218, 110, 24, 'wood'),
+                blk(608, GROUND - 218, 110, 24, 'wood')
+            ],
+            pigs: [ pig(500, GROUND - 16), pig(620, GROUND - 16),
+                    pig(508, GROUND - 170), pig(648, GROUND - 170),
+                    pig(584, GROUND - 16) ]
+        }
+    ];
+
+    // ---- runtime state ----
+    let levelIndex = 0;
+    let totalScore = 0;       // banked from cleared levels
+    let levelScore = 0;       // this level's running points
+    let birdsLeft = 0;
+    let blocks = [];
+    let pigs = [];
+    let particles = [];
+    let bird = null;          // active flying/loaded bird
+    let state = 'idle';       // idle | aim | drag | fly | reload | won | lost | done
+    let settleTimer = 0;
+    let msg = '';
+
+    function deepBlocks(src) {
+        return src.map(b => ({
+            x: b.x, y: b.y, w: b.w, h: b.h, mat: b.mat,
+            vx: 0, vy: 0, hp: MAT[b.mat].hp, maxhp: MAT[b.mat].hp, rest: false
+        }));
+    }
+    function deepPigs(src) {
+        return src.map(p => ({
+            x: p.x, y: p.y, r: p.r, vx: 0, vy: 0,
+            hp: 100, maxhp: 100, alive: true
+        }));
+    }
+
+    function loadLevel(i) {
+        const L = LEVELS[i];
+        blocks = deepBlocks(L.blocks);
+        pigs = deepPigs(L.pigs);
+        particles = [];
+        birdsLeft = L.birds;
+        levelScore = 0;
+        bird = null;
+        msg = '';
+        state = 'aim';
+        loadBird();
+        updateHUD();
+    }
+
+    function loadBird() {
+        if (birdsLeft <= 0) return;
+        bird = { x: ANCHOR.x, y: ANCHOR.y, vx: 0, vy: 0, r: BIRD_R, launched: false, life: 0, idle: 0 };
+        state = 'aim';
+    }
+
+    // ---------- input ----------
+    function getPos(e) {
+        const rect = canvas.getBoundingClientRect();
+        const t = e.touches && e.touches[0] ? e.touches[0] : e;
+        const sx = canvas.width / rect.width, sy = canvas.height / rect.height;
+        return { x: (t.clientX - rect.left) * sx, y: (t.clientY - rect.top) * sy };
+    }
+    function clampStretch(p) {
+        let dx = p.x - ANCHOR.x, dy = p.y - ANCHOR.y;
+        const d = Math.hypot(dx, dy);
+        if (d > MAX_STRETCH) { dx = dx / d * MAX_STRETCH; dy = dy / d * MAX_STRETCH; }
+        return { x: ANCHOR.x + dx, y: ANCHOR.y + dy };
+    }
+    function onDown(e) {
+        if (state === 'won' || state === 'lost' || state === 'done') { e.preventDefault(); advance(); return; }
+        if (state !== 'aim' || !bird) return;
+        e.preventDefault();
+        state = 'drag';
+        const p = clampStretch(getPos(e));
+        bird.x = p.x; bird.y = p.y;
+    }
+    function onMove(e) {
+        if (state !== 'drag' || !bird) return;
+        e.preventDefault();
+        const p = clampStretch(getPos(e));
+        bird.x = p.x; bird.y = p.y;
+    }
+    function onUp(e) {
+        if (state !== 'drag' || !bird) return;
+        e.preventDefault();
+        bird.vx = clampV((ANCHOR.x - bird.x) * POWER);
+        bird.vy = clampV((ANCHOR.y - bird.y) * POWER);
+        bird.launched = true;
+        state = 'fly';
+    }
+    function clampV(v) { return Math.max(-VMAX, Math.min(VMAX, v)); }
+
+    canvas.addEventListener('mousedown', onDown);
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+    canvas.addEventListener('touchstart', onDown, { passive: false });
+    canvas.addEventListener('touchmove', onMove, { passive: false });
+    canvas.addEventListener('touchend', onUp, { passive: false });
+
+    // ---------- physics helpers ----------
+    function aabbResolve(a, b) {
+        const ax2 = a.x + a.w, ay2 = a.y + a.h, bx2 = b.x + b.w, by2 = b.y + b.h;
+        const ox = Math.min(ax2, bx2) - Math.max(a.x, b.x);
+        const oy = Math.min(ay2, by2) - Math.max(a.y, b.y);
+        if (ox <= 0 || oy <= 0) return;
+        const ma = MAT[a.mat].mass, mb = MAT[b.mat].mass, tot = ma + mb;
+        if (ox < oy) {
+            const dir = (a.x + a.w / 2) < (b.x + b.w / 2) ? -1 : 1;
+            a.x += dir * ox * (mb / tot); b.x -= dir * ox * (ma / tot);
+            const rel = a.vx - b.vx;
+            if ((dir < 0 && rel > 0) || (dir > 0 && rel < 0)) {
+                const j = -(1.15) * rel / (1 / ma + 1 / mb);
+                a.vx += j / ma; b.vx -= j / mb;
+            }
+            a.vx *= 0.96; b.vx *= 0.96;
+        } else {
+            const dir = (a.y + a.h / 2) < (b.y + b.h / 2) ? -1 : 1;
+            a.y += dir * oy * (mb / tot); b.y -= dir * oy * (ma / tot);
+            const rel = a.vy - b.vy;
+            if ((dir < 0 && rel > 0) || (dir > 0 && rel < 0)) {
+                const j = -(1.05) * rel / (1 / ma + 1 / mb);
+                a.vy += j / ma; b.vy -= j / mb;
+                const impact = Math.abs(rel);
+                if (impact > 6) { a.hp -= impact * 1.2; b.hp -= impact * 1.2; }
+            }
+            if (dir < 0) a.vx *= 0.8; else b.vx *= 0.8;
+        }
+    }
+
+    function circleAABB(c, b) {
+        const nx = Math.max(b.x, Math.min(c.x, b.x + b.w));
+        const ny = Math.max(b.y, Math.min(c.y, b.y + b.h));
+        let dx = c.x - nx, dy = c.y - ny;
+        let d = Math.hypot(dx, dy);
+        if (d >= c.r) return 0;
+        if (d === 0) { dx = 0; dy = -1; d = 0.001; }
+        const nxx = dx / d, nyy = dy / d, pen = c.r - d;
+        c.x += nxx * pen; c.y += nyy * pen;
+        const mB = MAT[b.mat].mass, mC = 1.6;
+        const relvx = c.vx - b.vx, relvy = c.vy - b.vy;
+        const vn = relvx * nxx + relvy * nyy;
+        let impact = 0;
+        if (vn < 0) {
+            impact = -vn;
+            const j = -(1 + 0.25) * vn / (1 / mC + 1 / mB);
+            c.vx += (j / mC) * nxx; c.vy += (j / mC) * nyy;
+            b.vx -= (j / mB) * nxx; b.vy -= (j / mB) * nyy;
+            if (impact > 2.5) b.hp -= impact * (b.mat === 'stone' ? 1.6 : 3.4);
+        }
+        return impact;
+    }
+
+    function circleCircle(c, p) {
+        let dx = p.x - c.x, dy = p.y - c.y;
+        let d = Math.hypot(dx, dy);
+        const sum = c.r + p.r;
+        if (d >= sum) return 0;
+        if (d === 0) { dx = 0; dy = -1; d = 0.001; }
+        const nx = dx / d, ny = dy / d, pen = sum - d;
+        c.x -= nx * pen * 0.5; p.x += nx * pen * 0.5;
+        c.y -= ny * pen * 0.5; p.y += ny * pen * 0.5;
+        const rel = (c.vx - p.vx) * nx + (c.vy - p.vy) * ny;
+        let impact = 0;
+        if (rel > 0) {
+            impact = rel;
+            c.vx -= nx * rel * 0.6; c.vy -= ny * rel * 0.6;
+            p.vx += nx * rel * 0.6; p.vy += ny * rel * 0.6;
+        }
+        return impact;
+    }
+
+    function settleBox(b) {
+        if (b.y + b.h > GROUND) {
+            b.y = GROUND - b.h;
+            if (b.vy > 4) b.hp -= b.vy * 0.6;
+            b.vy *= -0.12; b.vx *= 0.7;
+            if (Math.abs(b.vy) < 0.6) b.vy = 0;
+        }
+        if (b.x < 0) { b.x = 0; b.vx *= -0.3; }
+        if (b.x + b.w > W) { b.x = W - b.w; b.vx *= -0.3; }
+    }
+
+    function pop(x, y, color, n) {
+        for (let i = 0; i < (n || 10); i++) {
+            const a = Math.random() * Math.PI * 2, s = 1 + Math.random() * 4;
+            particles.push({ x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s - 2, life: 1, color });
+        }
+    }
+
+    // ---------- update ----------
+    function update() {
+        if (bird && bird.launched && state === 'fly') {
+            bird.vy += G;
+            bird.vx = clampV(bird.vx); bird.vy = clampV(bird.vy);
+            const speed = Math.hypot(bird.vx, bird.vy);
+            const steps = Math.max(1, Math.ceil(speed / (BIRD_R * 0.7)));
+            for (let s = 0; s < steps; s++) {
+                bird.x += bird.vx / steps; bird.y += bird.vy / steps;
+                for (const b of blocks) {
+                    const imp = circleAABB(bird, b);
+                    if (imp) pop(bird.x, bird.y, '#a9743f', 3);
+                }
+                for (const p of pigs) {
+                    if (!p.alive) continue;
+                    const imp = circleCircle(bird, p);
+                    if (imp > 2) { p.hp -= imp * 9; }
+                }
+                if (bird.y + bird.r > GROUND) {
+                    bird.y = GROUND - bird.r;
+                    bird.vy *= -0.32; bird.vx *= 0.78;
+                }
+                if (bird.x - bird.r < 0) { bird.x = bird.r; bird.vx *= -0.4; }
+                if (bird.x + bird.r > W) { bird.x = W - bird.r; bird.vx *= -0.4; }
+            }
+            bird.life++;
+            const sp = Math.hypot(bird.vx, bird.vy);
+            if (sp < 0.6 && bird.y + bird.r >= GROUND - 1) bird.idle++; else bird.idle = 0;
+            if (bird.idle > 28 || bird.life > 480 || bird.x > W + 60 || bird.x < -60) {
+                endTurn();
+            }
+        }
+
+        for (const b of blocks) {
+            b.vy += G;
+            b.vy = clampV(b.vy); b.vx = clampV(b.vx);
+            b.x += b.vx; b.y += b.vy;
+        }
+        for (let iter = 0; iter < 4; iter++) {
+            for (let i = 0; i < blocks.length; i++) {
+                for (let j = i + 1; j < blocks.length; j++) aabbResolve(blocks[i], blocks[j]);
+            }
+            for (const b of blocks) settleBox(b);
+        }
+        for (const b of blocks) { if (Math.abs(b.vx) < 0.05) b.vx = 0; }
+
+        for (const p of pigs) {
+            if (!p.alive) continue;
+            p.vy += G; p.x += p.vx; p.y += p.vy;
+            p.vx *= 0.98;
+            if (p.y + p.r > GROUND) {
+                p.y = GROUND - p.r;
+                if (p.vy > 7) p.hp -= (p.vy - 7) * 12;
+                p.vy *= -0.2; p.vx *= 0.7;
+            }
+            if (p.x - p.r < 0) { p.x = p.r; p.vx *= -0.3; }
+            if (p.x + p.r > W) { p.x = W - p.r; p.vx *= -0.3; }
+            for (const b of blocks) {
+                const imp = circleAABB(p, b);
+                if (imp > 6) p.hp -= imp * 7;
+            }
+        }
+
+        for (let i = blocks.length - 1; i >= 0; i--) {
+            if (blocks[i].hp <= 0) {
+                pop(blocks[i].x + blocks[i].w / 2, blocks[i].y + blocks[i].h / 2, MAT[blocks[i].mat].edge, 14);
+                levelScore += 50;
+                blocks.splice(i, 1);
+            }
+        }
+        for (const p of pigs) {
+            if (p.alive && p.hp <= 0) {
+                p.alive = false;
+                pop(p.x, p.y, '#46e08a', 18);
+                levelScore += 1000;
+            }
+        }
+
+        for (let i = particles.length - 1; i >= 0; i--) {
+            const pt = particles[i];
+            pt.vy += 0.15; pt.x += pt.vx; pt.y += pt.vy; pt.life -= 0.025;
+            if (pt.life <= 0) particles.splice(i, 1);
+        }
+
+        if (state === 'fly' || state === 'aim') {
+            if (pigs.filter(p => p.alive).length === 0 && state !== 'won') winLevel();
+        }
+        updateHUD();
+    }
+
+    function endTurn() {
+        bird = null;
+        birdsLeft--;
+        if (pigs.filter(p => p.alive).length === 0) { winLevel(); return; }
+        if (birdsLeft <= 0) { loseLevel(); return; }
+        settleTimer = 26;
+        state = 'reload';
+    }
+
+    function winLevel() {
+        if (state === 'won') return;
+        levelScore += birdsLeft * 2000;
+        totalScore += levelScore;
+        bird = null;
+        state = 'won';
+        msg = (levelIndex + 1 >= LEVELS.length)
+            ? 'All five cleared. Nice shooting.'
+            : 'Level ' + (levelIndex + 1) + ' clear. Tap to continue.';
+    }
+    function loseLevel() {
+        state = 'lost';
+        msg = 'Out of comets. Tap to retry this level.';
+    }
+
+    function advance() {
+        if (state === 'lost') { loadLevel(levelIndex); return; }
+        if (state === 'won') {
+            if (levelIndex + 1 >= LEVELS.length) { finish(); return; }
+            levelIndex++; loadLevel(levelIndex); return;
+        }
+        if (state === 'done') { restart(); }
+    }
+
+    function finish() {
+        state = 'done';
+        msg = 'Run complete. Final score ' + totalScore + '. Tap to play again.';
+    }
+
+    function restart() {
+        levelIndex = 0; totalScore = 0;
+        loadLevel(0);
+    }
+
+    function updateHUD() {
+        const lv = document.getElementById('bg-level');
+        const bd = document.getElementById('bg-birds');
+        const sc = document.getElementById('bg-score');
+        if (lv) lv.textContent = 'Level: ' + (levelIndex + 1) + '/' + LEVELS.length;
+        if (bd) bd.textContent = 'Comets: ' + Math.max(0, birdsLeft);
+        if (sc) sc.textContent = 'Score: ' + (totalScore + levelScore);
+    }
+
+    // ---------- render ----------
+    function roundRect(x, y, w, h, r) {
+        ctx.beginPath();
+        ctx.moveTo(x + r, y);
+        ctx.arcTo(x + w, y, x + w, y + h, r);
+        ctx.arcTo(x + w, y + h, x, y + h, r);
+        ctx.arcTo(x, y + h, x, y, r);
+        ctx.arcTo(x, y, x + w, y, r);
+        ctx.closePath();
+    }
+
+    function drawComet(x, y, r) {
+        ctx.save();
+        ctx.shadowColor = 'rgba(244,183,60,.6)'; ctx.shadowBlur = 14;
+        ctx.fillStyle = '#f4b73c';
+        ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = '#fff';
+        ctx.beginPath(); ctx.arc(x - r * 0.3, y - r * 0.3, r * 0.32, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#07080f';
+        ctx.beginPath(); ctx.arc(x - r * 0.22, y - r * 0.28, r * 0.14, 0, Math.PI * 2); ctx.fill();
+        ctx.restore();
+    }
+
+    function drawPig(p) {
+        ctx.save();
+        ctx.fillStyle = '#46e08a';
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#2aa765';
+        ctx.beginPath(); ctx.arc(p.x - p.r * 0.4, p.y - p.r * 0.55, p.r * 0.22, 0, Math.PI * 2);
+        ctx.arc(p.x + p.r * 0.4, p.y - p.r * 0.55, p.r * 0.22, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#07140d';
+        ctx.beginPath(); ctx.arc(p.x - p.r * 0.32, p.y - p.r * 0.1, p.r * 0.16, 0, Math.PI * 2);
+        ctx.arc(p.x + p.r * 0.32, p.y - p.r * 0.1, p.r * 0.16, 0, Math.PI * 2); ctx.fill();
+        ctx.restore();
+    }
+
+    function predictPath() {
+        if (state !== 'drag' || !bird) return;
+        let px = bird.x, py = bird.y;
+        let vx = clampV((ANCHOR.x - bird.x) * POWER);
+        let vy = clampV((ANCHOR.y - bird.y) * POWER);
+        ctx.fillStyle = 'rgba(241,244,250,.5)';
+        for (let i = 0; i < 40; i++) {
+            vy += G; px += vx; py += vy;
+            if (i % 3 === 0) { ctx.beginPath(); ctx.arc(px, py, 2.4, 0, Math.PI * 2); ctx.fill(); }
+            if (py > GROUND || px > W) break;
+        }
+    }
+
+    function render() {
+        ctx.clearRect(0, 0, W, H);
+        ctx.fillStyle = '#04050b'; ctx.fillRect(0, 0, W, H);
+        ctx.fillStyle = 'rgba(170,179,198,.35)';
+        for (const s of STARS) { ctx.fillRect(s.x, s.y, s.s, s.s); }
+        ctx.fillStyle = '#0d0f18'; ctx.fillRect(0, GROUND, W, H - GROUND);
+        ctx.strokeStyle = 'rgba(244,183,60,.5)'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(0, GROUND); ctx.lineTo(W, GROUND); ctx.stroke();
+
+        ctx.strokeStyle = '#a9743f'; ctx.lineWidth = 8; ctx.lineCap = 'round';
+        ctx.beginPath(); ctx.moveTo(ANCHOR.x, GROUND); ctx.lineTo(ANCHOR.x, ANCHOR.y + 6); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(ANCHOR.x, ANCHOR.y + 6); ctx.lineTo(ANCHOR.x - 16, ANCHOR.y - 14); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(ANCHOR.x, ANCHOR.y + 6); ctx.lineTo(ANCHOR.x + 16, ANCHOR.y - 14); ctx.stroke();
+
+        if (bird && (state === 'aim' || state === 'drag')) {
+            ctx.strokeStyle = '#5a3a1f'; ctx.lineWidth = 5;
+            ctx.beginPath(); ctx.moveTo(ANCHOR.x - 16, ANCHOR.y - 14); ctx.lineTo(bird.x, bird.y); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(ANCHOR.x + 16, ANCHOR.y - 14); ctx.lineTo(bird.x, bird.y); ctx.stroke();
+        }
+
+        predictPath();
+
+        for (const b of blocks) {
+            const m = MAT[b.mat];
+            ctx.fillStyle = m.fill;
+            roundRect(b.x, b.y, b.w, b.h, 4); ctx.fill();
+            ctx.strokeStyle = m.edge; ctx.lineWidth = 2;
+            roundRect(b.x + 1, b.y + 1, b.w - 2, b.h - 2, 4); ctx.stroke();
+            const dmg = 1 - b.hp / b.maxhp;
+            if (dmg > 0.05) {
+                ctx.fillStyle = 'rgba(0,0,0,' + (dmg * 0.45) + ')';
+                roundRect(b.x, b.y, b.w, b.h, 4); ctx.fill();
+            }
+        }
+
+        for (const p of pigs) if (p.alive) drawPig(p);
+        if (bird) drawComet(bird.x, bird.y, bird.r);
+
+        for (const pt of particles) {
+            ctx.globalAlpha = Math.max(0, pt.life);
+            ctx.fillStyle = pt.color;
+            ctx.fillRect(pt.x, pt.y, 3, 3);
+        }
+        ctx.globalAlpha = 1;
+
+        if (state === 'won' || state === 'lost' || state === 'done') {
+            ctx.fillStyle = 'rgba(4,5,11,.72)'; ctx.fillRect(0, 0, W, H);
+            ctx.fillStyle = '#f4b73c';
+            ctx.font = '700 26px Inter, system-ui, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(msg, W / 2, H / 2 - 6);
+            ctx.fillStyle = '#aab3c6';
+            ctx.font = '600 14px ui-monospace, monospace';
+            ctx.fillText('Score so far: ' + (totalScore + (state === 'won' ? 0 : levelScore)), W / 2, H / 2 + 28);
+            ctx.textAlign = 'left';
+        }
+    }
+
+    const STARS = [];
+    for (let i = 0; i < 70; i++) {
+        STARS.push({ x: Math.random() * W, y: Math.random() * (GROUND - 10), s: Math.random() < 0.2 ? 2 : 1 });
+    }
+
+    // ---------- main loop ----------
+    function tick() {
+        if (state === 'reload') {
+            settleTimer--;
+            update();
+            if (settleTimer <= 0) loadBird();
+        } else if (state !== 'idle' && state !== 'won' && state !== 'lost' && state !== 'done') {
+            update();
+        } else if (state === 'won' || state === 'lost' || state === 'done') {
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const pt = particles[i];
+                pt.vy += 0.15; pt.x += pt.vx; pt.y += pt.vy; pt.life -= 0.025;
+                if (pt.life <= 0) particles.splice(i, 1);
+            }
+        }
+        render();
+        requestAnimationFrame(tick);
+    }
+
+    // ---------- launch button ----------
+    const launchBtn = document.getElementById('launchBirds');
+    if (launchBtn) {
+        launchBtn.addEventListener('click', function () {
+            const reveal = document.getElementById('birdsReveal');
+            reveal.hidden = false;
+            this.style.display = 'none';
+            restart();
+            reveal.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        });
+    }
+    const restartBtn = document.getElementById('birdsRestart');
+    if (restartBtn) restartBtn.addEventListener('click', restart);
+
+    render();
+    requestAnimationFrame(tick);
+})();
     </script>
 
     <!-- Lightbox (click-to-enlarge gallery) -->
