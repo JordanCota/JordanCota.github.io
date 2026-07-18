@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1,500 Miles on the Flying Brick | Jordan Cota</title>
+    <meta name="description" content="My first 1,500 miles with the 1986 BMW K75 — fuel system, alternator, a roadside push-start paid for in Newports and an Arizona, and one master cylinder I got to fix twice.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏍️</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #08090f; --panel: #0d0f18; --raise: #11131e;
+            --ink: #f1f4fa; --ink-2: #b4bccd; --muted: #8b95ab;
+            --amber: #f4b73c; --green: #46e08a; --red: #ff5a5a; --dim: #5b6576;
+            --line: rgba(150,160,190,.16); --line-2: rgba(150,160,190,.28);
+            --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            --font-mono: 'SF Mono', ui-monospace, Consolas, Menlo, monospace;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0; background: var(--bg); color: var(--ink-2);
+            font-family: var(--font-sans); line-height: 1.7; -webkit-font-smoothing: antialiased;
+        }
+        body::before {
+            content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+            background:
+                radial-gradient(720px 420px at 92% -12%, rgba(116,86,210,.16), transparent),
+                radial-gradient(560px 320px at 0% 110%, rgba(40,150,200,.12), transparent),
+                var(--bg);
+        }
+        .mono { font-family: var(--font-mono); }
+        .post-wrap { max-width: 720px; margin: 0 auto; padding: 2.5rem 1.5rem 4.5rem; }
+        .top-nav { margin-bottom: 2rem; }
+        .top-nav a { color: var(--muted); text-decoration: none; font-size: 0.92rem; font-weight: 600; transition: color .2s; }
+        .top-nav a:hover { color: var(--amber); }
+        .post-meta { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; color: var(--amber); margin-bottom: 14px; }
+        h1 { margin: 0; font-size: clamp(32px, 6vw, 48px); line-height: 1.04; font-weight: 900; letter-spacing: -.02em; color: var(--ink); }
+        .byline { margin: 14px 0 0; font-size: 13px; color: var(--muted); letter-spacing: .02em; }
+        .body { margin-top: 30px; font-size: 17px; }
+        .body p { margin: 0 0 1.3rem; color: var(--ink-2); }
+        .body p .lead { color: var(--ink); }
+        .body h2 { font-size: 20px; font-weight: 800; color: var(--ink); letter-spacing: -.01em; margin: 2.4rem 0 .8rem; }
+        .body em { color: var(--ink); font-style: italic; }
+        .body a { color: var(--amber); text-decoration: none; }
+        .body a:hover { text-decoration: underline; }
+        figure { margin: 2rem 0; }
+        figure img { width: 100%; height: auto; border-radius: 10px; border: 1px solid var(--line-2); display: block; }
+        figcaption { font-size: 0.85rem; color: var(--muted); text-align: center; margin-top: 0.6rem; font-style: italic; }
+
+        /* ---------- repair status panel (andon style) ---------- */
+        .statpanel { background: var(--panel); border: 1px solid var(--line-2); border-radius: 12px; overflow: hidden; font-family: var(--font-mono); }
+        .statpanel .sp-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 12px 16px; background: var(--raise); border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+        .statpanel .sp-title { font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink); font-weight: 700; }
+        .statpanel .sp-sub { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+        .statrow { display: flex; align-items: center; gap: 12px; padding: 11px 16px; border-bottom: 1px solid var(--line); }
+        .statrow:last-child { border-bottom: none; }
+        .statrow .sr-name { flex: 1; font-size: 12.5px; color: var(--ink-2); letter-spacing: .02em; }
+        .statrow .sr-name b { color: var(--ink); font-weight: 600; }
+        .pill { font-size: 9.5px; font-weight: 700; letter-spacing: .06em; padding: 3px 9px; border-radius: 99px; white-space: nowrap; }
+        .pill.done { background: rgba(70,224,138,.14); color: var(--green); border: 1px solid rgba(70,224,138,.4); }
+        .pill.wip { background: rgba(244,183,60,.14); color: var(--amber); border: 1px solid rgba(244,183,60,.42); }
+        .pill.queue { background: rgba(139,149,171,.12); color: var(--muted); border: 1px solid var(--line-2); }
+        .statpanel .sp-foot { padding: 10px 16px; background: var(--raise); border-top: 1px solid var(--line); font-size: 10.5px; letter-spacing: .08em; color: var(--muted); }
+        .statpanel .sp-foot b { color: var(--amber); }
+
+        /* ---------- fault readout (HMI alarm style) ---------- */
+        .faultbox { background: #120c0d; border: 1px solid rgba(255,90,90,.4); border-left: 3px solid var(--red); border-radius: 10px; padding: 14px 16px; margin: 0; font-family: var(--font-mono); font-size: 12.5px; line-height: 1.9; color: var(--ink-2); overflow-x: auto; white-space: pre-wrap; }
+        .faultbox .fb-alarm { color: var(--red); font-weight: 700; letter-spacing: .06em; }
+        .faultbox .fb-k { color: var(--muted); }
+        .faultbox .fb-v { color: var(--ink); }
+        .faultbox .fb-fix { color: var(--green); }
+
+        .post-foot { margin-top: 3rem; padding-top: 1.6rem; border-top: 1px solid var(--line); }
+        .back-home { display: inline-block; padding: 0.7rem 1.5rem; background: var(--amber); color: #07080f; text-decoration: none; border-radius: 7px; font-weight: 700; font-size: 0.92rem; }
+        @media (max-width: 640px) { .post-wrap { padding: 1.75rem 1.15rem 3.5rem; } .body { font-size: 16px; } }
+        @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+    </style>
+</head>
+<body>
+    <article class="post-wrap">
+        <nav class="top-nav"><a href="../index.html#garage">&#8592; Back to the Garage</a></nav>
+
+        <div class="post-meta">Garage &middot; Motorcycle</div>
+        <h1>1,500 Miles on the Flying Brick</h1>
+        <p class="byline">By Jordan Cota</p>
+
+        <figure>
+            <img src="ines.jpeg" alt="1986 BMW K75, Ines">
+            <figcaption>Ines, the 1986 K75, photographed on one of her good days.</figcaption>
+        </figure>
+
+        <div class="body">
+            <p><span class="lead">The first sign of trouble was the manual.</span> When I picked up the Clymer for the K75, it was roughly double the thickness of the one for my 1991 Honda Nighthawk. I chose to read that as <em>thorough</em> instead of <em>ominous</em>. Fifteen hundred miles later, I can report that I have never turned a wrench more on any vehicle I've owned, and that the manual was, in fact, ominous.</p>
+
+            <p>I love this bike. I also now know it intimately, one bolt at a time. Here's the tour of the first 1,500 miles.</p>
+
+            <h2>The fuel system, all of it</h2>
+            <p>First up was the entire fuel system, because a bike that's been sitting since 2020 doesn't really have gas in the tank so much as it has a <em>memory</em> of gas. The lines had gone hard, the pump had opinions, the filter was doing its best impression of a solid object, and the bottom of the tank was hosting a small science experiment. So: new fuel lines, new fuel pump, new fuel filter, and a long afternoon cleaning the tank out. Nothing exotic, just a lot of it.</p>
+
+            <figure>
+                <div class="statpanel">
+                    <div class="sp-head">
+                        <span class="sp-title">K75 &middot; System Status</span>
+                        <span class="sp-sub">Odometer 1,500 mi</span>
+                    </div>
+                    <div class="statrow"><span class="sr-name"><b>Fuel system</b> &mdash; lines, pump, filter, tank</span><span class="pill done">DONE</span></div>
+                    <div class="statrow"><span class="sr-name"><b>Cooling fan</b> &mdash; radiator</span><span class="pill done">DONE</span></div>
+                    <div class="statrow"><span class="sr-name"><b>Charging</b> &mdash; alternator (see Atlanta)</span><span class="pill done">DONE&#42;</span></div>
+                    <div class="statrow"><span class="sr-name"><b>Front brake</b> &mdash; master cylinder</span><span class="pill done">DONE &times;2</span></div>
+                    <div class="statrow"><span class="sr-name"><b>Rear main seal</b> &mdash; oil drops</span><span class="pill wip">IN PROGRESS</span></div>
+                    <div class="statrow"><span class="sr-name"><b>Clutch</b> &mdash; cable + seal</span><span class="pill queue">QUEUED</span></div>
+                    <div class="sp-foot">AVAILABILITY: <b>rideable</b> &middot; and yes, I build dashboards for a living, so the bike got one too</div>
+                </div>
+                <figcaption>Old habits. When your day job is uptime, everything becomes a status panel.</figcaption>
+            </figure>
+
+            <h2>The charging system, and the worst place to lose it</h2>
+            <p>Next was the charging system, which is where the story gets good. It started innocently with the radiator fan, then moved to the alternator. I tried to be economical and just replace the brushes. In the process I stripped a bolt, fought it for a while, said some things I'm not proud of, and finally admitted defeat and replaced the whole alternator.</p>
+
+            <p>But not before it stranded me in the middle of metro Atlanta, which, if you've ever driven it, is the single worst place for a motorcycle to quietly stop making electricity. Turns out I wasn't putting out enough voltage to keep her running, a diagnosis I arrived at the way all the great ones happen: on the shoulder, in traffic. The fix on the spot was a push start, the push start needed a second person, and the second person available to me was a gentleman experiencing homelessness who agreed to help in exchange for a Mango Arizona and a pack of Newport 100s. Fair trade. Best three dollars I've spent on this bike, and I have spent a <em>lot</em> on this bike.</p>
+
+            <figure>
+                <pre class="faultbox mono"><span class="fb-alarm">&#9888; ALARM &middot; CHARGING FAULT</span>
+<span class="fb-k">BUS VOLTAGE ....</span> <span class="fb-v">11.9 V (LOW)</span>
+<span class="fb-k">LOCATION .......</span> <span class="fb-v">SOMEWHERE ON THE PERIMETER, ATLANTA GA</span>
+<span class="fb-k">STATUS .........</span> <span class="fb-v">BIKE STOPPED</span>
+<span class="fb-k">RESOLUTION .....</span> <span class="fb-fix">1&times; MANGO ARIZONA, 1&times; NEWPORT 100s, 1&times; PUSH START</span></pre>
+                <figcaption>The actual root-cause analysis, roughly to scale.</figcaption>
+            </figure>
+
+            <h2>The master cylinder, twice</h2>
+            <p>With power sorted, I turned to the brakes. The front master cylinder started to leak, so I rebuilt it. It leaked again. So I replaced it. There is a lesson buried in there about knowing when a rebuild kit is genuine optimism and when it's just a slower way to buy the new part, and it is a lesson I apparently need to learn on a recurring schedule.</p>
+
+            <h2>Where she stands</h2>
+            <p>So that's the first 1,500 miles: fuel system, cooling fan, alternator, master cylinder, and a running crash course in what German engineers were thinking in 1986. The bike is not finished with me. Right now she's leaving a few drops of oil after every ride, which my nose and the entire internet agree is the rear main seal. That's the next job, along with a new clutch cable and clutch seal while I'm in there, because on a bike like this you are never in there for just one thing.</p>
+
+            <p>I love this bike. I want that on the record before the next part, which is that I would love, deeply, to put the wrench down for a little while. I won't. I bought a 37-year-old flying brick specifically because I like things that have a good chance of breaking on me, and Ines has never once let me down on that promise. Fifteen hundred miles in, we finally understand each other.</p>
+
+            <p><em>Rear main seal diary coming, once I stop finding oil underneath her. Could be a while.</em></p>
+        </div>
+
+        <div class="post-foot">
+            <a class="back-home" href="../index.html#garage">&#8592; Back to the Garage</a>
+        </div>
+    </article>
+</body>
+</html>
