@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Decoding Downtime: Two Apps I Built to Find Out Why the Sorter Stops | Jordan Cota</title>
+<meta name="description" content="How I turned raw alarm journals and chute fault exports into two small offline apps, the ADTA Decoder and the Chute Remediation Checklist, that tell us why the sorter stopped and what to fix first.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#127949;</text></svg>">
+<style>
+  :root{
+    --bg:#12171E; --panel:#1A212B; --raise:#212A36; --line:#2A3542;
+    --txt:#D6DCE2; --muted:#7C8A9B; --dim:#5B6878;
+    --amber:#F0A93B; --red:#E5484D; --ylo:#D9B84A; --green:#3FB950; --teal:#4FD1C5;
+    --violet:#9E8CFC;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0; background:var(--bg); color:var(--txt);
+    font-family:"Bahnschrift","Segoe UI",-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased; line-height:1.7;
+    padding:54px 20px 90px;
+  }
+  .mono{font-family:Consolas,ui-monospace,"SF Mono",Menlo,monospace;}
+  .wrap{max-width:760px;margin:0 auto;}
+  a{color:var(--teal);text-decoration:none;border-bottom:1px solid #4FD1C544;}
+  a:hover{border-bottom-color:var(--teal);}
+  ::selection{background:#F0A93B33;}
+
+  /* ---------- hero ---------- */
+  .stacklight{display:flex;gap:7px;margin-bottom:22px;}
+  .stacklight span{width:11px;height:11px;border-radius:50%;opacity:.9;}
+  .sl-r{background:var(--red);box-shadow:0 0 10px #E5484D66;}
+  .sl-a{background:var(--amber);box-shadow:0 0 10px #F0A93B66;}
+  .sl-g{background:var(--green);box-shadow:0 0 10px #3FB95066;}
+  .eyebrow{font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--amber);font-weight:600;margin-bottom:12px;}
+  h1{font-size:clamp(30px,5.4vw,44px);font-weight:700;letter-spacing:-.015em;line-height:1.12;margin:0 0 16px;}
+  .dek{font-size:18px;color:var(--muted);line-height:1.6;margin:0 0 22px;max-width:640px;}
+  .meta{font-size:12px;color:var(--dim);letter-spacing:.05em;}
+  .meta b{color:var(--muted);font-weight:600;}
+  .rule{height:1px;background:linear-gradient(90deg,var(--amber),transparent);margin:34px 0 40px;border:0;}
+
+  /* ---------- sections ---------- */
+  h2{font-size:24px;font-weight:650;letter-spacing:-.01em;margin:58px 0 6px;line-height:1.25;}
+  h2 .num{color:var(--amber);font-family:Consolas,ui-monospace,monospace;font-size:15px;vertical-align:3px;margin-right:10px;letter-spacing:.1em;}
+  h3{font-size:16.5px;font-weight:650;margin:34px 0 4px;}
+  p{margin:14px 0;font-size:16px;}
+  .lead{color:var(--muted);font-size:14px;margin:0 0 18px;letter-spacing:.02em;}
+  code{font-family:Consolas,ui-monospace,Menlo,monospace;font-size:.88em;background:var(--raise);border:1px solid var(--line);border-radius:5px;padding:1.5px 6px;color:var(--teal);white-space:nowrap;}
+  strong{color:#E8EDF2;}
+  em{color:#C9D2DB;}
+
+  /* ---------- app intro cards ---------- */
+  .appcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin:24px 0;}
+  .appcard .a-name{font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;}
+  .appcard .a-tag{font-size:12px;color:var(--muted);margin-top:3px;}
+  .appcard .a-io{display:flex;align-items:center;gap:10px;margin-top:14px;flex-wrap:wrap;font-size:13px;}
+  .io-chip{background:var(--raise);border:1px solid var(--line);border-radius:99px;padding:4px 13px;color:var(--txt);white-space:nowrap;}
+  .io-arrow{color:var(--amber);font-weight:700;}
+
+  /* ---------- journal excerpt ---------- */
+  .journal{background:#0D1218;border:1px solid var(--line);border-radius:10px;margin:22px 0;overflow:hidden;}
+  .journal .j-cap{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);padding:9px 16px;border-bottom:1px solid var(--line);background:var(--panel);}
+  .journal pre{margin:0;padding:14px 16px;font-family:Consolas,ui-monospace,Menlo,monospace;font-size:12.5px;line-height:1.85;overflow-x:auto;color:var(--muted);}
+  .jr{color:#8FA1B3;}
+  .j-act{color:var(--red);font-weight:600;}
+  .j-clr{color:var(--green);font-weight:600;}
+  .j-note{color:var(--teal);}
+  .j-dim{color:var(--dim);}
+
+  /* ---------- pipeline ---------- */
+  .pipe{display:flex;flex-wrap:wrap;gap:8px;margin:24px 0;align-items:stretch;}
+  .pstep{flex:1;min-width:126px;background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:12px 13px;position:relative;}
+  .pstep .p-n{font-family:Consolas,ui-monospace,monospace;font-size:11px;color:var(--amber);letter-spacing:.1em;}
+  .pstep .p-t{font-size:13.5px;font-weight:650;margin-top:3px;}
+  .pstep .p-d{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.5;}
+
+  /* ---------- rules ---------- */
+  .rulegrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;margin:22px 0;}
+  .rcard{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--amber);border-radius:8px;padding:13px 15px;}
+  .rcard.teal{border-left-color:var(--teal);}
+  .rcard.red{border-left-color:var(--red);}
+  .rcard.green{border-left-color:var(--green);}
+  .rcard.violet{border-left-color:var(--violet);}
+  .rcard .r-t{font-size:13px;font-weight:700;letter-spacing:.02em;}
+  .rcard .r-d{font-size:12.5px;color:var(--muted);margin-top:5px;line-height:1.55;}
+
+  /* ---------- stat strip ---------- */
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:26px 0;}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:14px 16px;text-align:left;}
+  .stat .s-n{font-size:24px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.1;}
+  .stat .s-l{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-top:6px;line-height:1.5;}
+
+  /* ---------- checklist mock ---------- */
+  .mock{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:22px 0;}
+  .mock .m-cap{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:11px;}
+  .mrow{display:flex;align-items:center;gap:12px;background:var(--raise);border:1px solid var(--line);border-radius:8px;padding:10px 13px;margin-bottom:7px;}
+  .mrow:last-child{margin-bottom:0;}
+  .mbox{width:16px;height:16px;min-width:16px;border:1.6px solid var(--dim);border-radius:4px;}
+  .mbox.done{background:var(--green);border-color:var(--green);position:relative;}
+  .mbox.done::after{content:"";position:absolute;left:4.5px;top:1px;width:4px;height:8px;border:solid #0c130d;border-width:0 2px 2px 0;transform:rotate(43deg);}
+  .mcode{font-family:Consolas,ui-monospace,monospace;font-size:13.5px;font-weight:600;min-width:60px;}
+  .mrow.done .mcode{color:var(--dim);text-decoration:line-through;}
+  .mflag{font-size:9px;font-weight:700;letter-spacing:.05em;color:#12171E;background:var(--red);padding:2px 7px;border-radius:99px;}
+  .mbar{flex:1;display:flex;height:15px;border-radius:4px;overflow:hidden;background:#0d1218;min-width:60px;}
+  .mseg{height:100%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#0d1218;font-family:Consolas,ui-monospace,monospace;}
+  .mtot{font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;min-width:22px;text-align:right;}
+  .zonechips{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0;}
+  .zc{font-size:11.5px;font-weight:600;letter-spacing:.03em;padding:5px 13px;border-radius:99px;border:1px solid;}
+  .zc.v{color:var(--violet);border-color:#9E8CFC55;}
+  .zc.t{color:var(--teal);border-color:#4FD1C555;}
+  .zc.a{color:var(--amber);border-color:#F0A93B55;}
+  .zc.r{color:var(--red);border-color:#E5484D55;}
+
+  /* ---------- duo ---------- */
+  .duo{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:24px 0;}
+  .duo .dcol{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:17px 19px;}
+  .duo .d-t{font-size:12px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;margin-bottom:8px;}
+  .duo .d-t.diag{color:var(--teal);}
+  .duo .d-t.treat{color:var(--green);}
+  .duo p{font-size:13.5px;color:var(--muted);margin:0;line-height:1.6;}
+  @media (max-width:600px){.duo{grid-template-columns:1fr;}}
+
+  /* ---------- lessons ---------- */
+  .lesson{border-left:2px solid var(--line);padding:2px 0 2px 20px;margin:26px 0;}
+  .lesson .l-t{font-size:15.5px;font-weight:700;color:var(--amber);}
+  .lesson p{margin:7px 0 0;font-size:15px;color:var(--txt);}
+
+  blockquote{margin:26px 0;padding:16px 22px;background:var(--panel);border-left:3px solid var(--teal);border-radius:0 10px 10px 0;font-size:16px;color:#C9D2DB;font-style:italic;}
+
+  /* ---------- footer ---------- */
+  .foot{margin-top:70px;padding-top:22px;border-top:1px solid var(--line);font-size:13px;color:var(--dim);line-height:1.7;}
+  .foot b{color:var(--muted);}
+
+  /* ---------- nav ---------- */
+  .top-nav{margin-bottom:22px;}
+  .top-nav a{color:var(--muted);text-decoration:none;font-size:13px;font-weight:600;border-bottom:none;}
+  .top-nav a:hover{color:var(--amber);}
+  .back-home{display:inline-block;margin-top:34px;padding:10px 22px;background:var(--amber);color:#12171E;text-decoration:none;border-radius:7px;font-weight:700;font-size:13.5px;border-bottom:none;}
+  .back-home:hover{background:#f5b854;}
+
+  @media (max-width:560px){ body{padding:34px 14px 60px;} h2{margin-top:44px;} }
+  @media (prefers-reduced-motion:reduce){ html{scroll-behavior:auto;} }
+</style>
+</head>
+<body>
+<article class="wrap">
+
+  <nav class="top-nav"><a href="../index.html#work">&larr; Back to jordancota.site</a></nav>
+
+  <header>
+    <div class="stacklight" aria-hidden="true"><span class="sl-r"></span><span class="sl-a"></span><span class="sl-g"></span></div>
+    <div class="eyebrow">Side Project &middot; Industrial Tooling</div>
+    <h1>Decoding downtime: two apps I built to find out why the sorter stops</h1>
+    <p class="dek">Every time the sorter goes down, everyone asks the same two questions. Why did we stop, and where do we start fixing? The answers were sitting right there in the exports the whole time. They were just impossible to read. So I built a decoder for each one.</p>
+    <div class="meta mono"><b>Jordan Cota</b> &nbsp;&middot;&nbsp; July 2026 &nbsp;&middot;&nbsp; ~8 min read</div>
+  </header>
+
+  <hr class="rule">
+
+  <h2><span class="num">01</span>The problem: the answers were buried in the exports</h2>
+
+  <p>I work around an automated parcel sorter, a machine that sends thousands of packages an hour down dozens of chutes. When it stops, everyone wants the same numbers: how long were we down, what actually caused each stop, and which chutes need attention before the next sort.</p>
+
+  <p>Here's the thing. All of that information already existed, buried in two exports nobody wants to read. The first is the <strong>HMI alarm journal</strong>, a spreadsheet with thousands of rows, one for every alarm event. Every E-stop, every jam, every comm fault, timestamped to the millisecond and completely raw. The second is the <strong>chute fault report</strong>, a per-chute count of faults like failed-to-divert. It tells you <em>which</em> chutes are acting up, but nothing about where to start or when you're done.</p>
+
+  <p>Turning the journal into a downtime report used to mean filtering rows by hand, guessing at durations, and arguing about which of fifteen simultaneous alarms "caused" the stop. Turning the fault report into actual work meant printing it out and crossing off lines with a pen. Both felt like decoding problems to me. The information was all there, just written for machines instead of people. So I built two small apps, one for each export.</p>
+
+  <div class="appcard">
+    <div class="a-name" style="color:var(--teal)">App 1: ADTA Decoder</div>
+    <div class="a-tag">Python engine + local web UI, shipped as a single standalone .exe</div>
+    <div class="a-io"><span class="io-chip mono">alarm journal .xlsx</span><span class="io-arrow">&rarr;</span><span class="io-chip">full downtime report: exact durations, episodes, shutdown triggers, availability</span></div>
+  </div>
+
+  <div class="appcard">
+    <div class="a-name" style="color:var(--amber)">App 2: Chute Remediation Checklist</div>
+    <div class="a-tag">A single HTML file. No install, no server, works fully offline.</div>
+    <div class="a-io"><span class="io-chip mono">chute fault export</span><span class="io-arrow">&rarr;</span><span class="io-chip">interactive fix list with zone decoding, outlier flags &amp; progress tracking</span></div>
+  </div>
+
+  <h2><span class="num">02</span>The ADTA Decoder: from alarm journal to answers</h2>
+  <p class="lead">Drop in a journal, set the sort window, get the report.</p>
+
+  <p>Using it is simple on purpose. You double-click one file and the interface opens in your browser, running completely on your own machine. The journal never leaves it. Drag the alarm journal onto the page, confirm the sort window (it prefills from the journal's own span), add breaks and lunch, and hit Generate. A little stack-light on the page turns amber while it works and green when it's done. You get the headline numbers right on screen: total downtime, availability, episode count. Plus a full multi-sheet Excel workbook with the episode log, shutdown trigger analysis, alarm durations, a Pareto, an hourly timeline, and the cleaned data itself.</p>
+
+  <p>The fun part is everything that happens in between. The engine treats the downtime methodology as a set of explicit, testable rules. And almost every rule exists because a real journal broke a simpler assumption.</p>
+
+  <h3>Reading the journal the way it's actually written</h3>
+
+  <p>The biggest discovery was about the data itself. The journal logs each alarm <strong>twice</strong>. One row the moment it goes active, one row the moment it clears, and nothing in the export tells you which is which:</p>
+
+  <div class="journal">
+    <div class="j-cap">Alarm journal excerpt: what the engine sees</div>
+    <pre><span class="jr">03:17:04.112   E-STOP 3 ENGAGED             HIGH</span>   <span class="j-act">&larr; active</span>
+<span class="jr">03:17:09.845   COMM LOSS, ZONE DR1_3        HIGH</span>   <span class="j-act">&larr; active</span> <span class="j-dim">(cascade)</span>
+<span class="jr">03:17:11.203   COMM LOSS, ZONE DR1_4        HIGH</span>   <span class="j-act">&larr; active</span> <span class="j-dim">(cascade)</span>
+<span class="jr">04:09:02.556   COMM LOSS, ZONE DR1_3        HIGH</span>   <span class="j-clr">&larr; clear</span>
+<span class="jr">04:09:02.601   COMM LOSS, ZONE DR1_4        HIGH</span>   <span class="j-clr">&larr; clear</span>
+<span class="jr">04:09:04.019   E-STOP 3 ENGAGED             HIGH</span>   <span class="j-clr">&larr; clear</span>
+<span class="j-note">&rarr; one episode &middot; 52.0 min &middot; shutdown trigger: E-STOP 3 &middot; comm faults credited to the stop</span></pre>
+  </div>
+
+  <p>An early version assumed each row was its own ~30 second event, which is a pretty standard way to read alarm logs. It was also quietly wrong. It undercounted every stop longer than 30 seconds, so a 52 minute E-stop showed up as two half-minute blips. Once I checked the paired active/clear structure against the HMI's live state view, durations became <strong>exact</strong>. Clear minus active, no estimates. Rebuilding on that model was the single biggest accuracy fix in the whole project.</p>
+
+  <h3>The pipeline</h3>
+
+  <div class="pipe">
+    <div class="pstep"><div class="p-n mono">1</div><div class="p-t">Pair</div><div class="p-d">Match each alarm's active row to its clear row. Exact durations, strays repaired and flagged.</div></div>
+    <div class="pstep"><div class="p-n mono">2</div><div class="p-t">Union</div><div class="p-d">Downtime = union of active windows, so a 15-alarm cascade counts once, not 15 times.</div></div>
+    <div class="pstep"><div class="p-n mono">3</div><div class="p-t">Episodes</div><div class="p-d">Group into stops. A quiet gap only bridges to causally connected alarms.</div></div>
+    <div class="pstep"><div class="p-n mono">4</div><div class="p-t">Rules</div><div class="p-d">Reattribute cascades, mask co-active symptoms, negate breaks, exclude warnings.</div></div>
+    <div class="pstep"><div class="p-n mono">5</div><div class="p-t">Report</div><div class="p-d">KPIs on the page + the full Excel workbook, every adjustment listed and auditable.</div></div>
+  </div>
+
+  <h3>Rules that earn their place</h3>
+
+  <p>Raw alarm data kind of lies to you. It records symptoms and causes side by side like they're equals, and the rule engine's whole job is telling them apart. Every rule in it was validated, and in a few cases discovered, by going through real journals event by event:</p>
+
+  <div class="rulegrid">
+    <div class="rcard red"><div class="r-t">Cascade reattribution</div><div class="r-d">Comm and power faults that overlap an E-stop or safety-door stop get credited to the stop. They're the network's view of the shutdown, not separate failures.</div></div>
+    <div class="rcard teal"><div class="r-t">Co-activity masking</div><div class="r-d">Some alarms only count while their true cause is also active. Measured second by second of exact overlap, not by "it happened around the same time."</div></div>
+    <div class="rcard green"><div class="r-t">Planned-downtime negation</div><div class="r-d">Alarm seconds inside breaks and lunch get negated, and availability is measured against scheduled time. That's the number that's actually fair.</div></div>
+    <div class="rcard amber"><div class="r-t">Data-backed thresholds</div><div class="r-d">A jam that starts while a jackpot-cart alarm is active is a late cart swap, not a mechanical jam. The 35 second linking window came straight from measuring real journals: most cart-driven jams fired within 5 seconds of the cart alarm.</div></div>
+    <div class="rcard violet"><div class="r-t">Non-stopping warnings excluded</div><div class="r-d">Low-voltage and under-speed warnings don't stop the sorter. The proof: a 42 minute over-current alarm where the machine kept right on sorting the whole time.</div></div>
+    <div class="rcard"><div class="r-t">Honest naming</div><div class="r-d">The report says <em>shutdown trigger</em>, not <em>root cause</em>. The earliest alarm in an episode is what tripped the machine. Calling it the root cause would be overselling the data.</div></div>
+  </div>
+
+  <h3>When the data fights back</h3>
+
+  <p>The hardest part wasn't the happy path. It was defending the pairing model against messy reality. An alarm that was already active before the export starts shows up as an orphaned clear. A panel restart can re-announce seventy alarms in a single second, which orphans rows mid-journal and flips the pairing for everything after it. That one invented hours of phantom downtime for a single alarm before the engine learned to catch and repair the flip. And one stray power-supply row once fabricated four thousand minutes of downtime all by itself. Every one of these cases now has a guard in the engine, a plain-language note in the report, and a regression test that has to pass before a release ships.</p>
+
+  <p>Same story at the analysis level. Running a week-long journal as one flat window gave a nonsense answer: thousands of minutes of "downtime" that were really just nights and gaps between sorts. Weekly mode fixes that by treating each sort day as its own run and rolling the results up:</p>
+
+  <div class="stats">
+    <div class="stat"><div class="s-n" style="color:var(--red)">7,467 min</div><div class="s-l">one week analyzed as a single flat window (nonsense)</div></div>
+    <div class="stat"><div class="s-n" style="color:var(--green)">91.2 min</div><div class="s-l">the same week in weekly mode, per sort day, rules scoped right</div></div>
+    <div class="stat"><div class="s-n" style="color:var(--teal)">96.8%</div><div class="s-l">fault-free share of scheduled time, measured fairly</div></div>
+  </div>
+
+  <h2><span class="num">03</span>The Chute Remediation Checklist: from fault counts to a fix list</h2>
+  <p class="lead">The whole app is one HTML file. Open it anywhere, even offline.</p>
+
+  <p>The second decoder is smaller, and it's all about the follow-through. Fault reports come in as per-chute counts with coded names like <code>S0508#8</code>. There's more meaning packed in there than it looks like. The prefix is the chute address, and the <code>#N</code> suffix is the sorter's zoning value, basically where along the chute's columns packages get dropped. The checklist decodes it on sight:</p>
+
+  <div class="zonechips">
+    <span class="zc v">#0 &middot; Automatic (round robin)</span>
+    <span class="zc t">#2 &middot; Early columns</span>
+    <span class="zc a">#5 &middot; Center columns</span>
+    <span class="zc r">#8 &middot; Late columns</span>
+  </div>
+
+  <p>Import a spreadsheet, paste rows straight from a query, or drop in a CSV. The parser figures out the shape on its own, including one weird export format where every field arrives stacked in a single column and the records have to be rebuilt by spotting the repeating pattern. Chutes get grouped by address, sorted worst first, and turned into a checklist:</p>
+
+  <div class="mock" aria-hidden="true">
+    <div class="m-cap">Checklist: worst chutes first</div>
+    <div class="mrow">
+      <span class="mbox"></span><span class="mcode">S0508</span><span class="mflag">OUTLIER</span>
+      <span class="mbar"><span class="mseg" style="width:50%;background:var(--red)">8</span><span class="mseg" style="width:31%;background:var(--amber)">5</span><span class="mseg" style="width:19%;background:var(--amber)">3</span></span>
+      <span class="mtot">16</span>
+    </div>
+    <div class="mrow">
+      <span class="mbox"></span><span class="mcode">S0505</span>
+      <span class="mbar"><span class="mseg" style="width:38%;background:var(--amber)">6</span><span class="mseg" style="width:25%;background:var(--amber)">4</span><span class="mseg" style="width:25%;background:var(--amber)">4</span><span class="mseg" style="width:12%;background:var(--ylo)">2</span></span>
+      <span class="mtot">16</span>
+    </div>
+    <div class="mrow done">
+      <span class="mbox done"></span><span class="mcode">S0502</span>
+      <span class="mbar"><span class="mseg" style="width:44%;background:var(--amber)">7</span><span class="mseg" style="width:31%;background:var(--amber)">5</span><span class="mseg" style="width:12.5%;background:var(--ylo)">2</span><span class="mseg" style="width:12.5%;background:var(--ylo)">2</span></span>
+      <span class="mtot">16</span>
+    </div>
+  </div>
+
+  <p>Each row expands into its per-position detail: zone chips, severity dots, and a readout comparing every position against its own zone's average across the dataset. So a position running at 2.1x its zone average gets a red outlier flag even if the raw count looks small. Techs check off positions as they go, leave notes on what they found, and the progress bar tracks the sweep. Everything saves in the browser between shifts, and progress exports back out as a CSV with the zones, ratios, and notes intact.</p>
+
+  <p>My favorite detail is hiding in the import button. The app reads native Excel files <strong>with zero libraries and zero network</strong>. An .xlsx file is secretly just a ZIP full of XML, so the app walks the ZIP's directory by hand, unzips the worksheet with the browser's built-in <code>DecompressionStream</code>, and parses the cells itself. About a hundred lines of code doing the job of a big third-party library. That's what keeps the whole tool a single file that works on a locked-down machine with no internet, which is exactly where it gets used.</p>
+
+  <h2><span class="num">04</span>Two decoders, one loop</h2>
+
+  <p>The apps split the problem the same way the work actually splits:</p>
+
+  <div class="duo">
+    <div class="dcol"><div class="d-t diag">Diagnosis: ADTA Decoder</div><p>After the sort. How long were we down, what triggered each stop, and what deserves engineering attention. The workbook is the record and the Pareto is the priority list.</p></div>
+    <div class="dcol"><div class="d-t treat">Treatment: Chute Checklist</div><p>Before the next sort. Which chutes and positions are faulting, which ones are outliers for their zone, who has checked what, and what they found.</p></div>
+  </div>
+
+  <p>One tells you <em>why the machine stopped</em>. The other turns the fault data into <em>a list you can actually finish</em>. The loop closes when the next journal and the next fault export show whether the fixes held.</p>
+
+  <h2><span class="num">05</span>What building them taught me</h2>
+
+  <div class="lesson"><div class="l-t">Read the data the way it's written, not the way you assume it is.</div>
+  <p>The paired active/clear discovery invalidated every number the tool had produced before it. And what caught it wasn't luck. It was a habit of checking computed durations against the HMI's live view, and that habit became the backbone of the whole project.</p></div>
+
+  <div class="lesson"><div class="l-t">Every rule needs a real proof case.</div>
+  <p>Nothing went into the engine just because it sounded reasonable. The cart-jam window is 35 seconds because measured journals said so. Over-current became non-stopping because one specific 42 minute alarm proved the sorter runs right through it. When a rule has a story behind it, people can challenge it. That's the point.</p></div>
+
+  <div class="lesson"><div class="l-t">Keep the audit trail in the deliverable.</div>
+  <p>Every reattributed cascade, negated break, and dropped stray row is listed in the workbook itself. A downtime number people can dig into gets trusted. A black-box number gets argued with.</p></div>
+
+  <div class="lesson"><div class="l-t">Meet users exactly where they are.</div>
+  <p>One tool is a double-click .exe serving a local page. The other is a single HTML file. No installs, no accounts, no cloud, nothing leaves the machine. On an industrial floor, deployment friction decides whether a tool gets used. Not features.</p></div>
+
+  <div class="lesson"><div class="l-t">Small tools can move fast.</div>
+  <p>Version one shipped, and eighteen more releases followed inside a week, each one driven by a real journal that broke an assumption. A regression suite of audited nights is what made that pace safe. Every fix had to reproduce the already-verified reports byte for byte before it shipped.</p></div>
+
+  <blockquote>The data was never missing. It was encoded in pairing conventions, cascade patterns, and zone suffixes. Both apps are just decoders with opinions, and every opinion had to prove itself against a real night on the floor.</blockquote>
+
+  <p>If you've got a machine spitting out logs nobody reads, there's probably a decoder waiting to be built. What would yours be?</p>
+
+  <footer class="foot">
+    <p><b>Under the hood:</b> the ADTA Decoder is Python (pandas and NumPy for the engine, openpyxl for the workbook, Flask serving the local page), compiled and packaged into a single standalone executable. The Chute Remediation Checklist is one hand-written HTML file: vanilla JavaScript, no frameworks, no dependencies, fully offline. Both run entirely on your machine and nothing ever leaves it.</p>
+    <p>The source stays private to keep site-specific details internal, but I'm always happy to talk about the design: the pairing model, the rule engine, or the tiny xlsx reader.</p>
+    <a class="back-home" href="../index.html#work">&larr; Back to Home</a>
+  </footer>
+
+</article>
+</body>
+</html>
